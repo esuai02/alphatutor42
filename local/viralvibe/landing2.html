@@ -1,14 +1,791 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ViralVibe2223333ㅈㅈ3</title>
-    <link rel="stylesheet" href="style.css">
+    <title>포모도르 학습일지 - KAIST 터치수학</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f5f7fa;
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+        
+        /* 헤더 영역 */
+        .header-bar {
+            background: linear-gradient(135deg, #4a69bd 0%, #3c5aa6 100%);
+            height: 60px;
+            display: flex;
+            align-items: center;
+            padding: 0 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .logo {
+            color: white;
+            font-size: 20px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo::before {
+            content: '⏱️';
+            font-size: 24px;
+        }
+        
+        /* 메인 컨테이너 */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px;
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 30px;
+        }
+        
+        /* 학생 정보 카드 */
+        .student-info {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .student-avatar {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+        }
+        
+        .student-details h2 {
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+        
+        .student-meta {
+            display: flex;
+            gap: 20px;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        
+        .badge {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        /* 포모도르 타이머 섹션 */
+        .pomodoro-section {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title::before {
+            content: '🍅';
+            font-size: 20px;
+        }
+        
+        .pomodoro-timer {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        
+        .timer-display {
+            font-size: 72px;
+            font-weight: 300;
+            color: #e74c3c;
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .timer-status {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .status-pill {
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .status-pill.break {
+            background: #fff3e0;
+            color: #ef6c00;
+        }
+        
+        .pomodoro-progress {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .pomo-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            transition: all 0.3s ease;
+        }
+        
+        .pomo-dot.completed {
+            background: #4caf50;
+            transform: scale(1.2);
+        }
+        
+        .pomo-dot.active {
+            background: #ff5722;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.3); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        /* 집중도 & 만족도 차트 */
+        .metrics-section {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+        
+        .chart-container {
+            height: 250px;
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .chart-legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 15px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+        
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+        
+        /* 학습 세션 기록 */
+        .sessions-list {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .session-item {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid #f0f0f0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .session-item:hover {
+            background: #f8f9fa;
+            transform: translateX(5px);
+        }
+        
+        .session-item:last-child {
+            border-bottom: none;
+        }
+        
+        .session-time {
+            font-size: 13px;
+            color: #95a5a6;
+            margin-right: 15px;
+            min-width: 80px;
+        }
+        
+        .session-type {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 20px;
+        }
+        
+        .session-type.math {
+            background: #e3f2fd;
+        }
+        
+        .session-type.break {
+            background: #fff8e1;
+        }
+        
+        .session-content {
+            flex: 1;
+        }
+        
+        .session-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+        
+        .session-meta {
+            font-size: 13px;
+            color: #7f8c8d;
+            display: flex;
+            gap: 15px;
+        }
+        
+        .focus-indicator {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .focus-bar {
+            width: 60px;
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .focus-fill {
+            height: 100%;
+            background: #4caf50;
+            transition: width 0.3s ease;
+        }
+        
+        /* 사이드바 */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        /* 오늘의 목표 카드 */
+        .goals-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .goal-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .goal-item:last-child {
+            border-bottom: none;
+        }
+        
+        .goal-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #cbd5e0;
+            border-radius: 50%;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .goal-checkbox.checked {
+            background: #4caf50;
+            border-color: #4caf50;
+        }
+        
+        .goal-checkbox.checked::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 12px;
+        }
+        
+        .goal-text {
+            flex: 1;
+            font-size: 14px;
+        }
+        
+        .goal-text.completed {
+            text-decoration: line-through;
+            color: #95a5a6;
+        }
+        
+        /* 인사이트 카드 */
+        .insights-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 16px;
+            padding: 25px;
+            color: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .insight-icon {
+            font-size: 32px;
+            margin-bottom: 15px;
+        }
+        
+        .insight-text {
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .insight-action {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .insight-action:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        /* 통계 요약 */
+        .stats-summary {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #3498db;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 13px;
+            color: #7f8c8d;
+        }
+        
+        /* 플로팅 액션 버튼 */
+        .fab {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: #e74c3c;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .fab:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+        }
+        
+        /* 반응형 */
+        @media (max-width: 1200px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .sidebar {
+                grid-template-columns: 1fr;
+            }
+            
+            .timer-display {
+                font-size: 56px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>ViralViㅈㅈㅈㅈㅈㅈㅈㅈㅈㅈㅈㅈb22e</h1>
+    <div class="header-bar">
+        <div class="logo">포모도르 학습일지</div>
+    </div>
+    
+    <div class="container">
+        <div class="main-content">
+            <!-- 학생 정보 -->
+            <div class="student-info">
+                <div class="student-avatar">김민지</div>
+                <div class="student-details">
+                    <h2>김민지 학생</h2>
+                    <div class="student-meta">
+                        <span>중학교 2학년</span>
+                        <span class="badge">집중형 학습자</span>
+                        <span>오늘의 학습 3시간 42분</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 포모도르 타이머 -->
+            <div class="pomodoro-section">
+                <h3 class="section-title">현재 포모도르 세션</h3>
+                <div class="pomodoro-timer">
+                    <div class="timer-display">23:47</div>
+                </div>
+                <div class="timer-status">
+                    <span class="status-pill">집중 시간 - 이차방정식 문제풀이</span>
+                </div>
+                <div class="pomodoro-progress">
+                    <div class="pomo-dot completed"></div>
+                    <div class="pomo-dot completed"></div>
+                    <div class="pomo-dot completed"></div>
+                    <div class="pomo-dot active"></div>
+                    <div class="pomo-dot"></div>
+                    <div class="pomo-dot"></div>
+                    <div class="pomo-dot"></div>
+                    <div class="pomo-dot"></div>
+                </div>
+            </div>
+            
+            <!-- 집중도 & 만족도 차트 -->
+            <div class="metrics-section">
+                <h3 class="section-title">오늘의 집중도 & 만족도 추이</h3>
+                <div class="chart-container">
+                    <!-- SVG 차트 -->
+                    <svg width="100%" height="100%" viewBox="0 0 800 250">
+                        <!-- 격자선 -->
+                        <g stroke="#f0f0f0" stroke-width="1">
+                            <line x1="50" y1="200" x2="750" y2="200" />
+                            <line x1="50" y1="150" x2="750" y2="150" />
+                            <line x1="50" y1="100" x2="750" y2="100" />
+                            <line x1="50" y1="50" x2="750" y2="50" />
+                        </g>
+                        
+                        <!-- 집중도 라인 -->
+                        <polyline
+                            fill="none"
+                            stroke="#3498db"
+                            stroke-width="3"
+                            points="50,100 150,80 250,60 350,90 450,70 550,50 650,80 750,70"
+                        />
+                        
+                        <!-- 만족도 라인 -->
+                        <polyline
+                            fill="none"
+                            stroke="#e74c3c"
+                            stroke-width="3"
+                            points="50,120 150,100 250,90 350,110 450,80 550,70 650,100 750,90"
+                        />
+                        
+                        <!-- 데이터 포인트 -->
+                        <g fill="#3498db">
+                            <circle cx="50" cy="100" r="5" />
+                            <circle cx="150" cy="80" r="5" />
+                            <circle cx="250" cy="60" r="5" />
+                            <circle cx="350" cy="90" r="5" />
+                            <circle cx="450" cy="70" r="5" />
+                            <circle cx="550" cy="50" r="5" />
+                            <circle cx="650" cy="80" r="5" />
+                            <circle cx="750" cy="70" r="5" />
+                        </g>
+                        
+                        <g fill="#e74c3c">
+                            <circle cx="50" cy="120" r="5" />
+                            <circle cx="150" cy="100" r="5" />
+                            <circle cx="250" cy="90" r="5" />
+                            <circle cx="350" cy="110" r="5" />
+                            <circle cx="450" cy="80" r="5" />
+                            <circle cx="550" cy="70" r="5" />
+                            <circle cx="650" cy="100" r="5" />
+                            <circle cx="750" cy="90" r="5" />
+                        </g>
+                        
+                        <!-- Y축 라벨 -->
+                        <g fill="#7f8c8d" font-size="12">
+                            <text x="30" y="55">100</text>
+                            <text x="35" y="105">75</text>
+                            <text x="35" y="155">50</text>
+                            <text x="35" y="205">25</text>
+                        </g>
+                        
+                        <!-- X축 라벨 -->
+                        <g fill="#7f8c8d" font-size="12">
+                            <text x="40" y="230">14:00</text>
+                            <text x="240" y="230">15:00</text>
+                            <text x="440" y="230">16:00</text>
+                            <text x="640" y="230">17:00</text>
+                            <text x="730" y="230">18:00</text>
+                        </g>
+                    </svg>
+                </div>
+                <div class="chart-legend">
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background: #3498db;"></div>
+                        <span>집중도</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background: #e74c3c;"></div>
+                        <span>만족도</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 학습 세션 기록 -->
+            <div class="sessions-list">
+                <h3 class="section-title">오늘의 학습 세션</h3>
+                
+                <div class="session-item">
+                    <div class="session-time">17:30-17:55</div>
+                    <div class="session-type math">📐</div>
+                    <div class="session-content">
+                        <div class="session-title">이차방정식 활용 - 도형 문제</div>
+                        <div class="session-meta">
+                            <span>문제 12개 해결</span>
+                            <div class="focus-indicator">
+                                <span>집중도</span>
+                                <div class="focus-bar">
+                                    <div class="focus-fill" style="width: 85%;"></div>
+                                </div>
+                                <span>85%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="session-item">
+                    <div class="session-time">17:25-17:30</div>
+                    <div class="session-type break">☕</div>
+                    <div class="session-content">
+                        <div class="session-title">휴식 시간</div>
+                        <div class="session-meta">
+                            <span>스트레칭 & 간식</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="session-item">
+                    <div class="session-time">17:00-17:25</div>
+                    <div class="session-type math">📊</div>
+                    <div class="session-content">
+                        <div class="session-title">함수의 그래프 - 이차함수</div>
+                        <div class="session-meta">
+                            <span>개념정리 & 문제 8개</span>
+                            <div class="focus-indicator">
+                                <span>집중도</span>
+                                <div class="focus-bar">
+                                    <div class="focus-fill" style="width: 92%;"></div>
+                                </div>
+                                <span>92%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="session-item">
+                    <div class="session-time">16:30-16:55</div>
+                    <div class="session-type math">✏️</div>
+                    <div class="session-content">
+                        <div class="session-title">연립방정식 복습</div>
+                        <div class="session-meta">
+                            <span>오답노트 정리</span>
+                            <div class="focus-indicator">
+                                <span>집중도</span>
+                                <div class="focus-bar">
+                                    <div class="focus-fill" style="width: 78%;"></div>
+                                </div>
+                                <span>78%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 사이드바 -->
+        <div class="sidebar">
+            <!-- 오늘의 목표 -->
+            <div class="goals-card">
+                <h3 class="section-title">오늘의 학습 목표</h3>
+                <div class="goal-item">
+                    <div class="goal-checkbox checked"></div>
+                    <span class="goal-text completed">이차방정식 단원 마무리</span>
+                </div>
+                <div class="goal-item">
+                    <div class="goal-checkbox checked"></div>
+                    <span class="goal-text completed">오답노트 정리 (연립방정식)</span>
+                </div>
+                <div class="goal-item">
+                    <div class="goal-checkbox"></div>
+                    <span class="goal-text">함수 단원평가 대비</span>
+                </div>
+                <div class="goal-item">
+                    <div class="goal-checkbox"></div>
+                    <span class="goal-text">포모도로 8회 완료</span>
+                </div>
+            </div>
+            
+            <!-- AI 인사이트 -->
+            <div class="insights-card">
+                <div class="insight-icon">💡</div>
+                <h3 style="margin-bottom: 10px;">AI 학습 인사이트</h3>
+                <p class="insight-text">
+                    오후 4-5시 사이의 집중도가 가장 높습니다! 
+                    이 시간대에 어려운 문제를 배치하면 
+                    학습 효율을 20% 높일 수 있어요.
+                </p>
+                <button class="insight-action">자세히 보기</button>
+            </div>
+            
+            <!-- 통계 요약 -->
+            <div class="stats-summary">
+                <div class="stat-item">
+                    <div class="stat-value">87%</div>
+                    <div class="stat-label">평균 집중도</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">4/8</div>
+                    <div class="stat-label">완료 포모도로</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">32</div>
+                    <div class="stat-label">해결한 문제</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">91%</div>
+                    <div class="stat-label">목표 달성률</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 플로팅 액션 버튼 -->
+    <div class="fab">▶️</div>
+    
+    <script>
+        // 타이머 카운트다운
+        let timeLeft = 23 * 60 + 47; // 23분 47초
+        const timerDisplay = document.querySelector('.timer-display');
+        
+        setInterval(() => {
+            if (timeLeft > 0) {
+                timeLeft--;
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+        }, 1000);
+        
+        // 목표 체크박스 클릭
+        document.querySelectorAll('.goal-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('click', function() {
+                this.classList.toggle('checked');
+                const text = this.nextElementSibling;
+                text.classList.toggle('completed');
+            });
+        });
+        
+        // 세션 아이템 호버 효과
+        document.querySelectorAll('.session-item').forEach(item => {
+            item.addEventListener('mouseenter', function() {
+                this.style.borderLeft = '4px solid #3498db';
+                this.style.paddingLeft = '16px';
+            });
+            
+            item.addEventListener('mouseleave', function() {
+                this.style.borderLeft = '';
+                this.style.paddingLeft = '';
+            });
+        });
+        
+        // FAB 클릭 애니메이션
+        const fab = document.querySelector('.fab');
+        fab.addEventListener('click', function() {
+            this.style.transform = 'scale(0.9)';
+            setTimeout(() => {
+                this.style.transform = '';
+            }, 200);
+        });
+    </script>
 </body>
 </html>
-
-

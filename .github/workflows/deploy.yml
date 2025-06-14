@@ -17,4 +17,5 @@ jobs:
           key: ${{ secrets.GCP_SSH_KEY }}
           script: |
             cd /var/www/html/moodle
+            git config --global --add safe.directory /var/www/html/moodle
             git pull origin MOODLE_500_STABLE

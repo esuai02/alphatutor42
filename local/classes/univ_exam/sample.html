@@ -188,6 +188,13 @@
             border-bottom: 1px solid #e0e0e0;
             flex: 1;
             overflow-y: auto;
+            position: relative;
+            transition: opacity 0.5s ease;
+        }
+        
+        .insight-section.hidden {
+            opacity: 0;
+            pointer-events: none;
         }
         
         .section-header {
@@ -277,14 +284,23 @@
         
         /* 1등급 질문 섹션 */
         .creative-section {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             padding: 20px;
             background: white;
             overflow-y: auto;
-            display: none;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.5s ease;
+            z-index: 10;
         }
         
         .creative-section.active {
-            display: block;
+            opacity: 1;
+            visibility: visible;
         }
         
         /* 우측 칼럼 - 해설 */
@@ -2399,9 +2415,13 @@
             
             // 인사이트 초기화
             const insightButton = document.getElementById('insightButton');
+            const insightSection = document.getElementById('insightSection');
             if (insightButton) {
                 insightButton.textContent = '문제 분석 시작';
                 insightButton.onclick = showInsight;
+            }
+            if (insightSection) {
+                insightSection.classList.remove('hidden');
             }
             document.getElementById('insightList').innerHTML = '';
             
@@ -2787,15 +2807,24 @@
             
             // 핵심 포인트 정리가 끝나면 창의적 질문 표시
             if (currentStep === currentProblemData.solutionSteps.length) {
+                // 시선 섹션 숨기기
+                const insightSection = document.getElementById('insightSection');
+                if (insightSection) {
+                    insightSection.classList.add('hidden');
+                }
+                
                 // 창의적 질문 섹션 활성화
                 const creativeSection = document.getElementById('creativeSection');
                 const creativeContainer = document.getElementById('creativeQuestionsList');
                 
                 if (creativeSection && creativeContainer && currentProblemData.creativeQuestions) {
-                    creativeSection.classList.add('active');
-                    
-                    // 창의적 질문 실시간 생성
-                    generateCreativeQuestions(creativeContainer, currentProblemData.creativeQuestions);
+                    // 약간의 지연 후 창의적 질문 표시 (부드러운 전환을 위해)
+                    setTimeout(() => {
+                        creativeSection.classList.add('active');
+                        
+                        // 창의적 질문 실시간 생성
+                        generateCreativeQuestions(creativeContainer, currentProblemData.creativeQuestions);
+                    }, 300);
                     
                     // 다음 버튼 텍스트 변경
                     document.getElementById('nextButton').innerHTML = '서술평가 시작하기';

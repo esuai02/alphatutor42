@@ -1,0 +1,3093 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>수학 문제 학습 시스템</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Malgun Gothic', sans-serif;
+            background-color: #f5f5f5;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        /* 진행률 바 */
+        .progress-bar-container {
+            background-color: #fff;
+            padding: 15px 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .problem-counter {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            min-width: 120px;
+        }
+        
+        .progress-bar {
+            flex: 1;
+            height: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+        
+        .score-display {
+            font-size: 16px;
+            color: #666;
+            min-width: 100px;
+            text-align: right;
+        }
+        
+        /* 질문 카운터 */
+        .question-counter {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #f0f0f0;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        
+        .question-icon {
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        
+        .question-count {
+            font-weight: bold;
+            color: #FF6B6B;
+        }
+        
+        /* 문제 네비게이션 */
+        .problem-nav {
+            background-color: #fff;
+            padding: 10px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .nav-button {
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        
+        .nav-button:hover:not(:disabled) {
+            background: #f5f5f5;
+            border-color: #999;
+        }
+        
+        .nav-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .nav-button.complete {
+            background: #e8f5e9;
+            border-color: #4CAF50;
+            color: #2e7d32;
+        }
+        
+        .nav-button.current {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+        }
+        
+        /* 메인 컨테이너 - 투 칼럼 레이아웃 */
+        .main-container {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+        
+        /* 좌측 칼럼 - 문제 정보 */
+        .left-column {
+            width: 40%;
+            background: white;
+            border-right: 1px solid #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .problem-section {
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .problem-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .problem-description {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #495057;
+            margin-bottom: 15px;
+        }
+        
+        .problem-box {
+            background-color: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .equation {
+            margin: 10px 0;
+            font-size: 18px;
+            color: #495057;
+            position: relative;
+        }
+        
+        /* 1등급 시선 섹션 */
+        .insight-section {
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #4CAF50;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .insight-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            font-size: 13px;
+            border-radius: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s;
+        }
+        
+        .insight-button:hover {
+            background-color: #45a049;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .eye-icon {
+            width: 16px;
+            height: 16px;
+        }
+        
+        #insightList {
+            margin-top: 10px;
+        }
+        
+        .insight-item {
+            margin-bottom: 12px;
+            padding: 10px;
+            background-color: white;
+            border-radius: 4px;
+            border-left: 3px solid #4CAF50;
+            font-size: 14px;
+            opacity: 0;
+            transform: translateY(10px);
+            animation: slideIn 0.5s forwards;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+        
+        .insight-text {
+            flex: 1;
+            line-height: 1.4;
+        }
+        
+        .insight-text.typing::after {
+            content: '|';
+            animation: blink 0.8s infinite;
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        
+        .insight-number {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            line-height: 20px;
+            border-radius: 50%;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+        
+        /* 1등급 질문 섹션 */
+        .creative-section {
+            padding: 20px;
+            background: white;
+            overflow-y: auto;
+            display: none;
+        }
+        
+        .creative-section.active {
+            display: block;
+        }
+        
+        /* 우측 칼럼 - 해설 */
+        .right-column {
+            flex: 1;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .solution-container {
+            flex: 1;
+            padding: 20px 30px;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        #explanationArea {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .explanation-step {
+            margin: 20px 0;
+            opacity: 0;
+            animation: fadeIn 0.5s forwards;
+        }
+        
+        .question {
+            color: #007bff;
+            font-size: 20px;
+            font-weight: bold;
+            margin: 20px 0;
+            position: relative;
+        }
+        
+        .thinking-indicator {
+            display: inline-block;
+            margin-left: 10px;
+            color: #999;
+            font-size: 16px;
+            font-weight: normal;
+        }
+        
+        .thinking-indicator::after {
+            content: '';
+            animation: dots 1.5s infinite;
+        }
+        
+        .answer {
+            color: #333;
+            font-size: 18px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+        
+        .next-button {
+            background-color: transparent;
+            color: #999;
+            border: none;
+            padding: 15px 0;
+            font-size: 14px;
+            cursor: pointer;
+            margin: 20px auto;
+            transition: all 0.3s;
+            width: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border-bottom: 1px solid #e0e0e0;
+            position: relative;
+        }
+        
+        .next-button:hover {
+            color: #666;
+            border-bottom-color: #999;
+        }
+        
+        .next-button:disabled {
+            color: #e0e0e0;
+            cursor: not-allowed;
+            border-bottom-color: #f0f0f0;
+        }
+        
+        .arrow-down {
+            display: inline-block;
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 8px solid currentColor;
+            transition: transform 0.3s;
+        }
+        
+        .next-button:hover .arrow-down {
+            transform: translateY(2px);
+        }
+        
+        /* 하이라이트 마크 */
+        .highlight-mark {
+            background-color: rgba(255, 235, 59, 0);
+            transition: background-color 0.5s ease-in-out;
+            padding: 2px 4px;
+            border-radius: 2px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .highlight-mark.active {
+            background-color: rgba(255, 235, 59, 0.2);
+            animation: pulse 0.5s;
+        }
+        
+        .highlight-mark.active::after {
+            content: attr(data-insight);
+            position: absolute;
+            right: -16px;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(76, 175, 80, 0.08);
+            color: rgba(76, 175, 80, 0.7);
+            padding: 0px 4px;
+            font-size: 9px;
+            font-weight: normal;
+            opacity: 0;
+            animation: fadeInSubtle 0.5s forwards;
+            z-index: 10;
+            pointer-events: none;
+            border-radius: 0 8px 8px 0;
+            border: 1px solid rgba(76, 175, 80, 0.15);
+            border-left: none;
+            line-height: 1.2;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .highlight-mark.active::before {
+            content: '';
+            position: absolute;
+            right: -6px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+            border-right: 6px solid rgba(76, 175, 80, 0.08);
+            opacity: 0;
+            animation: fadeInSubtle 0.5s forwards;
+            z-index: 9;
+        }
+        
+        /* 창의적 질문 스타일 */
+        .creative-questions {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 25px;
+            border-radius: 12px;
+            margin-top: 20px;
+            border: 1px solid #dee2e6;
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            animation: fadeInUp 0.6s ease-out forwards;
+            animation-delay: 0.3s;
+        }
+        
+        .creative-questions::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .creative-loading {
+            text-align: center;
+            padding: 40px 0;
+        }
+        
+        .thinking-dots {
+            margin-top: 20px;
+            font-size: 16px;
+            color: #666;
+        }
+        
+        .dots-animation {
+            display: inline-block;
+            width: 30px;
+            text-align: left;
+            animation: dots 1.5s infinite;
+        }
+        
+        .creative-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #667eea;
+            display: block;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .creative-question {
+            background: white;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+            border: 1px solid transparent;
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+        }
+        
+        .creative-question::after {
+            content: '→';
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 24px;
+            color: #667eea;
+            opacity: 0;
+            transition: all 0.3s;
+        }
+        
+        .creative-question:hover {
+            transform: translateX(10px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+            border-color: #667eea;
+        }
+        
+        .creative-question:hover::after {
+            opacity: 0.5;
+            right: 15px;
+        }
+        
+        .q-number {
+            display: inline-block;
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 35px;
+            font-weight: bold;
+            margin-right: 15px;
+            font-size: 16px;
+        }
+        
+        .q-text {
+            font-size: 16px;
+            color: #333;
+            line-height: 1.6;
+            display: inline-block;
+            width: calc(100% - 60px);
+            vertical-align: middle;
+        }
+        
+        .q-text.generating {
+            color: #999;
+            font-style: italic;
+        }
+        
+        .generating-text {
+            color: #999;
+            font-style: italic;
+        }
+        
+        .generating-dots {
+            display: inline-block;
+            width: 20px;
+            text-align: left;
+            animation: dots 1s infinite;
+        }
+        
+        .q-hint {
+            margin-top: 10px;
+            margin-left: 50px;
+            padding: 10px 15px;
+            background: #f0f7ff;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #0066cc;
+            border-left: 3px solid #0066cc;
+            opacity: 0;
+        }
+        
+        .creative-footer {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px dashed #dee2e6;
+            font-size: 16px;
+            color: #666;
+        }
+        
+        /* 질문 가능한 요소 스타일 */
+        .questionable {
+            position: relative;
+            cursor: help;
+            transition: background-color 0.3s;
+        }
+        
+        .questionable:hover {
+            background-color: rgba(255, 235, 59, 0.2);
+            border-radius: 4px;
+            padding: 2px 4px;
+            margin: -2px -4px;
+        }
+        
+        /* 질문 목록 팝업 */
+        .question-popup {
+            position: absolute;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            padding: 10px;
+            z-index: 1000;
+            display: none;
+            min-width: 200px;
+            max-width: 300px;
+        }
+        
+        .question-popup.active {
+            display: block;
+        }
+        
+        .question-item {
+            padding: 8px 12px;
+            margin: 4px 0;
+            background: #f8f9fa;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .question-item:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateX(5px);
+        }
+        
+        .question-item-icon {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+        }
+        
+        /* 기타 스타일 */
+        .highlight {
+            background-color: rgba(255, 235, 59, 0.4);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+        
+        .important {
+            color: #d32f2f;
+            font-weight: bold;
+            font-size: 20px;
+        }
+        
+        .final-emphasis {
+            background-color: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .typing {
+            display: inline;
+            border-right: 2px solid #333;
+            animation: blink 0.8s infinite;
+        }
+        
+        .loading-dots::after {
+            content: '';
+            animation: dots 1.5s infinite;
+        }
+        
+        /* 애니메이션 */
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+        
+        @keyframes fadeInSubtle {
+            0% { opacity: 0; transform: translateY(-50%) translateX(5px); }
+            100% { opacity: 0.6; transform: translateY(-50%) translateX(0); }
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.01); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes blink {
+            0%, 50% { border-color: #333; }
+            51%, 100% { border-color: transparent; }
+        }
+        
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+        
+        @keyframes fadeInSimple {
+            from { opacity: 0; }
+            to { opacity: 0.8; }
+        }
+        
+        /* 화이트보드 스타일 */
+        .whiteboard-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: white;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.8s ease;
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+        }
+        
+        .whiteboard-container.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        body.evaluation-mode {
+            overflow: hidden;
+        }
+        
+        body.evaluation-mode .progress-bar-container,
+        body.evaluation-mode .problem-nav,
+        body.evaluation-mode .main-container {
+            display: none;
+        }
+        
+        .whiteboard-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        .close-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            color: white;
+        }
+        
+        .close-button:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.1);
+        }
+        
+        .answer-selection {
+            background: rgba(255,255,255,0.15);
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .answer-selection label {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .answer-dropdown {
+            background: white;
+            color: #333;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            min-width: 150px;
+            transition: all 0.3s;
+        }
+        
+        .answer-dropdown:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        
+        .answer-dropdown:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255,255,255,0.5);
+        }
+        
+        .whiteboard-title {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .whiteboard-question {
+            font-size: 18px;
+            background: rgba(255,255,255,0.2);
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 10px;
+            line-height: 1.6;
+        }
+        
+        .whiteboard-tools {
+            background: #f8f9fa;
+            padding: 15px 40px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            flex-wrap: wrap;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .tool-button {
+            background: white;
+            border: 2px solid #dee2e6;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+        
+        .tool-button:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .tool-button.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .color-picker {
+            width: 30px;
+            height: 30px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        .color-picker:hover {
+            transform: scale(1.1);
+        }
+        
+        .thickness-slider {
+            width: 100px;
+        }
+        
+        .canvas-wrapper {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            background: #fafafa;
+        }
+        
+        #whiteboardCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            cursor: crosshair;
+            background: white;
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.02);
+        }
+        
+        .submit-button {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .submit-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        
+        /* 전환 메시지 */
+        .transition-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.5s ease;
+            z-index: 999;
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        .transition-message.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .transition-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+            animation: bounce 1s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .transition-text {
+            font-size: 24px;
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        /* 채점 결과 팝업 스타일 */
+        .result-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 400px;
+            width: 90%;
+            display: none;
+            z-index: 2001;
+            text-align: center;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .result-popup.active {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        
+        .result-popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .result-popup-overlay.active {
+            opacity: 1;
+        }
+        
+        .result-popup-icon {
+            font-size: 60px;
+            margin-bottom: 15px;
+        }
+        
+        .result-popup-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .result-popup-score {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .result-popup-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .result-popup-button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .result-popup-button.primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .result-popup-button.secondary {
+            background: #f0f0f0;
+            color: #666;
+        }
+        
+        .result-popup-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        
+        /* 해설 팝업 스타일 */
+        .solution-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            display: none;
+            z-index: 2003;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .solution-popup.active {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        
+        .solution-popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            z-index: 2002;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .solution-popup-overlay.active {
+            opacity: 1;
+        }
+        
+        .solution-popup-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .solution-popup-title {
+            font-size: 28px;
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .solution-popup-content {
+            line-height: 1.8;
+            color: #333;
+        }
+        
+        .solution-step {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .solution-step-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .solution-step-content {
+            font-size: 16px;
+            color: #555;
+        }
+        
+        .solution-answer-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        
+        .solution-close-button {
+            display: block;
+            margin: 30px auto 0;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .solution-close-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        
+        /* 다음 문제 버튼 */
+        .next-problem-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s;
+            display: none;
+            z-index: 900;
+        }
+        
+        .next-problem-button.active {
+            display: block;
+        }
+        
+        .next-problem-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        
+        /* 질문 기록 패널 */
+        .question-history-panel {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+        
+        .question-history-panel.minimized {
+            width: 60px;
+            height: 60px;
+            cursor: pointer;
+        }
+        
+        .question-history-panel.expanded {
+            width: 350px;
+            max-height: 400px;
+        }
+        
+        .question-history-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .question-history-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #4CAF50;
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .question-history-content {
+            display: none;
+            padding: 20px;
+            max-height: 340px;
+            overflow-y: auto;
+        }
+        
+        .question-history-panel.expanded .question-history-content {
+            display: block;
+        }
+        
+        .question-history-panel.expanded .question-history-icon {
+            display: none;
+        }
+        
+        .question-history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .question-history-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .question-history-close {
+            width: 30px;
+            height: 30px;
+            border: none;
+            background: #f0f0f0;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .question-history-close:hover {
+            background: #e0e0e0;
+        }
+        
+        .question-record {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-left: 3px solid #FF6B6B;
+        }
+        
+        .question-record-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        
+        .question-record-content {
+            color: #666;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        
+        .question-record-time {
+            color: #999;
+            font-size: 11px;
+            margin-top: 5px;
+        }
+        
+        /* 음성 재생 인디케이터 */
+        .voice-indicator {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 30px;
+            display: none;
+            align-items: center;
+            gap: 15px;
+            z-index: 2000;
+        }
+        
+        .voice-indicator.active {
+            display: flex;
+        }
+        
+        .voice-wave {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+        
+        .voice-bar {
+            width: 3px;
+            background: white;
+            border-radius: 3px;
+            animation: wave 0.5s ease-in-out infinite;
+        }
+        
+        .voice-bar:nth-child(1) { height: 10px; animation-delay: 0s; }
+        .voice-bar:nth-child(2) { height: 20px; animation-delay: 0.1s; }
+        .voice-bar:nth-child(3) { height: 15px; animation-delay: 0.2s; }
+        .voice-bar:nth-child(4) { height: 25px; animation-delay: 0.3s; }
+        .voice-bar:nth-child(5) { height: 18px; animation-delay: 0.4s; }
+        
+        @keyframes wave {
+            0%, 100% { transform: scaleY(1); }
+            50% { transform: scaleY(1.5); }
+        }
+        
+        /* 반응형 디자인 */
+        @media (max-width: 1024px) {
+            .left-column {
+                width: 50%;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+            
+            .left-column {
+                width: 100%;
+                height: 40vh;
+                border-right: none;
+                border-bottom: 1px solid #e0e0e0;
+            }
+            
+            .right-column {
+                height: 60vh;
+            }
+            
+            .creative-question {
+                padding: 15px;
+            }
+            
+            .q-text {
+                font-size: 14px;
+                width: calc(100% - 50px);
+            }
+            
+            .q-number {
+                width: 30px;
+                height: 30px;
+                line-height: 30px;
+                font-size: 14px;
+                margin-right: 10px;
+            }
+            
+            .q-hint {
+                margin-left: 40px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 진행률 바 -->
+    <div class="progress-bar-container">
+        <div class="problem-counter">문제 <span id="currentProblem">1</span> / <span id="totalProblems">20</span></div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="score-display">점수: <span id="totalScore">0</span>점</div>
+        <div class="question-counter">
+            <div class="question-icon">?</div>
+            <span>질문 가능: <span class="question-count" id="remainingQuestions">10</span>개</span>
+        </div>
+    </div>
+    
+    <!-- 문제 네비게이션 -->
+    <div class="problem-nav" id="problemNav">
+        <!-- 동적으로 생성됨 -->
+    </div>
+    
+    <!-- 메인 컨테이너 -->
+    <div class="main-container">
+        <!-- 좌측 칼럼 -->
+        <div class="left-column">
+            <!-- 문제 섹션 -->
+            <div class="problem-section">
+                <h2 class="problem-title" id="problemTitle">문제</h2>
+                <p class="problem-description" id="problemDescription"></p>
+                <div class="problem-box" id="problemBox">
+                    <div id="conditionsArea"></div>
+                </div>
+            </div>
+            
+            <!-- 1등급 시선 섹션 -->
+            <div class="insight-section" id="insightSection">
+                <div class="section-header">
+                    <h3 class="section-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 5C7 5 2.73 8.11 1 12.5C2.73 16.89 7 20 12 20C17 20 21.27 16.89 23 12.5C21.27 8.11 17 5 12 5ZM12 17.5C9.24 17.5 7 15.26 7 12.5C7 9.74 9.24 7.5 12 7.5C14.76 7.5 17 9.74 17 12.5C17 15.26 14.76 17.5 12 17.5ZM12 9.5C10.34 9.5 9 10.84 9 12.5C9 14.16 10.34 15.5 12 15.5C13.66 15.5 15 14.16 15 12.5C15 10.84 13.66 9.5 12 9.5Z"/>
+                        </svg>
+                        1등급 시선
+                    </h3>
+                    <button class="insight-button" id="insightButton">
+                        문제 분석 시작
+                    </button>
+                </div>
+                <div id="insightList"></div>
+            </div>
+            
+            <!-- 1등급 질문 섹션 -->
+            <div class="creative-section" id="creativeSection">
+                <div class="section-header">
+                    <h3 class="section-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="#667eea">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/>
+                        </svg>
+                        1등급 창의적 질문
+                    </h3>
+                </div>
+                <div id="creativeQuestionsList"></div>
+            </div>
+        </div>
+        
+        <!-- 우측 칼럼 -->
+        <div class="right-column">
+            <div class="solution-container" id="solutionContainer">
+                <div id="explanationArea"></div>
+                <button class="next-button" id="nextButton"><span class="arrow-down"></span></button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 전환 메시지 -->
+    <div class="transition-message" id="transitionMessage">
+        <div class="transition-icon">✍️</div>
+        <div class="transition-text">서술평가를 시작합니다</div>
+    </div>
+    
+    <!-- 화이트보드 컨테이너 -->
+    <div class="whiteboard-container" id="whiteboardContainer">
+        <div class="whiteboard-header">
+            <button class="close-button" id="closeButton" title="종료">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                </svg>
+            </button>
+            <div class="whiteboard-title">📝 서술형 평가</div>
+            <div class="whiteboard-question" id="similarProblemDescription">
+                다음 문제를 풀고, 풀이 과정을 자세히 작성하세요:<br>
+                <strong>문제:</strong> <span id="similarProblemText"></span>
+            </div>
+            <div class="answer-selection">
+                <label for="answerSelect">정답 선택:</label>
+                <select id="answerSelect" class="answer-dropdown">
+                    <!-- 동적으로 생성됨 -->
+                </select>
+            </div>
+        </div>
+        <div class="whiteboard-tools">
+            <button class="tool-button active" id="penTool">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                </svg>
+                펜
+            </button>
+            <button class="tool-button" id="eraserTool">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M15.14 3.63L12.37 6.4l4.24 4.24 2.77-2.77c.59-.59.59-1.54 0-2.12l-2.12-2.12c-.58-.59-1.53-.59-2.12 0zM11 7.83L3.41 15.41c-.78.78-.78 2.05 0 2.83l2.83 2.83c.78.78 2.05.78 2.83 0L16.66 13.48 11 7.83z"/>
+                </svg>
+                지우개
+            </button>
+            <button class="tool-button" id="clearTool">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                </svg>
+                전체 지우기
+            </button>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <label style="font-size: 14px;">색상:</label>
+                <input type="color" class="color-picker" id="colorPicker" value="#000000">
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <label style="font-size: 14px;">굵기:</label>
+                <input type="range" class="thickness-slider" id="thicknessSlider" min="1" max="20" value="2">
+                <span id="thicknessValue">2</span>
+            </div>
+        </div>
+        <div class="canvas-wrapper">
+            <canvas id="whiteboardCanvas"></canvas>
+            <button class="submit-button" id="submitButton">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                </svg>
+                제출하기
+            </button>
+        </div>
+    </div>
+    
+    <!-- 채점 결과 팝업 -->
+    <div class="result-popup-overlay" id="resultOverlay"></div>
+    <div class="result-popup" id="resultPopup">
+        <div class="result-popup-icon" id="resultIcon"></div>
+        <div class="result-popup-title" id="resultTitle"></div>
+        <div class="result-popup-score" id="resultScore"></div>
+        <div class="result-popup-buttons">
+            <button class="result-popup-button secondary" onclick="closeResultPopup()">닫기</button>
+            <button class="result-popup-button primary" onclick="showSolution()">해설 보기</button>
+        </div>
+    </div>
+    
+    <!-- 해설 팝업 -->
+    <div class="solution-popup-overlay" id="solutionOverlay"></div>
+    <div class="solution-popup" id="solutionPopup">
+        <div class="solution-popup-header">
+            <h2 class="solution-popup-title">📚 문제 해설</h2>
+        </div>
+        <div class="solution-popup-content" id="solutionContent">
+            <!-- 동적으로 생성됨 -->
+        </div>
+        <button class="solution-close-button" onclick="closeSolution()">닫기</button>
+    </div>
+    
+    <!-- 다음 문제 버튼 -->
+    <button class="next-problem-button" id="nextProblemButton" onclick="nextProblem()">다음 문제로 →</button>
+    
+    <!-- 질문 팝업 -->
+    <div class="question-popup" id="questionPopup"></div>
+    
+    <!-- 음성 재생 인디케이터 -->
+    <div class="voice-indicator" id="voiceIndicator">
+        <div class="voice-wave">
+            <div class="voice-bar"></div>
+            <div class="voice-bar"></div>
+            <div class="voice-bar"></div>
+            <div class="voice-bar"></div>
+            <div class="voice-bar"></div>
+        </div>
+        <span>음성 설명 재생 중...</span>
+    </div>
+    
+    <!-- 질문 기록 패널 -->
+    <div class="question-history-panel minimized" id="questionHistoryPanel">
+        <div class="question-history-icon" onclick="toggleQuestionHistory()">
+            ❓
+            <div class="question-history-badge" id="questionHistoryBadge" style="display: none;">0</div>
+        </div>
+        <div class="question-history-content">
+            <div class="question-history-header">
+                <h3 class="question-history-title">질문 기록</h3>
+                <button class="question-history-close" onclick="toggleQuestionHistory()">✕</button>
+            </div>
+            <div id="questionHistoryList"></div>
+        </div>
+    </div>
+
+    <script>
+        // 전역 함수들을 먼저 정의
+        function closeResultPopup() {
+            const overlay = document.getElementById('resultOverlay');
+            const popup = document.getElementById('resultPopup');
+            
+            if (overlay && overlay.classList) {
+                overlay.classList.remove('active');
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                }, 300);
+            }
+            
+            if (popup && popup.classList) {
+                popup.classList.remove('active');
+                setTimeout(() => {
+                    popup.style.display = 'none';
+                }, 300);
+            }
+        }
+        
+        function showSolution() {
+            closeResultPopup();
+            const solutionOverlay = document.getElementById('solutionOverlay');
+            const solutionPopup = document.getElementById('solutionPopup');
+            
+            if (solutionOverlay) {
+                solutionOverlay.style.display = 'block';
+                setTimeout(() => {
+                    if (solutionOverlay.classList) {
+                        solutionOverlay.classList.add('active');
+                    }
+                }, 10);
+            }
+            
+            if (solutionPopup) {
+                solutionPopup.style.display = 'block';
+                setTimeout(() => {
+                    if (solutionPopup.classList) {
+                        solutionPopup.classList.add('active');
+                    }
+                }, 10);
+            }
+        }
+        
+        function closeSolution() {
+            const solutionOverlay = document.getElementById('solutionOverlay');
+            const solutionPopup = document.getElementById('solutionPopup');
+            
+            if (solutionOverlay && solutionOverlay.classList) {
+                solutionOverlay.classList.remove('active');
+                setTimeout(() => {
+                    solutionOverlay.style.display = 'none';
+                }, 300);
+            }
+            
+            if (solutionPopup && solutionPopup.classList) {
+                solutionPopup.classList.remove('active');
+                setTimeout(() => {
+                    solutionPopup.style.display = 'none';
+                }, 300);
+            }
+        }
+        
+        function checkAnswer(userAnswer) {
+            const correctAnswer = currentProblemData.similarProblemAnswer;
+            const isCorrect = userAnswer === correctAnswer;
+            
+            // 결과 팝업 표시
+            const overlay = document.getElementById('resultOverlay');
+            const popup = document.getElementById('resultPopup');
+            const icon = document.getElementById('resultIcon');
+            const title = document.getElementById('resultTitle');
+            const score = document.getElementById('resultScore');
+            
+            if (!overlay || !popup || !icon || !title || !score) {
+                alert('채점 결과를 표시할 수 없습니다. 페이지를 새로고침해주세요.');
+                return;
+            }
+            
+            // 유사문제 해설 내용 업데이트
+            updateSimilarProblemSolution();
+            
+            // 팝업 표시
+            overlay.style.display = 'block';
+            popup.style.display = 'block';
+            
+            // 애니메이션을 위한 지연
+            setTimeout(() => {
+                if (overlay && overlay.classList) {
+                    overlay.classList.add('active');
+                }
+                if (popup && popup.classList) {
+                    popup.classList.add('active');
+                }
+            }, 10);
+            
+            if (isCorrect) {
+                icon.innerHTML = '🎉';
+                icon.style.color = '#4CAF50';
+                title.textContent = '정답입니다!';
+                score.textContent = '100점 획득! 문제를 완벽하게 이해하셨네요.';
+                
+                // 점수 추가
+                totalScore += 100;
+                updateScore();
+                
+                // 문제 완료 표시
+                problemsCompleted[currentProblemIndex] = true;
+                updateProblemNav();
+                
+                // 다음 문제 버튼 표시
+                showNextProblemButton();
+            } else {
+                icon.innerHTML = '😢';
+                icon.style.color = '#f44336';
+                title.textContent = '아쉬워요!';
+                score.textContent = `선택하신 답: ${userAnswer} (정답: ${correctAnswer})`;
+            }
+        }
+        
+        // 전역 함수들을 window 객체에 즉시 등록
+        window.closeResultPopup = closeResultPopup;
+        window.showSolution = showSolution;
+        window.closeSolution = closeSolution;
+        window.checkAnswer = checkAnswer;
+        
+        // 질문 관련 변수들
+        let remainingQuestions = 10;
+        let questionHistory = [];
+        let currentQuestionPopup = null;
+        
+        // 질문 관련 함수들
+        function updateQuestionCounter() {
+            document.getElementById('remainingQuestions').textContent = remainingQuestions;
+        }
+        
+        function addQuestionableElements() {
+            // 문제 설명, 조건들에 질문 가능한 클래스 추가
+            const elements = document.querySelectorAll('.equation, .highlight-mark, .answer span');
+            elements.forEach(el => {
+                if (!el.classList.contains('questionable')) {
+                    el.classList.add('questionable');
+                    el.addEventListener('mouseenter', showQuestionPopup);
+                    el.addEventListener('mouseleave', hideQuestionPopup);
+                    el.addEventListener('click', handleQuestionClick);
+                }
+            });
+        }
+        
+        function showQuestionPopup(e) {
+            if (remainingQuestions <= 0) return;
+            
+            const target = e.currentTarget;
+            const rect = target.getBoundingClientRect();
+            const popup = document.getElementById('questionPopup');
+            
+            // 질문 옵션 생성
+            const questions = getQuestionsForElement(target);
+            popup.innerHTML = questions.map((q, i) => `
+                <div class="question-item" data-question-index="${i}">
+                    <svg class="question-item-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/>
+                    </svg>
+                    ${q}
+                </div>
+            `).join('');
+            
+            // 팝업 위치 설정
+            popup.style.left = rect.left + 'px';
+            popup.style.top = (rect.bottom + 5) + 'px';
+            popup.classList.add('active');
+            
+            currentQuestionPopup = {
+                element: target,
+                questions: questions
+            };
+        }
+        
+        function hideQuestionPopup() {
+            setTimeout(() => {
+                const popup = document.getElementById('questionPopup');
+                if (!popup.matches(':hover')) {
+                    popup.classList.remove('active');
+                    currentQuestionPopup = null;
+                }
+            }, 100);
+        }
+        
+        function handleQuestionClick(e) {
+            if (remainingQuestions <= 0) {
+                alert('오늘의 질문 횟수를 모두 사용했습니다.');
+                return;
+            }
+            
+            const questionItem = e.target.closest('.question-item');
+            if (!questionItem) return;
+            
+            const questionIndex = parseInt(questionItem.dataset.questionIndex);
+            const question = currentQuestionPopup.questions[questionIndex];
+            const elementText = currentQuestionPopup.element.textContent;
+            
+            // 질문 횟수 차감
+            remainingQuestions--;
+            updateQuestionCounter();
+            
+            // 질문 기록에 추가
+            addQuestionToHistory(question, elementText);
+            
+            // 팝업 닫기
+            document.getElementById('questionPopup').classList.remove('active');
+            
+            // 음성 설명 재생
+            playVoiceExplanation(question, elementText);
+        }
+        
+        function getQuestionsForElement(element) {
+            const text = element.textContent.toLowerCase();
+            const questions = [];
+            
+            // 수식 관련 질문
+            if (text.includes('³') || text.includes('²')) {
+                questions.push('이 지수는 무엇을 의미하나요?');
+                questions.push('왜 이런 차수의 식이 나왔나요?');
+            }
+            
+            if (text.includes('=')) {
+                questions.push('이 등식은 어떤 의미인가요?');
+                questions.push('왜 양변이 같아야 하나요?');
+            }
+            
+            if (text.includes('+') || text.includes('-')) {
+                questions.push('이 연산의 의미는 무엇인가요?');
+                questions.push('다른 방법으로 계산할 수 있나요?');
+            }
+            
+            // 조건 관련 질문
+            if (element.classList.contains('equation')) {
+                questions.push('이 조건이 왜 필요한가요?');
+                questions.push('이 조건에서 주목해야 할 점은?');
+            }
+            
+            // 일반적인 질문 추가
+            questions.push('이 부분을 더 자세히 설명해주세요');
+            questions.push('다른 예시로 설명해주세요');
+            
+            return questions;
+        }
+        
+        function addQuestionToHistory(question, context) {
+            const record = {
+                question: question,
+                context: context,
+                time: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }),
+                problemTitle: currentProblemData.title
+            };
+            
+            questionHistory.push(record);
+            updateQuestionHistoryDisplay();
+            
+            // 배지 업데이트
+            const badge = document.getElementById('questionHistoryBadge');
+            badge.textContent = questionHistory.length;
+            badge.style.display = 'block';
+        }
+        
+        function updateQuestionHistoryDisplay() {
+            const historyList = document.getElementById('questionHistoryList');
+            historyList.innerHTML = questionHistory.map((record, index) => `
+                <div class="question-record">
+                    <div class="question-record-title">${record.problemTitle} - ${record.context.substring(0, 20)}...</div>
+                    <div class="question-record-content">${record.question}</div>
+                    <div class="question-record-time">${record.time}</div>
+                </div>
+            `).reverse().join('');
+        }
+        
+        function toggleQuestionHistory() {
+            const panel = document.getElementById('questionHistoryPanel');
+            panel.classList.toggle('minimized');
+            panel.classList.toggle('expanded');
+        }
+        
+        window.toggleQuestionHistory = toggleQuestionHistory;
+        
+        function playVoiceExplanation(question, context) {
+            // 음성 인디케이터 표시
+            const indicator = document.getElementById('voiceIndicator');
+            indicator.classList.add('active');
+            
+            // 설명 텍스트 생성
+            const explanation = generateExplanation(question, context);
+            
+            // Web Speech API 사용
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(explanation);
+                utterance.lang = 'ko-KR';
+                utterance.rate = 0.9;
+                utterance.pitch = 1.1;
+                
+                utterance.onend = () => {
+                    indicator.classList.remove('active');
+                };
+                
+                speechSynthesis.speak(utterance);
+            } else {
+                // 음성 합성을 지원하지 않는 경우
+                setTimeout(() => {
+                    indicator.classList.remove('active');
+                    alert(`설명: ${explanation}`);
+                }, 2000);
+            }
+        }
+        
+        function generateExplanation(question, context) {
+            // 질문과 문맥에 따라 적절한 설명 생성
+            const explanations = {
+                '이 지수는 무엇을 의미하나요?': `${context}에서 지수는 거듭제곱을 나타냅니다. 예를 들어 x²는 x곱하기 x를 의미하고, x³는 x를 세 번 곱한 것입니다.`,
+                '왜 이런 차수의 식이 나왔나요?': `이 문제에서는 삼차방정식을 다루고 있습니다. 세 개의 근을 가지므로 세 개의 변수를 구할 수 있습니다.`,
+                '이 등식은 어떤 의미인가요?': `이 등식은 좌변과 우변이 같다는 것을 나타냅니다. 문제에서 주어진 조건을 만족해야 합니다.`,
+                '이 조건이 왜 필요한가요?': `이 조건은 문제를 풀기 위한 핵심 정보입니다. 여러 조건을 조합하여 미지수를 구할 수 있습니다.`,
+                '이 부분을 더 자세히 설명해주세요': `${context}는 이 문제의 중요한 부분입니다. 차근차근 분석하면 패턴을 발견할 수 있습니다.`
+            };
+            
+            return explanations[question] || `${context}에 대한 설명: 이 부분은 문제 해결의 중요한 단서입니다. 다른 조건들과 연결하여 생각해보세요.`;
+        }
+        
+        // 질문 팝업에 마우스 이벤트 추가
+        document.getElementById('questionPopup').addEventListener('mouseenter', () => {
+            currentQuestionPopup = currentQuestionPopup; // 유지
+        });
+        
+        document.getElementById('questionPopup').addEventListener('mouseleave', () => {
+            document.getElementById('questionPopup').classList.remove('active');
+            currentQuestionPopup = null;
+        });
+        
+        // DOM이 완전히 로드된 후 초기화
+        window.addEventListener('load', function() {
+            // 팝업들이 초기에는 숨겨져 있는지 확인
+            const resultOverlay = document.getElementById('resultOverlay');
+            const resultPopup = document.getElementById('resultPopup');
+            const solutionOverlay = document.getElementById('solutionOverlay');
+            const solutionPopup = document.getElementById('solutionPopup');
+            
+            if (resultOverlay) resultOverlay.style.display = 'none';
+            if (resultPopup) resultPopup.style.display = 'none';
+            if (solutionOverlay) solutionOverlay.style.display = 'none';
+            if (solutionPopup) solutionPopup.style.display = 'none';
+            
+            // 질문 카운터 초기화
+            updateQuestionCounter();
+        });
+        
+        // 전역 변수들
+        let problemsData = null;
+        let currentProblemIndex = 0;
+        let currentProblemData = null;
+        let totalScore = 0;
+        let problemsCompleted = [];
+        let currentStep = -1;
+        let isTyping = false;
+        let insightStep = 0;
+        let insightInterval;
+        let isInsightActive = false;
+        let autoNextTimeout;
+        
+        // 샘플 데이터 (실제로는 별도 JSON 파일에서 로드)
+        const sampleData = {
+            "problems": [
+                {
+                    "id": 1,
+                    "title": "대칭식 문제",
+                    "problemInfo": {
+                        "description": "세 실수 a, b, c가 다음 조건을 모두 만족시킬 때, abc의 값을 구하여라.",
+                        "conditions": [
+                            "(가) a³ - 5a² + 2a + 33 = a² + b² + c²",
+                            "(나) b³ - 5b² + 2b + 33 = a² + b² + c²",
+                            "(다) c³ - 5c² + 2c + 33 = a² + b² + c²"
+                        ]
+                    },
+                    "analysisInfo": [
+                        "변수의 개수와 종류 파악 → 세 개의 미지수",
+                        "조건의 완전성 확인 → '모두' 만족해야 함",
+                        "목표 명확히 하기 → abc의 값 구하기",
+                        "좌변의 공통 구조 발견 → 동일한 패턴!",
+                        "우변이 모두 같음 → 핵심 단서 발견!"
+                    ],
+                    "highlightTags": [
+                        { "text": "세 실수 a, b, c", "insightNumber": 1 },
+                        { "text": "다음 조건을 모두 만족시킬 때", "insightNumber": 2 },
+                        { "text": "abc의 값", "insightNumber": 3 },
+                        { "text": "a³ - 5a² + 2a + 33", "insightNumber": 4 },
+                        { "text": "b³ - 5b² + 2b + 33", "insightNumber": 4 },
+                        { "text": "c³ - 5c² + 2c + 33", "insightNumber": 4 },
+                        { "text": "a² + b² + c²", "insightNumber": 5 }
+                    ],
+                    "solutionSteps": [
+                        {
+                            "question": "🤔 이 문제에서 가장 먼저 주목해야 할 특징은 무엇일까요?",
+                            "answer": "세 개의 조건 (가), (나), (다)를 자세히 보면...\n\n모두 우변이 <span class='highlight'>a² + b² + c²</span>로 같다는 것을 발견할 수 있습니다!\n\n이것은 매우 중요한 단서입니다. 세 식의 좌변이 모두 같은 값이라는 의미죠."
+                        },
+                        {
+                            "question": "💡 그렇다면 세 식의 좌변을 어떻게 정리할 수 있을까요?",
+                            "answer": "조건 (가)에서: a³ - 5a² + 2a + 33 = (a² + b² + c²)\n조건 (나)에서: b³ - 5b² + 2b + 33 = (a² + b² + c²)\n조건 (다)에서: c³ - 5c² + 2c + 33 = (a² + b² + c²)\n\n따라서 <span class='highlight'>a³ - 5a² + 2a + 33 = b³ - 5b² + 2b + 33 = c³ - 5c² + 2c + 33</span>\n\n이것은 a, b, c가 모두 같은 형태의 식을 만족한다는 뜻입니다!"
+                        },
+                        {
+                            "question": "🎯 a, b, c가 만족하는 공통 방정식을 찾아볼까요?",
+                            "answer": "x에 대한 삼차방정식을 세워보면:\n\n<span class='highlight'>x³ - 5x² + 2x + 33 = (a² + b² + c²)</span>\n\n이 방정식의 세 근이 바로 a, b, c입니다!\n\n이를 정리하면:\nx³ - 5x² + 2x + 33 - (a² + b² + c²) = 0"
+                        },
+                        {
+                            "question": "📐 삼차방정식의 근과 계수의 관계를 활용해볼까요?",
+                            "answer": "삼차방정식 x³ + px² + qx + r = 0의 세 근을 α, β, γ라 하면:\n\n• α + β + γ = -p\n• αβ + βγ + γα = q\n• αβγ = -r\n\n우리 방정식에서는 최고차 계수가 1이므로:\n• <span class='highlight'>a + b + c = 5</span>\n• <span class='highlight'>ab + bc + ca = 2</span>\n• <span class='highlight'>abc = -33 + (a² + b² + c²)</span>"
+                        },
+                        {
+                            "question": "🔍 이제 abc를 구하기 위해 (a² + b² + c²)의 값을 찾아야 합니다. 어떻게 구할까요?",
+                            "answer": "항등식을 이용합니다!\n\n(a + b + c)² = a² + b² + c² + 2(ab + bc + ca)\n\n알고 있는 값을 대입하면:\n5² = (a² + b² + c²) + 2 × 2\n25 = (a² + b² + c²) + 4\n\n따라서 <span class='highlight'>a² + b² + c² = 21</span>"
+                        },
+                        {
+                            "question": "✨ 드디어 마지막 단계! abc의 값은?",
+                            "answer": "앞서 구한 관계식에서:\nabc = -33 + (a² + b² + c²)\n\n(a² + b² + c²) = 21을 대입하면:\n\nabc = -33 + 21\n<span class='important'>abc = -12</span>\n\n따라서 답은 <span class='important'>-12</span>입니다!"
+                        },
+                        {
+                            "question": "📝 이 문제의 핵심 포인트를 정리해볼까요?",
+                            "answer": "<div class='final-emphasis'>\n<span class='important'>🎓 이 문제에서 꼭 기억해야 할 핵심 아이디어:</span>\n\n1️⃣ <span class='highlight'>공통된 우변을 발견</span>하여 세 변수가 같은 방정식의 근임을 파악\n\n2️⃣ <span class='highlight'>대칭성</span>을 이용하여 문제를 단순화\n\n3️⃣ <span class='highlight'>근과 계수의 관계</span>를 활용하여 미지수들 사이의 관계식 유도\n\n4️⃣ <span class='highlight'>항등식 (a+b+c)² = a²+b²+c² + 2(ab+bc+ca)</span>을 이용한 계산\n\n💡 <span class='important'>가장 중요한 것은 '패턴 인식'입니다!</span>\n세 조건이 동일한 구조를 가진다는 것을 발견하는 순간,\n문제는 훨씬 간단해집니다.\n</div>"
+                        }
+                    ],
+                    "creativeQuestions": {
+                        "title": "💭 이 문제를 더 깊이 이해하기 위한 심화 질문들:",
+                        "questions": [
+                            {
+                                "text": "만약 조건에서 우변이 <span class='highlight'>a² + b² + c²</span>가 아니라 <span class='highlight'>ab + bc + ca</span>였다면 어떻게 접근해야 할까요?",
+                                "hint": "이 경우에도 세 변수가 같은 방정식의 근이 되지만, 계산 과정이 달라집니다."
+                            },
+                            {
+                                "text": "이 문제를 일반화하여 <span class='highlight'>n개의 변수</span>에 대한 문제로 확장할 수 있을까요?",
+                                "hint": "n차 방정식의 근과 계수의 관계를 생각해보세요."
+                            },
+                            {
+                                "text": "실제로 a, b, c의 구체적인 값들을 구할 수 있을까요? 그 값들 사이에는 어떤 관계가 있을까요?",
+                                "hint": "삼차방정식을 직접 풀어보고, 근들의 대칭성을 관찰해보세요."
+                            }
+                        ],
+                        "footer": "🚀 이런 질문들을 스스로 만들어내는 것이 <span class='important'>수학적 사고력</span>을 기르는 핵심입니다!"
+                    },
+                    "keyPoints": [
+                        "공통된 우변을 발견하여 세 변수가 같은 방정식의 근임을 파악",
+                        "대칭성을 이용하여 문제를 단순화",
+                        "근과 계수의 관계를 활용하여 미지수들 사이의 관계식 유도",
+                        "항등식 (a+b+c)² = a²+b²+c² + 2(ab+bc+ca)을 이용한 계산"
+                    ],
+                    "similarProblem": {
+                        "description": "세 실수 x, y, z가 x³-4x²+x+15 = y³-4y²+y+15 = z³-4z²+z+15 = x²+y²+z²를 만족할 때, xyz의 값을 구하시오.",
+                        "options": [
+                            { "value": 1, "text": "① 1" },
+                            { "value": 0, "text": "② 0" },
+                            { "value": -1, "text": "③ -1" },
+                            { "value": -2, "text": "④ -2" },
+                            { "value": 2, "text": "⑤ 2" }
+                        ]
+                    },
+                    "similarProblemAnswer": -1,
+                    "similarProblemSolution": {
+                        "steps": [
+                            {
+                                "title": "1단계: 패턴 발견",
+                                "content": "세 식의 우변이 모두 <strong>x² + y² + z²</strong>로 같다는 것을 발견합니다.<br>이는 x, y, z가 같은 방정식의 세 근임을 의미합니다."
+                            },
+                            {
+                                "title": "2단계: 방정식 세우기",
+                                "content": "t³ - 4t² + t + 15 = x² + y² + z²<br>이 방정식의 세 근이 x, y, z입니다."
+                            },
+                            {
+                                "title": "3단계: 근과 계수의 관계",
+                                "content": "• x + y + z = 4<br>• xy + yz + zx = 1<br>• xyz = -(15 - (x² + y² + z²))"
+                            },
+                            {
+                                "title": "4단계: x² + y² + z² 계산",
+                                "content": "(x + y + z)² = x² + y² + z² + 2(xy + yz + zx)<br>16 = x² + y² + z² + 2<br>따라서 <strong>x² + y² + z² = 14</strong>"
+                            }
+                        ],
+                        "finalAnswer": "xyz = -(15 - 14) = -1"
+                    }
+                },
+                {
+                    "id": 2,
+                    "title": "이차방정식의 근과 계수",
+                    "problemInfo": {
+                        "description": "이차방정식 x² - 2x + k = 0의 두 근이 α, β일 때, α² + β² = 10을 만족하는 상수 k의 값을 구하여라.",
+                        "conditions": []
+                    },
+                    "analysisInfo": [
+                        "이차방정식의 근과 계수의 관계 확인",
+                        "주어진 조건 α² + β² = 10 파악",
+                        "목표: 상수 k의 값 구하기",
+                        "항등식 활용 필요성 인지"
+                    ],
+                    "highlightTags": [
+                        { "text": "x² - 2x + k = 0", "insightNumber": 1 },
+                        { "text": "두 근이 α, β", "insightNumber": 2 },
+                        { "text": "α² + β² = 10", "insightNumber": 3 },
+                        { "text": "상수 k의 값", "insightNumber": 4 }
+                    ],
+                    "solutionSteps": [
+                        {
+                            "question": "🤔 이차방정식의 근과 계수의 관계는 무엇일까요?",
+                            "answer": "이차방정식 x² - 2x + k = 0에서:\n\n• 두 근의 합: <span class='highlight'>α + β = 2</span>\n• 두 근의 곱: <span class='highlight'>αβ = k</span>\n\n이것이 비에타의 공식입니다!"
+                        },
+                        {
+                            "question": "💡 α² + β²를 어떻게 표현할 수 있을까요?",
+                            "answer": "항등식을 이용합니다:\n\n<span class='highlight'>(α + β)² = α² + 2αβ + β²</span>\n\n따라서:\nα² + β² = (α + β)² - 2αβ"
+                        },
+                        {
+                            "question": "🎯 주어진 조건에 대입해볼까요?",
+                            "answer": "α² + β² = 10이고,\nα + β = 2, αβ = k이므로:\n\n10 = 2² - 2k\n10 = 4 - 2k\n\n따라서 <span class='highlight'>2k = -6</span>"
+                        },
+                        {
+                            "question": "✨ k의 값은?",
+                            "answer": "2k = -6에서:\n\n<span class='important'>k = -3</span>\n\n따라서 상수 k의 값은 <span class='important'>-3</span>입니다!"
+                        }
+                    ],
+                    "creativeQuestions": {
+                        "title": "💭 이 문제를 더 깊이 이해하기 위한 심화 질문들:",
+                        "questions": [
+                            {
+                                "text": "판별식 D = 4 - 4k를 계산하면 어떤 의미가 있을까요? <span class='highlight'>k = -3</span>일 때 근의 성질은?",
+                                "hint": "D > 0이면 서로 다른 두 실근, D = 0이면 중근, D < 0이면 허근입니다."
+                            },
+                            {
+                                "text": "만약 조건이 <span class='highlight'>α³ + β³ = 28</span>이었다면 어떻게 풀어야 할까요?",
+                                "hint": "a³ + b³ = (a + b)³ - 3ab(a + b) 공식을 활용해보세요."
+                            },
+                            {
+                                "text": "이차방정식의 두 근 α, β와 계수들 사이의 기하학적 의미는 무엇일까요?",
+                                "hint": "포물선 y = x² - 2x + k와 x축의 교점을 생각해보세요."
+                            }
+                        ],
+                        "footer": "🚀 이런 질문들을 스스로 만들어내는 것이 <span class='important'>수학적 사고력</span>을 기르는 핵심입니다!"
+                    },
+                    "keyPoints": [
+                        "이차방정식의 근과 계수의 관계 (비에타의 공식)",
+                        "항등식 (α + β)² = α² + 2αβ + β² 활용",
+                        "주어진 조건을 이용한 방정식 수립"
+                    ],
+                    "similarProblem": {
+                        "description": "이차방정식 x² - 6x + m = 0의 두 근이 p, q일 때, p² + q² = 20을 만족하는 상수 m의 값을 구하시오.",
+                        "options": [
+                            { "value": 6, "text": "① 6" },
+                            { "value": 7, "text": "② 7" },
+                            { "value": 8, "text": "③ 8" },
+                            { "value": 9, "text": "④ 9" },
+                            { "value": 10, "text": "⑤ 10" }
+                        ]
+                    },
+                    "similarProblemAnswer": 8,
+                    "similarProblemSolution": {
+                        "steps": [
+                            {
+                                "title": "1단계: 근과 계수의 관계",
+                                "content": "p + q = 6, pq = m"
+                            },
+                            {
+                                "title": "2단계: 항등식 적용",
+                                "content": "p² + q² = (p + q)² - 2pq = 36 - 2m"
+                            },
+                            {
+                                "title": "3단계: 조건 대입",
+                                "content": "20 = 36 - 2m<br>2m = 16"
+                            }
+                        ],
+                        "finalAnswer": "m = 8"
+                    }
+                }
+            ]
+        };
+        
+        // 20문제로 확장 (더미 데이터 추가)
+        for (let i = 3; i <= 20; i++) {
+            sampleData.problems.push({
+                "id": i,
+                "title": `문제 ${i}`,
+                "problemInfo": {
+                    "description": `이것은 ${i}번째 문제입니다. 주어진 조건을 만족하는 값을 구하시오.`,
+                    "conditions": ["조건 1", "조건 2", "조건 3"]
+                },
+                "analysisInfo": ["분석 1", "분석 2", "분석 3"],
+                "highlightTags": [
+                    { "text": "주어진 조건", "insightNumber": 1 }
+                ],
+                "solutionSteps": [
+                    {
+                        "question": "문제를 어떻게 접근할까요?",
+                        "answer": "단계별로 차근차근 접근합니다."
+                    },
+                    {
+                        "question": "핵심 포인트는 무엇인가요?",
+                        "answer": "이 문제의 핵심은 조건을 잘 파악하는 것입니다."
+                    }
+                ],
+                "creativeQuestions": {
+                    "title": "💭 이 문제를 더 깊이 이해하기 위한 심화 질문들:",
+                    "questions": [
+                        {
+                            "text": "이 문제의 조건을 다르게 변형한다면?",
+                            "hint": "조건의 변화가 결과에 미치는 영향을 생각해보세요."
+                        },
+                        {
+                            "text": "다른 접근 방법은 없을까요?",
+                            "hint": "여러 관점에서 문제를 바라보세요."
+                        },
+                        {
+                            "text": "이 문제의 일반화는 가능할까요?",
+                            "hint": "특수한 경우에서 일반적인 경우로 확장해보세요."
+                        }
+                    ],
+                    "footer": "🚀 이런 질문들을 스스로 만들어내는 것이 <span class='important'>수학적 사고력</span>을 기르는 핵심입니다!"
+                },
+                "keyPoints": ["핵심 포인트 1"],
+                "similarProblem": {
+                    "description": "유사 문제입니다.",
+                    "options": [
+                        { "value": 1, "text": "① 1" },
+                        { "value": 2, "text": "② 2" },
+                        { "value": 3, "text": "③ 3" },
+                        { "value": 4, "text": "④ 4" },
+                        { "value": 5, "text": "⑤ 5" }
+                    ]
+                },
+                "similarProblemAnswer": 3,
+                "similarProblemSolution": {
+                    "steps": [{ "title": "풀이", "content": "풀이 과정" }],
+                    "finalAnswer": "정답: 3"
+                }
+            });
+        }
+        
+        // 문제 데이터 로드
+        function loadProblemsData() {
+            // 실제로는 fetch API로 JSON 파일을 로드
+            // fetch('problems.json').then(response => response.json()).then(data => {...});
+            
+            // 여기서는 샘플 데이터 사용
+            problemsData = sampleData;
+            problemsCompleted = new Array(problemsData.problems.length).fill(false);
+            
+            // 초기화
+            initializeProblemNav();
+            loadProblem(0);
+            updateProgress();
+        }
+        
+        // 문제 네비게이션 초기화
+        function initializeProblemNav() {
+            const nav = document.getElementById('problemNav');
+            nav.innerHTML = '';
+            
+            for (let i = 0; i < Math.min(20, problemsData.problems.length); i++) {
+                const button = document.createElement('button');
+                button.className = 'nav-button';
+                button.textContent = i + 1;
+                button.onclick = () => {
+                    if (i <= currentProblemIndex || problemsCompleted[i-1]) {
+                        loadProblem(i);
+                    }
+                };
+                nav.appendChild(button);
+            }
+        }
+        
+        // 문제 네비게이션 업데이트
+        function updateProblemNav() {
+            const buttons = document.querySelectorAll('.nav-button');
+            buttons.forEach((button, index) => {
+                button.classList.remove('current', 'complete');
+                if (index === currentProblemIndex) {
+                    button.classList.add('current');
+                } else if (problemsCompleted[index]) {
+                    button.classList.add('complete');
+                }
+                
+                // 이전 문제가 완료되었거나 현재/이전 문제인 경우만 활성화
+                button.disabled = !(index <= currentProblemIndex || (index > 0 && problemsCompleted[index-1]));
+            });
+        }
+        
+        // 진행률 업데이트
+        function updateProgress() {
+            const progressFill = document.getElementById('progressFill');
+            const currentProblemSpan = document.getElementById('currentProblem');
+            const totalProblemsSpan = document.getElementById('totalProblems');
+            
+            const totalProblems = Math.min(20, problemsData.problems.length);
+            const progress = ((currentProblemIndex + 1) / totalProblems) * 100;
+            
+            progressFill.style.width = progress + '%';
+            currentProblemSpan.textContent = currentProblemIndex + 1;
+            totalProblemsSpan.textContent = totalProblems;
+        }
+        
+        // 점수 업데이트
+        function updateScore() {
+            document.getElementById('totalScore').textContent = totalScore;
+        }
+        
+        // 문제 로드
+        function loadProblem(index) {
+            if (index >= problemsData.problems.length) {
+                alert('모든 문제를 완료했습니다! 총 점수: ' + totalScore + '점');
+                return;
+            }
+            
+            // 초기화
+            resetProblemState();
+            
+            currentProblemIndex = index;
+            currentProblemData = problemsData.problems[index];
+            
+            // 문제 정보 업데이트
+            updateProblemDisplay();
+            
+            // 진행 상황 업데이트
+            updateProgress();
+            updateProblemNav();
+            
+            // 질문 가능한 요소들 추가 (약간의 지연)
+            setTimeout(addQuestionableElements, 100);
+        }
+        
+        // 문제 표시 업데이트
+        function updateProblemDisplay() {
+            // 제목
+            document.getElementById('problemTitle').textContent = currentProblemData.title;
+            
+            // 설명 (하이라이트 태그 적용)
+            let description = currentProblemData.problemInfo.description;
+            currentProblemData.highlightTags.forEach(tag => {
+                const regex = new RegExp(escapeRegExp(tag.text), 'g');
+                description = description.replace(regex, `<span class="highlight-mark" data-insight="${tag.insightNumber}">${tag.text}</span>`);
+            });
+            document.getElementById('problemDescription').innerHTML = description;
+            
+            // 조건들
+            const conditionsArea = document.getElementById('conditionsArea');
+            conditionsArea.innerHTML = '';
+            
+            currentProblemData.problemInfo.conditions.forEach(condition => {
+                const div = document.createElement('div');
+                div.className = 'equation';
+                
+                let conditionHtml = condition;
+                // 조건에도 하이라이트 태그 적용
+                currentProblemData.highlightTags.forEach(tag => {
+                    const regex = new RegExp(escapeRegExp(tag.text), 'g');
+                    conditionHtml = conditionHtml.replace(regex, `<span class="highlight-mark" data-insight="${tag.insightNumber}">${tag.text}</span>`);
+                });
+                
+                div.innerHTML = conditionHtml;
+                conditionsArea.appendChild(div);
+            });
+        }
+        
+        // 문제 상태 초기화
+        function resetProblemState() {
+            currentStep = -1;
+            isTyping = false;
+            insightStep = 0;
+            isInsightActive = false;
+            
+            // UI 초기화
+            document.getElementById('explanationArea').innerHTML = '';
+            document.getElementById('nextButton').innerHTML = '<span class="arrow-down"></span>';
+            document.getElementById('nextButton').disabled = false;
+            document.getElementById('nextButton').style.display = 'block';
+            
+            // 인사이트 초기화
+            const insightButton = document.getElementById('insightButton');
+            if (insightButton) {
+                insightButton.textContent = '문제 분석 시작';
+                insightButton.onclick = showInsight;
+            }
+            document.getElementById('insightList').innerHTML = '';
+            
+            // 창의적 질문 섹션 초기화
+            const creativeSection = document.getElementById('creativeSection');
+            if (creativeSection) {
+                creativeSection.classList.remove('active');
+                document.getElementById('creativeQuestionsList').innerHTML = '';
+            }
+            
+            // 화이트보드 초기화
+            document.body.classList.remove('evaluation-mode');
+            const whiteboardContainer = document.getElementById('whiteboardContainer');
+            if (whiteboardContainer) {
+                whiteboardContainer.classList.remove('active');
+            }
+            
+            // 다음 문제 버튼 숨기기
+            const nextProblemButton = document.getElementById('nextProblemButton');
+            if (nextProblemButton) {
+                nextProblemButton.classList.remove('active');
+            }
+        }
+        
+        // 정규식 이스케이프
+        function escapeRegExp(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+        
+        // 유사문제 해설 업데이트
+        function updateSimilarProblemSolution() {
+            const solutionContent = document.getElementById('solutionContent');
+            solutionContent.innerHTML = '';
+            
+            currentProblemData.similarProblemSolution.steps.forEach(step => {
+                const stepDiv = document.createElement('div');
+                stepDiv.className = 'solution-step';
+                
+                const titleDiv = document.createElement('div');
+                titleDiv.className = 'solution-step-title';
+                titleDiv.textContent = step.title;
+                
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'solution-step-content';
+                contentDiv.innerHTML = step.content;
+                
+                stepDiv.appendChild(titleDiv);
+                stepDiv.appendChild(contentDiv);
+                solutionContent.appendChild(stepDiv);
+            });
+            
+            const answerBox = document.createElement('div');
+            answerBox.className = 'solution-answer-box';
+            answerBox.textContent = currentProblemData.similarProblemSolution.finalAnswer;
+            solutionContent.appendChild(answerBox);
+        }
+        
+        // 다음 문제 버튼 표시
+        function showNextProblemButton() {
+            const button = document.getElementById('nextProblemButton');
+            if (button && currentProblemIndex < problemsData.problems.length - 1) {
+                button.classList.add('active');
+            }
+        }
+        
+        // 다음 문제로 이동
+        function nextProblem() {
+            closeSolution();
+            closeResultPopup();
+            
+            // 화이트보드 모드 해제
+            document.body.classList.remove('evaluation-mode');
+            document.getElementById('whiteboardContainer').classList.remove('active');
+            
+            // 다음 문제 버튼 숨기기
+            document.getElementById('nextProblemButton').classList.remove('active');
+            
+            // 다음 문제 로드
+            loadProblem(currentProblemIndex + 1);
+        }
+        
+        window.nextProblem = nextProblem;
+        
+        // 인사이트 관련 함수들
+        function showInsight() {
+            try {
+                const button = document.getElementById('insightButton');
+                const insightList = document.getElementById('insightList');
+                
+                if (!button || !insightList) {
+                    console.error('Required elements not found');
+                    return;
+                }
+                
+                if (isInsightActive) {
+                    // 이미 활성화된 경우
+                    return;
+                }
+                
+                isInsightActive = true;
+                button.textContent = '분석 중...';
+                button.disabled = true;
+                
+                insightStep = 0;
+                insightList.innerHTML = '<div style="color: #999; font-size: 13px; text-align: center; padding: 20px;">문제 분석 중<span style="display: inline-block; width: 20px; text-align: left;" class="loading-dots"></span></div>';
+                
+                // 하이라이트 초기화
+                document.querySelectorAll('.highlight-mark').forEach(el => {
+                    if (el && el.classList) {
+                        el.classList.remove('active');
+                    }
+                });
+                
+                // 순차적으로 하이라이트 표시
+                insightInterval = setInterval(() => {
+                    insightStep++;
+                    
+                    const elements = document.querySelectorAll(`[data-insight="${insightStep}"]`);
+                    elements.forEach(el => {
+                        if (el && el.classList) {
+                            el.classList.add('active');
+                        }
+                    });
+                    
+                    if (insightStep >= currentProblemData.analysisInfo.length) {
+                        clearInterval(insightInterval);
+                        setTimeout(() => {
+                            insightList.innerHTML = '';
+                            showInsightDescriptions();
+                            button.textContent = '분석 완료';
+                        }, 500);
+                    }
+                }, 600);
+            } catch (error) {
+                console.error('Error in showInsight:', error);
+            }
+        }
+        
+        function showInsightDescriptions() {
+            const insightList = document.getElementById('insightList');
+            let descriptionIndex = 0;
+            
+            function addNextDescription() {
+                if (descriptionIndex >= currentProblemData.analysisInfo.length) {
+                    setTimeout(() => {
+                        const completionDiv = document.createElement('div');
+                        completionDiv.style.cssText = 'text-align: center; color: #4CAF50; font-size: 13px; margin-top: 15px; padding-top: 15px; border-top: 1px solid #e9ecef;';
+                        completionDiv.innerHTML = '✓ 분석 완료';
+                        insightList.appendChild(completionDiv);
+                    }, 300);
+                    return;
+                }
+                
+                const insightItem = document.createElement('div');
+                insightItem.className = 'insight-item';
+                insightItem.style.animationDelay = '0.1s';
+                
+                const numberSpan = document.createElement('span');
+                numberSpan.className = 'insight-number';
+                numberSpan.textContent = (descriptionIndex + 1).toString();
+                
+                const textSpan = document.createElement('span');
+                textSpan.className = 'insight-text';
+                
+                insightItem.appendChild(numberSpan);
+                insightItem.appendChild(textSpan);
+                insightList.appendChild(insightItem);
+                
+                typeWriterSimple(textSpan, currentProblemData.analysisInfo[descriptionIndex], () => {
+                    descriptionIndex++;
+                    setTimeout(() => {
+                        addNextDescription();
+                    }, 600);
+                });
+            }
+            
+            addNextDescription();
+        }
+        
+        function typeWriterSimple(element, text, callback) {
+            let i = 0;
+            element.innerHTML = '';
+            if (element.classList) {
+                element.classList.add('typing');
+            }
+            
+            // HTML 태그를 처리하기 위한 임시 div
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = text;
+            const nodes = Array.from(tempDiv.childNodes);
+            
+            function typeNode(nodeIndex) {
+                if (nodeIndex >= nodes.length) {
+                    if (element.classList) {
+                        element.classList.remove('typing');
+                    }
+                    if (callback) callback();
+                    return;
+                }
+                
+                const node = nodes[nodeIndex];
+                
+                if (node.nodeType === Node.TEXT_NODE) {
+                    // 텍스트 노드인 경우
+                    const text = node.textContent;
+                    let charIndex = 0;
+                    const textSpan = document.createElement('span');
+                    element.appendChild(textSpan);
+                    
+                    function typeChar() {
+                        if (charIndex < text.length) {
+                            textSpan.textContent += text[charIndex];
+                            charIndex++;
+                            setTimeout(typeChar, 15);
+                        } else {
+                            typeNode(nodeIndex + 1);
+                        }
+                    }
+                    typeChar();
+                } else {
+                    // 엘리먼트 노드인 경우 (예: <span class='highlight'>)
+                    const clonedNode = node.cloneNode(true);
+                    element.appendChild(clonedNode);
+                    setTimeout(() => typeNode(nodeIndex + 1), 50);
+                }
+            }
+            
+            if (nodes.length > 0) {
+                typeNode(0);
+            } else {
+                // 단순 텍스트인 경우
+                let charIndex = 0;
+                function type() {
+                    if (charIndex < text.length) {
+                        element.innerHTML += text.charAt(charIndex);
+                        charIndex++;
+                        setTimeout(type, 15);
+                    } else {
+                        if (element.classList) {
+                            element.classList.remove('typing');
+                        }
+                        if (callback) callback();
+                    }
+                }
+                type();
+            }
+        }
+        
+        function typeWriter(element, text, callback) {
+            isTyping = true;
+            let i = 0;
+            element.innerHTML = '';
+            if (element.classList) {
+                element.classList.add('typing');
+            }
+            
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = text;
+            const plainText = tempDiv.textContent;
+            
+            function type() {
+                if (i < text.length) {
+                    if (text[i] === '<') {
+                        const tagEnd = text.indexOf('>', i);
+                        const tag = text.substring(i, tagEnd + 1);
+                        element.innerHTML = text.substring(0, tagEnd + 1);
+                        i = tagEnd + 1;
+                    } else {
+                        element.innerHTML = text.substring(0, i + 1);
+                        i++;
+                    }
+                    setTimeout(type, 30);
+                } else {
+                    if (element.classList) {
+                        element.classList.remove('typing');
+                    }
+                    isTyping = false;
+                    if (callback) callback();
+                    
+                    // 타이핑이 끝나면 질문 가능한 요소 추가
+                    setTimeout(addQuestionableElements, 100);
+                }
+            }
+            type();
+        }
+        
+        // 창의적 질문 실시간 생성 함수
+        function generateCreativeQuestions(containerElement, questionsData) {
+            // 초기 로딩 상태
+            containerElement.innerHTML = `
+                <div class="creative-loading">
+                    <span class="creative-title">${questionsData.title}</span>
+                    <div class="thinking-dots">
+                        <span>AI가 창의적 질문을 생성하고 있습니다</span>
+                        <span class="dots-animation">...</span>
+                    </div>
+                </div>
+            `;
+            
+            containerElement.style.opacity = '1';
+            containerElement.style.animation = 'fadeInUp 0.6s ease-out forwards';
+            
+            let questionIndex = 0;
+            
+            setTimeout(() => {
+                // 타이틀만 남기고 질문 생성 시작
+                containerElement.innerHTML = `<span class="creative-title">${questionsData.title}</span>`;
+                
+                function addNextQuestion() {
+                    if (questionIndex >= questionsData.questions.length) {
+                        // 모든 질문 생성 완료 후 footer 추가
+                        setTimeout(() => {
+                            const footerDiv = document.createElement('div');
+                            footerDiv.className = 'creative-footer';
+                            footerDiv.innerHTML = questionsData.footer;
+                            footerDiv.style.opacity = '0';
+                            footerDiv.style.animation = 'fadeIn 0.5s ease-out forwards';
+                            containerElement.appendChild(footerDiv);
+                        }, 500);
+                        return;
+                    }
+                    
+                    const question = questionsData.questions[questionIndex];
+                    const questionDiv = document.createElement('div');
+                    questionDiv.className = 'creative-question';
+                    questionDiv.style.opacity = '0';
+                    
+                    // 임시 로딩 상태
+                    questionDiv.innerHTML = `
+                        <span class="q-number">Q${questionIndex + 1}.</span>
+                        <span class="q-text generating">
+                            <span class="generating-text">질문 생성 중</span>
+                            <span class="generating-dots">...</span>
+                        </span>
+                    `;
+                    
+                    containerElement.appendChild(questionDiv);
+                    
+                    // 애니메이션 시작
+                    setTimeout(() => {
+                        questionDiv.style.animation = 'slideInLeft 0.5s ease-out forwards';
+                    }, 10);
+                    
+                    // 실제 질문 텍스트로 교체
+                    setTimeout(() => {
+                        const qText = questionDiv.querySelector('.q-text');
+                        qText.classList.remove('generating');
+                        
+                        // 타이핑 효과로 질문 표시
+                        typeWriterSimple(qText, question.text, () => {
+                            // 힌트 추가
+                            setTimeout(() => {
+                                const hintDiv = document.createElement('div');
+                                hintDiv.className = 'q-hint';
+                                hintDiv.innerHTML = `💡 힌트: ${question.hint}`;
+                                hintDiv.style.opacity = '0';
+                                hintDiv.style.animation = 'fadeIn 0.3s ease-out forwards';
+                                questionDiv.appendChild(hintDiv);
+                                
+                                // 다음 질문으로
+                                questionIndex++;
+                                setTimeout(addNextQuestion, 800);
+                            }, 300);
+                        });
+                    }, 1000);
+                }
+                
+                // 첫 질문 시작
+                addNextQuestion();
+                
+            }, 2000);
+        }
+        
+        function showNextStep() {
+            if (isTyping) return;
+            
+            if (autoNextTimeout) {
+                clearTimeout(autoNextTimeout);
+                autoNextTimeout = null;
+            }
+            
+            currentStep++;
+            
+            // 핵심 포인트 정리가 끝나면 창의적 질문 표시
+            if (currentStep === currentProblemData.solutionSteps.length) {
+                // 창의적 질문 섹션 활성화
+                const creativeSection = document.getElementById('creativeSection');
+                const creativeContainer = document.getElementById('creativeQuestionsList');
+                
+                if (creativeSection && creativeContainer && currentProblemData.creativeQuestions) {
+                    creativeSection.classList.add('active');
+                    
+                    // 창의적 질문 실시간 생성
+                    generateCreativeQuestions(creativeContainer, currentProblemData.creativeQuestions);
+                    
+                    // 다음 버튼 텍스트 변경
+                    document.getElementById('nextButton').innerHTML = '서술평가 시작하기';
+                }
+                return;
+            } else if (currentStep > currentProblemData.solutionSteps.length) {
+                // 서술평가로 전환
+                document.getElementById('nextButton').style.display = 'none';
+                
+                const transitionMessage = document.getElementById('transitionMessage');
+                if (transitionMessage && transitionMessage.classList) {
+                    transitionMessage.classList.add('active');
+                }
+                
+                setTimeout(() => {
+                    if (transitionMessage && transitionMessage.classList) {
+                        transitionMessage.classList.remove('active');
+                    }
+                    
+                    const mainContainer = document.querySelector('.main-container');
+                    if (mainContainer) {
+                        mainContainer.style.transition = 'opacity 0.5s ease';
+                        mainContainer.style.opacity = '0';
+                    }
+                    
+                    setTimeout(() => {
+                        if (document.body && document.body.classList) {
+                            document.body.classList.add('evaluation-mode');
+                        }
+                        
+                        const whiteboardContainer = document.getElementById('whiteboardContainer');
+                        if (whiteboardContainer && whiteboardContainer.classList) {
+                            whiteboardContainer.classList.add('active');
+                        }
+                        initWhiteboard();
+                    }, 500);
+                }, 2000);
+                
+                return;
+            }
+            
+            const step = currentProblemData.solutionSteps[currentStep];
+            const explanationArea = document.getElementById('explanationArea');
+            
+            const stepDiv = document.createElement('div');
+            stepDiv.className = 'explanation-step';
+            
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question';
+            questionDiv.textContent = step.question;
+            
+            const answerDiv = document.createElement('div');
+            answerDiv.className = 'answer';
+            
+            stepDiv.appendChild(questionDiv);
+            stepDiv.appendChild(answerDiv);
+            explanationArea.appendChild(stepDiv);
+            
+            setTimeout(() => {
+                document.getElementById('solutionContainer').scrollTop = 
+                    document.getElementById('solutionContainer').scrollHeight;
+            }, 100);
+            
+            document.getElementById('nextButton').disabled = true;
+            
+            const thinkingSpan = document.createElement('span');
+            thinkingSpan.className = 'thinking-indicator';
+            thinkingSpan.textContent = '생각 중';
+            questionDiv.appendChild(thinkingSpan);
+            
+            setTimeout(() => {
+                thinkingSpan.remove();
+                
+                typeWriter(answerDiv, step.answer, () => {
+                    document.getElementById('nextButton').disabled = false;
+                });
+            }, 3000);
+        }
+        
+        // 화이트보드 초기화 함수
+        function initWhiteboard() {
+            // 유사문제 정보 업데이트
+            document.getElementById('similarProblemText').textContent = currentProblemData.similarProblem.description;
+            
+            // 답안 선택 옵션 업데이트
+            const answerSelect = document.getElementById('answerSelect');
+            answerSelect.innerHTML = '<option value="">답을 선택하세요</option>';
+            
+            currentProblemData.similarProblem.options.forEach(option => {
+                const optionElement = document.createElement('option');
+                optionElement.value = option.value;
+                optionElement.textContent = option.text;
+                answerSelect.appendChild(optionElement);
+            });
+            
+            const canvas = document.getElementById('whiteboardCanvas');
+            const ctx = canvas.getContext('2d');
+            const canvasWrapper = document.querySelector('.canvas-wrapper');
+            
+            function resizeCanvas() {
+                canvas.width = canvasWrapper.offsetWidth;
+                canvas.height = canvasWrapper.offsetHeight;
+            }
+            
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            
+            let isDrawing = false;
+            let currentTool = 'pen';
+            let currentColor = '#000000';
+            let currentThickness = 2;
+            
+            document.getElementById('penTool').addEventListener('click', function() {
+                currentTool = 'pen';
+                updateToolButtons();
+                canvas.style.cursor = 'crosshair';
+            });
+            
+            document.getElementById('eraserTool').addEventListener('click', function() {
+                currentTool = 'eraser';
+                updateToolButtons();
+                canvas.style.cursor = 'grab';
+            });
+            
+            document.getElementById('clearTool').addEventListener('click', function() {
+                if (confirm('화이트보드를 모두 지우시겠습니까?')) {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }
+            });
+            
+            document.getElementById('colorPicker').addEventListener('change', function(e) {
+                currentColor = e.target.value;
+            });
+            
+            document.getElementById('thicknessSlider').addEventListener('input', function(e) {
+                currentThickness = e.target.value;
+                document.getElementById('thicknessValue').textContent = currentThickness;
+            });
+            
+            function updateToolButtons() {
+                document.querySelectorAll('.tool-button').forEach(btn => {
+                    if (btn && btn.classList) {
+                        btn.classList.remove('active');
+                    }
+                });
+                
+                if (currentTool === 'pen') {
+                    const penTool = document.getElementById('penTool');
+                    if (penTool && penTool.classList) {
+                        penTool.classList.add('active');
+                    }
+                } else if (currentTool === 'eraser') {
+                    const eraserTool = document.getElementById('eraserTool');
+                    if (eraserTool && eraserTool.classList) {
+                        eraserTool.classList.add('active');
+                    }
+                }
+            }
+            
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseout', stopDrawing);
+            
+            canvas.addEventListener('touchstart', handleTouch);
+            canvas.addEventListener('touchmove', handleTouch);
+            canvas.addEventListener('touchend', stopDrawing);
+            
+            function startDrawing(e) {
+                isDrawing = true;
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+            }
+            
+            function draw(e) {
+                if (!isDrawing) return;
+                
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                ctx.lineWidth = currentThickness;
+                ctx.lineCap = 'round';
+                
+                if (currentTool === 'pen') {
+                    ctx.globalCompositeOperation = 'source-over';
+                    ctx.strokeStyle = currentColor;
+                } else if (currentTool === 'eraser') {
+                    ctx.globalCompositeOperation = 'destination-out';
+                    ctx.lineWidth = currentThickness * 3;
+                }
+                
+                ctx.lineTo(x, y);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+            }
+            
+            function stopDrawing() {
+                if (isDrawing) {
+                    isDrawing = false;
+                    ctx.beginPath();
+                }
+            }
+            
+            function handleTouch(e) {
+                e.preventDefault();
+                const touch = e.touches[0];
+                const mouseEvent = new MouseEvent(e.type === 'touchstart' ? 'mousedown' : 
+                                                e.type === 'touchmove' ? 'mousemove' : 'mouseup', {
+                    clientX: touch.clientX,
+                    clientY: touch.clientY
+                });
+                canvas.dispatchEvent(mouseEvent);
+            }
+            
+            const submitBtn = document.getElementById('submitButton');
+            if (submitBtn) {
+                submitBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const answerSelect = document.getElementById('answerSelect');
+                    if (!answerSelect) {
+                        alert('답안 선택 요소를 찾을 수 없습니다.');
+                        return;
+                    }
+                    
+                    const selectedAnswer = answerSelect.value;
+                    
+                    if (!selectedAnswer || selectedAnswer === '') {
+                        alert('답을 선택해주세요.');
+                        return;
+                    }
+                    
+                    if (typeof window.checkAnswer === 'function') {
+                        window.checkAnswer(parseInt(selectedAnswer));
+                    } else {
+                        alert('채점 기능에 오류가 발생했습니다.');
+                    }
+                });
+            }
+            
+            const closeBtn = document.getElementById('closeButton');
+            if (closeBtn) {
+                closeBtn.addEventListener('click', function() {
+                    if (confirm('서술평가를 종료하시겠습니까?\n\n작성한 내용이 저장되지 않습니다.')) {
+                        location.reload();
+                    }
+                });
+            }
+        }
+        
+        // DOMContentLoaded 이벤트 리스너
+        document.addEventListener('DOMContentLoaded', function() {
+            const insightButton = document.getElementById('insightButton');
+            if (insightButton) {
+                insightButton.addEventListener('click', showInsight);
+            }
+            
+            const nextButton = document.getElementById('nextButton');
+            if (nextButton) {
+                nextButton.addEventListener('click', showNextStep);
+            }
+            
+            document.addEventListener('click', function(e) {
+                if (e.target && e.target.id === 'resultOverlay') {
+                    closeResultPopup();
+                } else if (e.target && e.target.id === 'solutionOverlay') {
+                    closeSolution();
+                }
+            });
+            
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    const solutionPopup = document.getElementById('solutionPopup');
+                    const resultPopup = document.getElementById('resultPopup');
+                    
+                    if (solutionPopup && solutionPopup.classList && solutionPopup.classList.contains('active')) {
+                        closeSolution();
+                    } else if (resultPopup && resultPopup.classList && resultPopup.classList.contains('active')) {
+                        closeResultPopup();
+                    }
+                }
+            });
+            
+            // 문제 데이터 로드
+            loadProblemsData();
+        });
+    </script>
+</body>
+</html>

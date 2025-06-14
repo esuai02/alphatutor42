@@ -46,3 +46,9 @@ Moodle is provided freely as open source software, under version 3 of the GNU Ge
 [10]: https://moodle.com/partners
 [11]: https://moodle.com/cloud
 [12]: https://moodledev.io/general/license
+
+---
+## 🚀 GCP Auto-Deploy Test
+**Test Timestamp:** 2025-06-14  
+**Purpose:** Testing GitHub Actions → GCP Server deployment pipeline  
+If you see this message on the GCP server, the auto-deployment is working! ✅

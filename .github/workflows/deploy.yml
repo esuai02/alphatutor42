@@ -3,7 +3,7 @@ name: Deploy Moodle to GCP
 on:
   push:
     branches:
-      - MOODLE_500_STABLE
+      - main
 
 jobs:
   deploy:
@@ -18,4 +18,4 @@ jobs:
           script: |
             cd /var/www/html/moodle
             git config --global --add safe.directory /var/www/html/moodle
-            git pull origin MOODLE_500_STABLE
+            git pull origin main

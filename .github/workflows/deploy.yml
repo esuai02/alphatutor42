@@ -1,0 +1,20 @@
+name: Deploy Moodle to GCP
+
+on:
+  push:
+    branches:
+      - MOODLE_500_STABLE
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Connect and deploy via SSH
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.GCP_HOST }}
+          username: ${{ secrets.GCP_USER }}
+          key: ${{ secrets.GCP_SSH_KEY }}
+          script: |
+            cd /var/www/html/moodle
+            git pull origin MOODLE_500_STABLE

@@ -1,0 +1,795 @@
+This files describes changes in the Hot Question code.
+
+=== 4.?.? === Items that hopefully will be in a future release.
+
+=== 4.2.5 === 2025060200
+HotQuestion_1378 - HotQuestion - Adopting for Moodle Plugin CI. #108. Did a merge
+    to make the code changes and created new release.
+
+
+=== 4.2.4 === 2025041500
+20220421 HotQuestion_844 - The Moodle Mobile app is not supported.
+20220430 HotQuestion_853 - Sometimes when a user has no question submitted, they
+    are getting a grade anyway. 
+20220706 HotQuestion_881 - When Whole Hot Question grading is NOT enabled, the
+    Activity completion should reflect that. See the ticket for details.
+20220821 HotQuestion_911 - Need to see about including grades in the Export tool.
+20230120 HotQuestion_995 - The grade table needs more info included in the download. 
+    Some items (3) have been done. Still have others (3) to do.
+20231201 HotQuestion_1123 - Allow the 'submit your question' text area to be plain
+    text #61. 20231201 Started investigating how to do this.
+
+
+=== 4.2.3 === 20241009
+202040904 HotQuestion_1316 - Some tool icons render way oversize in Moodle 4.5 code.
+    Modified code in renderer.php to set width of icons where need. See ticket for details.
+
+=== 4.2.2 === 20240711
+20221125 HotQuestion_964 - Need to rewrite the privacy.php file as it currently is not
+    working. Pull request issue #101 has fixed the problem. User data export requests
+    seem to be working correctly, now.
+20231111 HotQuestion_1118 - HotQuestion - Exception occurred while calling mod_hotquestion
+    \privacy\provider::export_user_data. Pull request issue #101 has fixed the problem.
+    User data export requests seem to be working correctly, now.
+20240711 HotQuestion_1245 - PARAM_ACTION is deprecated and should be changed so
+    that it is PARAM_ALPHANUMEXT. See ticket for details. Made the change in the
+    view.php file and it works.
+20240904 HotQuestion_1315 - Need to run Code checker and PHPdoc checker prior to 
+    v4.2. release. Fixed code checks as needed.
+
+=== 4.2.1 === 20240707 released 20240711
+20220716 HotQuestion_892v - HotQuestion does not have a cron_task.php file. Added the
+    file with code for completion update_state. See ticket for details.
+20240625 HotQuestion_1255v - Hot Question Activity Completion possible bug #97. Made a lot
+    of changes to the completion code. See ticket for details.
+20240706 HotQuestion_1256v - The language string for entries_viewed is missing. Added
+    the missing string, $string['evententriesviewed'] = 'Viewed questions';.
+20240706 HotQuestion_1257v - The language string for entry_updated is missing. Added
+    the missing string, $string['evententryupdated'] = 'Updated question';.
+
+=== 4.2.0 === 20240209 released 20240210
+20240109 HotQuestion_1162v - Hot Question - Missing privacy metadata for
+    mdl_hotquestion_grades table github issue #92. Reviewed and approved
+    pull request on github. Added three strings and added hotquestion_grades
+    to privacy metadata.
+20240209 HotQuestion_1204v - HotQuestion - Feature request - Hide the visibility
+    preference when Approval Required is set to No. Adding an if check on $hotquestion->
+    approval to control whether or not the visibility selector is shown. If approval
+    is not required, the the selector is hidden.
+
+=== 4.1.9 === 2023112600 released 2023112600
+20231027 HotQuestion_1105v - When, Questions for max grading, is not one or more,
+    you get a non-fatal divide by zero error. Changed code in line 843 of lib.php file
+    to prevent $factor from being zero.
+20231101 HotQuestion_1110v - Can not select just "Student must add question" as the
+    criteria for Completion Tracking #87. Changed default settings from 1 to 0, for,
+    $defaultvalues['completionpost'] = 0; and for $defaultvalues['completionvote'] = 0;
+    in the mod_form.php file.
+20231122 HotQuestion_1120v - Users unable to view hot questions when course is in
+    Read-Only mode #88. Made changes to view.php where I added a new line 62 and
+    then modified line 64, which added a new view capability. Picture is in
+    FAQ>HotQuestion>CourseReadOnlyContext.
+20231123 HotQuestion_1121v - Vote and unvote actions undo / toggle on page reload #89.
+    Made changes in locallib.php. See the ticket for details.
+
+=== 4.1.8.02+ === 2023101702 released 2023102500
+20231025 HotQuestion_1104v - Error when deleting data for user Issue #86 at github.
+    Changed provider.php lines 366 and 408 to use voter instead of userid. Also to
+    use id instead of itemid in line 408.
+
+=== 4.1.8.01+ === 2023101701 released 2023102100
+20230601 HotQuestion_1051v - $hotquestion->viewaftertimeclose in view.php at line 167
+    does not appear to work correctly. Made code changes to the mod_form.php plus
+    made some other changes in view.php and renderer.php.
+
+=== 4.1.8 === 2023101700
+20230601 HotQuestion_1051v - $hotquestion->viewaftertimeclose in view.php at line 167
+    does not appear to work correctly. Made code changes to the mod_form.php plus
+    made some other changes in view.php and renderer.php.
+20230926 HotQuestion_1076v - Need to implement suffix on mod_for.php for Moodle 4.3.
+    Added needed code to the mod_form.php file for both add_completion_rules and for
+    completion_rule_enabled. Made code changes as needed. See ticket for details.
+20231008 HotQuestion_1091v - Latest codechecker says "Import statements must not begin
+    with a leading backslash". Made code changes as needed. See ticket for details.
+20231008 HotQuestion_1092v - Latest codechecker requires convert from long array(),
+    to short array []. Made code changes as needed. See ticket for details.
+20231010 HotQuestion_1094v - Using v4.1.8 on IONOS moodle311 test site students cannot
+    vote/unvote. Did find in grades.php line 42 the closing bracket was missing.
+    Wound up replaceing the two HQ activities and HQ works as expected. Was due
+    to a mismatch between timeclose and viewaftertimeclose.
+20231011 HotQuestion_1095v - Need to add a viewaftertimeclose setting definition to
+    settings.php. Added at about line 132 of settings.php file.
+20231011 HotQuestion_1096v - Non-ed teacher cannot see questions if activity is closed.
+    Modified capability checks in two places in the view.php file. Down around line
+    343 and line 244.
+20231011 HotQuestion_1097v - Non-editing teacher cannot remove questions or change the
+    approval status of a question. See the ticket for further details where I have
+    changed capability checks from manageentries, to rate so the non-editing teacher
+    has capabilities similar to other plugins.
+20231013 HotQuestion_1099v - Have a pull request to fix an SQL error in provider.php
+    at line 171. Did the merge and checked that it fixed the code. Hmm, Allie Katt's
+    reuest to export all data expired without delivery of anything, and nothing logged.
+
+
+
+=== 4.1.7 === 2023052500 Only for M3.11 and above.
+=== 4.1.7+ ===
+20230519 HotQuestion_1045v - Issue #81, Unapproved items are not displayed reliably
+    when using PostgreSQL. The issue affects MariaDB and MySQL databases too. I have
+    added code to both view.php and renderer.php that give a selector to show/hide
+    unapproved questions and also change the index.php call to a class="btn btn-link"
+    instead of a plain URL link. 20230522 Added string for another list option of,
+    Preference not set. 20230531 Added code to go ahead and populate the listing
+    and setting the drop down menu to, Preference not set. 20230607 Made a lot of
+    changes to get rid of the blank option at the top of the list.
+
+=== 4.1.6 === 20230407 Release for M3.11 and above.
+=== 4.1.6+ === 20230428 Code cleanup.
+20221027 Hot Question_943v - Feature request #58 - 4.0 hotquestion upgrade fails. The
+    fix is to search for any hotquestion_question teacher priority of null, and change
+    it to 0, then proceed with the upgrade. 
+20230407 HotQuestion_1031v - Invalid event functions defined in
+    \mod_hotquestion\event\course_module_viewed. Searched all the HQ files and
+    deleted all the deprecated add_to_log code.
+
+
+
+=== 4.1.5 === 20230126 Only for M3.11 and above.
+20230119 HotQuestion_977 - Non-unique names for database fields #56. The fields assessed,
+    assestimestart and assesstimefinish are required for ratings, but assessedtimefinish
+    and assessedtimestart are not used at all, so I need to see about dropping them.
+    I have included code in upgrade.php that will drop the fields, if they exist.
+20230122 HotQuestion_989 - Issue #68 at github, Let students view questions after "close time."
+    I have all the contributed code integrated, but it needs more work.  WIll need to hide the
+    capability for students to change votes when the activity is closed. Right now a studet
+    can still change their votes after the activity has closed.
+20230123 HotQuestion_997 - When set, open and close times should show on the view.php page. 
+    I have added code that will show the open and/or close times, if either one of them is
+    set and being used. The code is down around line 285 of the view.php file.
+20230124 HotQuestion_999 - Need to prevent students from changing vote when viewing after
+    close time. Modified the case 'vote" and case 'remove' in the view.php file. Student
+    clicks on the heat vote icon are ignored. Clicks by anyone with manage capabilities
+    can change and/or remove their votes, as I can see a case for teachers catching up
+    with grading, after the activity has closed.
+20200522 Hot Question_479 - Need to move locallib.php functions to .../classes/... I have
+    slowly been doing this and have placed 12 into class files, so far. I am going to
+    close this ticket, and start doing individual tickets for the rest of them.
+
+
+=== 4.1.4 === 20221219 Only for M3.11 and above.
+20221126 HotQuestion_959v - Need to make sure the new rating data is being added to
+    the GDPR provider.php file. 20221219 Have finally had the time to do this. The
+    system is including Hot Question grades in data requests.
+20221211 HotQuestion_975v - Issue #72 New toggle text is hard coded. 20221205 Modified
+    line 263 in view.php to show the new string that I added to the language file.
+20221217 HotQuestion_976v - Issue #73 at github, Exception when adding a new question
+    to existing instance. This happens only when the activity is set to manual mark
+    for view. In the locallib.php file, change line 938. From this:
+        $completion = new completion_info($course);
+    To this:
+        $completion->set_module_viewed($cm);
+
+=== 4.1.3 === 20221204 Only for M3.11 and above.
+20220601 HotQuestion_870v - Default settings to allow comments, is not being picked
+    up when creating activity. Works now, but need to verify in a new install.
+20221023 HotQuestion_798v - Need to create new icons, monologo.svg and monologo.png
+    for Moodle 4.0. Decided it was better to actually have the correct files for
+    the icon. Changed the ticket title and created both icons and they are being
+    used in this Moodle 4.x.x site.
+20221029 HotQuestion_945v - In locallib.php line 850 is returning the question ID
+    instead of the voter ID. Made the suggested change and verified the correct
+    deletions are being done.
+20221031 HotQuestion_946v - Feature request #62 - sort unapproved questions to bottom
+    of, or hide them from the list.20221101 I think I have things working so that it
+    is doing both requests. Unapproved questions are sorted to the bottom of the
+    question list, AND there is a toggle link to show or hide unapproved questions.
+    When there ARE unapproved questions and the toggle is off, a teacher can see them
+    like always and change the approval status. A student in the same situation, sees
+    the same old message, This entry is not currently approved for viewing.
+20221102 HotQuestion_947v - Issue #69#70 Completion state never updated for vote and submit
+    actions. 20220102 Completed the pull request in issue #69 and #70. I have also merged
+    locally on 10.0.6.136/moodle401 to see how it works with my new approval sort and
+    show/hide code.
+20221124 HotQuestion_961v - CSV export includes comments from other Moodle components #71.
+    In locallib.php, down around line 708/709, I made a small addition that seems to fix
+    the problem. Added 'component' => 'mod_hotquestion' to the get_records() syntax.
+20221204 HotQuestion_973v - Branch check in lib.php at line 258 probably not needed anymore.
+    I need to remove line 258, 261, 262, and 263. Then set the indent for the remaining
+    lines, 259 and 260. THis will leave only the new core_user\fields code. 20221204 While
+    testing this, I discovered I seem to have made a typo error in line 260. I had
+    'duserid' where it should be just 'userid'. I also took the opportunity to redo
+    the indents for the $sql variable.
+
+
+=== 4.1.2.01 === 2022082100 Only for M3.11 and above.
+20220410 HotQuestion_840v - Need to add comments to question downloads. See ticket
+    for details. Have gotten working for teachers, managers and admins.
+20220718 HotQuestion_894v - Need to cleanup/change code in upgrade.php. Made changes
+    as needed with the main one being next to last line of code being changed
+    to return true;, instead of, return $result;.
+20220821 Hot Question_910v - The public function get_description(), about line 61 in
+    download_questions. php needs updating. See ticket for details. Basically added
+    a check to see if it is an admin or a regular teacher/manager doing the download. 
+20220821 Ran code checker and fixed errors reported errors.
+
+===4.1.2.00 === 2022081700 Only for M3.11 and above.
+20220817 Ran Code checker and Moodle PHPdoc check. Fixed as needed.
+20220810 Hot Question_907v - Issue #65 at github regarding undefined variable. Added
+    a code snippet at line 166 and 167, in the, function reset_instance($hotquestionid),
+    in lib.php for Hot Question, that fixes the undefined variable.
+
+=== 4.1.1.03+ === 2022071800
+20220718 HotQuestion_895v - Need to make some minor language string changes in
+    new grade strings. Made changes as needed.
+
+=== 4.1.1.02+ ===
+20220712 HotQuestion_890v - I think the Upgrade version check is incorrect.
+    Forgot to change if from checking for M2.8 to M3.11. 
+20220716 HotQuestion_891v - When using scales, the Grade column needs to show max
+    points, not the negative scale id. Added new string, Final grade. Added code
+    that gets the index of the highest item and entry, in the scale. Then adds
+    both to the, Final grade, column heading. e.g. Final grade (6=Mastery), if
+    using a scale of: No Credit, No Understanding, Beginning, Developing,
+    Accomplished, Mastery
+20220717 HotQuestion_893v - In v4.1.1 students cannot see or make comments. Modified
+    new check code to account for when the first flag is null.
+
+=== 4.1.1 ===
+20220709 HotQuestion_888v - upgrade.php, line 348 needs assesstimefinish changed to
+    assessed. Made needed change to upgrade.php, version.php and upgrade.txt.
+
+=== 4.1.0 === 2022070700
+20220220 HotQuestion_484v - Need to update GDPR Code. Made changes as needed until
+    the code ran without errors when I ran: php adhoc_task.php --execute. As of
+    20220410 I have added comments so they need to be included in the GDPR Code.
+20220410 HotQuestion_838v - Need setting to limit new comments to the current round.
+    Made changes to an if in renderer.php about line 356. See ticket for more details.
+20220426 HotQuestion_846v - Are Completion & grades considered of interest? #53.
+    Added modified code from contributed work into current Hot Question code. Then
+    made a tone of updates and changes to get it working reliably.
+20220427 HotQuestion_848v - String [grade,core] is deprecated. 20220427 Changed
+    the language string reference in hotquestion/classes/output/viewgrades.php
+    down around line 166 from, get_string('grade'), over to, get_string('gradenoun'),
+    and the debug error went away.
+20220427 HotQuestion_849v - get_extra_user_fields() is deprecated. Changed the code
+    as needed to fix the problem. See the ticket for details.
+20220427 HotQuestion_850v - user_picture::fields() is deprecated. Changed the code
+    as needed to fix the problem. See the ticket for details.
+20220428 HotQuestion_851v - *_get_completion_state() callback functions such as
+    hotquestion_get_completion_state have been deprecated. 20220428 1025 Created
+    the needed folder and file. Not getting the debug message anymore.
+20220429 HotQuestion_852v - Invalid course module ID when making grade setup change.
+    Added code to check for missing cmid and get it, if needed. The change is in
+    lib.php down around line 809.
+20220427 Ran codechecker and fixed hundreds of warnings and errors, as needed.
+20220502 HotQuestion_854v - Need a space between new Rating score and Rating ranking
+    button. In view.php down around line 255, I added an echo space that only gets
+    added if the user can see the button. For a normal student user, the extra space
+    is not needed as spacing is handled by the toolbar.
+20220503 HotQuestion_855v - Need heatgiven and heatreceived in place of Votes in
+    Rating ranking. Added new $fields to the sql in ranking_tables.php file down
+    around line 185 that counts the number of heat/votes that a user has received.
+    Also added needed language string for heatreceived. Also changed the votes
+    string to heatgiven.
+20220504 HotQuestion_856v - Need teacherpriority column on Rating ranking page. Added
+    the needed code to the ranking_table.php file like I did yesterday for heatreceived.
+    Today, 20220507, I had to modify the sql to get it to show zero, positive, or
+    negative teacher priority count.
+20220505 HotQuestion_858v - Need to add percentage factors to column labels. Added
+    needed info to the string for each column label. The way the ranking _table.php
+    does this, it automatically gets added for downloads.
+20220506 HotQuestion_859v - Need to change all references to rating over to grade. 
+    Made code and language string changes as needed in the language file and other
+    locations.
+20220507 HotQuestion_860v - Need to change hard coded text to a language string in
+    the /mod/hotquestion/classes/output/viewgrades.php file. Commented out the original
+    line of code and changed to new version using a string. Have a second commented
+    out version available, if needed.
+20220507 HotQuestion_861v - The ranking_table.php file name needs to be changed to
+    viewgrades.php. Changed the filename and, hopefully, all references to it in
+    all the Hot Question files.
+20220507 HotQuestion_862v - Need to change $rankingtable variable to $gradestable
+    in grades.php file. Changed the $rankingtable variable to $gradestable. Hopefully,
+    I have changed all references to it, also.
+20220507 HotQuestion_863v - Need to fix viewgrades.php functions that print out the
+    column data. Tested each of the column functions and fixed code and reference name
+    errors, as needed. Ensured the teacher priority prints '-' in the teacher priority
+    column for students that have NOT posted a question, yet. Prints a 0 if they posted
+    a question, but the teacher has NOT changed the priority.
+20220508 HotQuestion_857v - Need to redefine Hot Question DB fields size and defaults.
+    Made changes as needed. See ticket for more details. 
+20220508 HotQuestion_864v - Need to sort language file on string names. Completed
+    manual sort using copy and paste.
+20220508 HotQuestion_865v - Need to verify backup files are correct for all the new
+    changes. Still needs further testing but backup and restore is working.
+20220502 HotQuestion_839v - Need to make sure associated comments are deleted
+    whenever a question is deleted. 20220510 1115 Added two lines of code and a comment
+    to locallib.php. When a question is deleted, it, any comments on it, and any votes
+    on it, are also deleted.
+20220510 1130 Ran codechecker and made changes as needed.
+20220515 HotQuestion_866v - Anonymous posts do not work. Fixed the anonymous problem by
+    changing code in results.php down around line 408 by using isset check. 
+20220519 1030 Hot Questions_868v - Group is not working correctly when going from view to
+    grades. Noticed this problem back when I first integrated the contributed code. Just
+    now spent a few minutes to actually add the $group information to the $url in
+    view.php. Got a weird result (managers only) the very first time I went to grades.php
+    page, but after that it seems to be working correctly.
+20220608 HotQuestion_871v - Deleting a Hot Question activity does NOT delete associated
+    grades. See ticket for details. Changed line 896 in lib.php and delete started working.
+20220622 HotQuestion_873v - Default setting for Comments is not working on mod_form.php.
+    Modified the 'default' on the mod_form.php page to use the current Hot Question
+    configuration setting, that was missing and using a default of 0, which means, No. It
+    is now giving expected results.
+20220623 HotQuestion_874v - A question should not add to the grade if it is NOT approved.
+     Added an if check in locallib.php function calculate_user_ratings that checks to see
+     if the question is approved. Skips adding to the grade if not approved.
+20220629 HotQuestion_875v - Changing the tpriority for a student does not update their grade.
+    In the locallib.php file, I added a call to,
+    $this->update_users_grades([$question->userid, $USER->id]); in the, public function
+    tpriority_change($u, $question) {, which seems to fix the problem.
+20220629 HotQuestion_876v - Changing the approval status for a sudent question does not
+    update their grade. In the locallib.php file, I added a call to,
+    $this->update_users_grades([$question->userid, $USER->id]); in the, public function
+    approve_question($question) {, which seems to fix the problem.
+20220630 HotQuestion_877v - When Whole Hot Question grading is NOT enabled, the View
+    grades button should be hidden. Modified the if check in view.php, at about line
+    264 so that the raw rating and view grades button are visible only if gading is setup.
+20220706 HotQuestion_882v - In Moodle 4.0.x the activity name, description, and completion
+    labels get duplicated. Added a branch check in view.php about line 233, that skips
+    adding the intro for Moodle 4.0 and higher.
+20220707 HotQuestion_887v - Anonymous post should NOT count towards a users grade. In file
+    locallib.php at about line 855, I added, AND q.anonymous = 0. This is in the
+    calculate_user_ratings function and makes it so that only entries that are NOT
+    anonymous get counted towards a users grade.
+
+=== 4.0.2 === released 20220410 for Moodle 3.1 and higher
+20211029 Merged pull request #51 made by Vidalia.
+20211029 Ran codechecker.php.
+20211029 HotQuestion_758 - According to codechececker.php underscores in functions need
+    to be removed. Removed as indicated by codechecker.
+20211029 HotQuestion_759 - Line 35: Function print_error() has been deprecated; in
+    index.php. Switched to using the much simpler code as used in assign/index.php.
+    $course = $DB-&gt;get_record('course', array('id' =&gt; $cm-&gt;course), '*',
+    MUST_EXIST);
+20211102 HotQuestion_761 - Line 214: Function print_error() has been deprecated;
+    in renderer.php. Switched to using the throw new moodle_exception(). Also had
+    add new language string for incorrectmodule.
+20211102 HotQuestion_762 - Line 43: Function print_error() has been deprecated;
+    in view.php. Switched to using the throw new moodle_exception().
+20211102 HotQuestion_763 - Line 46: Function print_error() has been deprecated;
+    in view.php. Switched to using the much simpler code as used in assign/index.php.
+    $course = $DB-&gt;get_record('course', array('id' =&gt; $cm-&gt;course), '*',
+    MUST_EXIST);
+20211103 HotQuestion_764 - Line 61: Function print_error() has been deprecated;
+    in view.php. Switched to using the throw new moodle_exception(). Already
+    have the needed language string.
+20211103 HotQuestion_765 - Line 65: Function print_error() has been deprecated;
+    in view.php. Switched to using the throw new moodle_exception(). Already
+    have the needed language string.
+20211103 HotQuestion_766 - Line 69: Function print_error() has been deprecated;
+    in view.php. Switched to using the throw new moodle_exception(). Already
+    have the needed language string.
+20211104 HotQuestion_487 - Need to implement Comments. Finally got this working
+    by deleting module.js and all references to it in view.php.
+20211219 HotQuestion_790 - Would be nice to have, View all Hot Questions link on
+    view.php page. Added code for an href link to view.php file about line 290.
+    Also had to add one new string, viewallhotquestions. 
+20220225 Merged pull request #52 made by ehsan42. Entered info into another
+    behat ticket,  HotQuestion_486 - Need to update Behat tests for new remove
+    confirmation.
+20220301 HotQuestion_827 - Need to implement Activity Completion for View. Made
+    changes and code addition as needed to lib.php, view.php, and renderer.php.
+    See the ticket for details.
+20220321 HotQuestion_834 - Need new hotquestion_supports($feature) for Moodle 4.0.
+    Created two versions of the switch ($feature), and added a branch check to
+    control which is used. The first switch includes the needed new feature,
+    while the second, does not.
+20220410 HotQuestion_841 - The file module.js is no longer needed so it and
+    all references to it need removal. Removed the file and all references to it.
+20220410 Ran codechecker.php. 
+
+
+=== 4.0.1 === 2021100100 For Moodle 2.8 thru Moodle 3.11
+20210516 HotQuestion_695v - Invalid get_string() identifier: 'hotquestion:rate'.
+    Added the missing string.
+20210516 HotQuestion_723v - Invalid get_string() identifier: 'hotquestion:comment'.
+    Added the missing string.
+20210823 HotQuestion_751v - user_picture::fields() is deprecated. Please use the
+    \core_user\fields API instead. For compatibility, added an if check to use the new
+    code for Moodle > 3.0 the old code for 3.0 and below.
+20211001 HotQuestion_752v - need to format_text of the submit directions. Changed the
+    code to include format_text, in mod_form.php down around line 236.
+
+=== 4.0.0 === 2021032300 For Moodle 2.8 thru Moodle 3.11
+20210321 HotQuestion_561 See about using editor text area to allow for formatting
+    and emoji's. Got it working in just a couple of hours, mostly looking for the
+    best place to add the code. Does not support audio and video recording. Will do
+    that, hopefully, in a later release.
+20231201 Late entry. There were three missnamed /classes/event files, each starting
+    with 'xxx...' that were dropped in this release. This relates to issue #47 at
+    github.
+
+=== 3.9.2 ===
+20210215 HotQuestion_669, Need round indicator between the round nav icons. Completed
+    development. Completed further testing and cleanup. Added string, xofn = " of ". Code
+    in locallib.php and render.php.
+
+=== 3.9.1 ===
+20201217 HotQuestion_661, Github issue 45 feature request - hide student names.
+    implemented new setting for this. Actual code is in renderer.php.
+
+=== 3.9.0 ===
+05/25/2020 Starting development for HotQuestion_410, New mode request to limit
+    number of votes per round.
+05/25/2020 HotQuestion_410, New mode request to limit number of votes per round,
+    added code for site settings, activity settings, and modified install.xml.
+05/26/2020 HotQuestion_491, Need to add missing fields to backup_hotquestion_stepslib.php,
+    Added missing fields.
+05/26/2020 HotQuestion_491, Need to verify backup includes all information, and a
+    restore seems to include everything as expected.
+05/28/2020 HotQuestion_410, New mode request to limit number of votes per round, is
+    ready for testing.
+05/29/2020 HotQuestion_410, New mode request to limit number of votes per round, fixed
+    sql that was allowing to count ALL votes instead of just current round votes.
+06/08/2020 Started work on HotQuestion_496, HotQuestion - Need a Remove my vote capability.
+    Added language string, $string['removevote'] = 'Remove my vote';
+    Added code in render.php to show the remove icon for any question for
+    which the user has voted.
+    Added public function remove_vote($question) in locallib.php.
+    Added trigger event for remove vote.
+    Added classes/event/remove_vote.php file for log.
+    Added eventremovevote string
+    Votes can be removed and the event is logged.
+06/08/2020 HotQuestion_496, HotQuestion - Need a Remove my vote capability is being tested.
+
+=== 3.8.2 ===
+05/22/2020 Started dev on v 3.8.2 and began moving tickets from User Support
+Tracker into Hot Question Support Tracker.
+05/22/2020 Published all of the following tickets to Hot Question github.
+    HotQuestion_476 $this->instance->id should NOT be concatenated directly to SQL.
+    HotQuestion_405 Need to remove this instance id in heading row, column L.
+    HotQuestion_403 CSV download headings Hotquestion, Questions and Content are incorrect.
+    HotQuestion_401 Teacher/Manager download needs to use new column labels.
+    HotQuestion_400 Approved column heading on view.php should be an activity setting.
+    HotQuestion_399 Remove column heading on view.php should be an activity setting.
+    HotQuestion_398 Heat column heading on view.php should be an activity setting.
+    HotQuestion_397 Priority column heading on view.php should be an activity setting.
+    HotQuestion_396 Questions column heading on view.php should be an activity setting.
+05/22/2020 Converted TRK1_219 to HotQuestion_477, locallib.php need SQL fixes.
+05/22/2020 Converted TRK1_283 to HotQuestion_478, Need to add more info to events.
+05/22/2020 Converted TRK1_359 to HotQuestion_479, need to move locallib.php
+    functions to .../classes/...
+05/22/2020 Converted TRK1_383 to HotQuestion_480, Round does no seem to be
+    in csv download.
+05/22/2020 Converted TRK1_28 to HotQuestion_481, module.js errors and warnings
+    need to be fixed.
+05/22/2020 Converted TRK1_227 to HotQuestion_482, Need Who Voted toolbutton.
+05/22/2020 Converted TRK1_226 to HotQuestion_483, Investigate making old round
+    the current round.
+05/22/2020 Converted TRK1_128 to HotQuestion_484, Need to update GDPR Code.
+05/22/2020 Converted TRK1_142 to HotQuestion_485, Activity heading does not
+    include help.
+05/22/2020 Converted TRK1_136 to HotQuestion_486, Need to update Behat tests
+    for new remove confirmation
+05/22/2020 Converted TRK1_104 to HotQuestion_487, Need to implement Comments.
+05/22/2020 Converted TRK1_83 to HotQuestion_488, Need Groups and Priority
+    added to Behat Tests.
+05/22/2020 Converted TRK1_82 to HotQuestion_489, Need Behat Tests for Approval Testing.
+05/25/2020 HotQuestion_402, Admin download needs to use appropriate column labels,
+    changed to resolved.
+05/25/2020 HotQuestion_477, locallib.php need SQL fixes, changed to resolved. 
+05/25/2020 HotQuestion_401, Teacher/Manager download needs to use new column labels,
+    changed to resolved. 
+05/25/2020 HotQuestion_476, $this->instance->id should NOT be concatenated directly
+    to SQL, changed to resolved. 
+05/25/2020 HotQuestion_400, Approved column heading on view.php should be an
+    activity setting, changed to resolved. 
+05/25/2020 HotQuestion_399, Remove column heading on view.php should be an
+    activity setting, changed to resolved.
+05/25/2020 HotQuestion_398, Heat column heading on view.php should be an
+    activity setting, changed to resolved.
+05/25/2020 HotQuestion_397, Priority column heading on view.php should be an
+    activity setting, changed to resolved.
+05/25/2020 HotQuestion_396, Questions column heading on view.php should be an
+    activity setting, changed to resolved.
+05/25/2020 HotQuestion_403, CSV download headings Hotquestion, Questions and
+    Content are incorrect, changed to resolved.
+05/25/2020 HotQuestion_405, Need to remove this instance id in heading row,
+    column L, changed to resolved.
+
+=== 3.8.1 ===
+04/30/2020 Got an email regarding issue #39 on github for Hot Question.
+04/30/2020 Finished TRK1_384, Hot Question - Need to eliminate 3 occurrences
+of $_GET, all three are in locallib.php.
+05/02/2020 Finished TRK1_386, Hot Question - variables $hotquestion->id,
+$gid->id and $USER->id are concatenated directly to SQL, and pushed to github.
+05/03/2020 Finished TRK1_385, Hot Question - $this->instance->id should NOT be
+concatenated directly to SQL, and started testing nr HQ RC.
+05/03/2020 Finished TRK1_387, Hot Question - variable $hotquestionid is
+concatenated directly to SQL, and pushed to github.
+05/03/2020 Finished TRK1_390, Hot Question - Index.php, should add hidden
+label to hidden HQ's that adds a slashed eye in the list generated by 
+index.php, when the HQ activity is hidden from students or regular users.
+05/03/2020 Finished TRK1_389, Hot Question - index.php does not show Topic Name
+for topic zero. Old code was skipping name of topic zero. New code shows it.
+05/04/2020 Ran codehecker and phpchecker and fixed as needed. Pushed to github.
+05/11/2020 Added database fields to allow changing the column headings
+used on the view.php page.
+05/11/2020 Made needed changes to the settings.php and language strings
+the new column heading settings.
+05/12/2020 Made changes to mod_form.php, settings.php, hotquestion.php, and
+renderer.php to complete code changes needed for allowing each Hot Question
+activity to have column headings that more closely reflect what the activity
+is being used for. e.g. The regular, Questions, column on view.php, is more
+meaningful if it is changed to, Suggestions, when HQ is being used as
+a suggestion box.
+05/12/2020 TRKR_HQ_401 Modified code in locallib.php for the
+function download_questions to fix column heading errors for teachers.
+05/12/2020 TRKR_HQ_402, TRKR_HQ_403 Modified code in locallib.php for the
+function download_questions to fix column heading errors and to use the new
+headings elsewhere.
+
+
+
+TODO add settings to mod_form.php
+
+=== 3.8.0 ===
+11/21/19 Made changes in locallib.php to fix linelength error in two functions 
+Changed line 317 of function get_questions() - tested - still works.
+Changed line 395 of function remove_round() - tested - still works.
+11/21/19 In file upgrade.txt, I changed all the "\r\n" to just "\n" using replace all,
+without any apparent problems. I also made a bunch of line length changes due to
+codechecker recommendations. Made multiple entries to make sure I did not break something.
+11/22/19 Added settings for Teacher Priority visibility and for Heat visibility. This
+required some new language strings, two new fields in the mdl_hotquestion table,
+and multiple lines of new code in renderer.php. It also required changes in the
+install.xml file, the upgrade.php file, and the backup_hotquestion_stepslib.php file.
+11/23/19 Added the two new settings to the settings.php file. Ran codechecker and
+did code cleanup as needed.
+The final change was to bump the version to 3.8.0 and push to github.
+
+=== 3.7.0 ===
+10/31/19 Rewrote event code for the Hot Question index.php file.
+10/31/19 Rewrote event code for the Hot Question view.php file.
+10/31/19 Bumped version to 3.7.0.
+11/07/19 Pushed change to settings.php file. Wording error.
+11/07/19 Modified event code for update_vote and add_question in the
+locallib.php file, and pushed to github.
+11/09/19 Checked and modified as nescessary other event codes in the
+locallib.php file, and pushed the changes to github.
+
+=== 3.6.1 ===
+10/18/19 Added pull request from Vidalia to fix invalid GROUP BY issue
+with MSSQL/sqlsrv databases #37
+10/18/19 Pushed to github.
+
+=== 3.6.0 ===
+05/28/19 Removed duplicate blank line in lib.php.
+06/24/19 Accepted pull request, from lucaboesch, that added a new string for a
+link to, More Help info about Hot Question. Link is visible when adding a new
+Hot Question activity. The help is not available for M28, M29, and M30. The
+More help starts showing up in Moodle 3.1.
+06/24/19 Fix comment error in locallib.php line 333.
+06/24/19 Added code for "Confirm you want to start a new round?" in renderer.php.
+06/24/19 Pushed everything to github and released version 3.6.0.
+
+=== 3.5.3+ ===
+02/11/19 Released 3.5.3 with a couple of the wrong files so made + release.
+02/15/19 Discovered that the $mootyper->id was not being set at the correct
+point in the code which caused debug error when creating a new HotQuestion
+activity in a course. Created fix based off fixing the same problem in
+the code for MooTyper.
+02/16/19 Pushed changes to github and released another 3.5.3+ version.
+
+=== 3.5.3 ===
+02/08/19 Added code for "Confirm you want to delete this entry" in renderer.php.
+02/08/19 Added code for "Confirm you want to delete this round" in renderer.php.
+02/11/19 Pushed everything to github and released version 3.5.3.
+
+
+=== 3.5.2 ===
+06/25/18 Added code to turn on Automatic View activity completion.
+10/07/18 Removed whitespace in provider.php.
+10/07/18 Added phpdoc for parameter array $subcontext in line 214 provider.php.
+10/07/18 Replaced arguments.caller with whoCalled.caller in five places in module.js.
+10/10/18 Got emails regarding two issues when using PostgreSQL. Got a temporary
+fix for the quotes, concat, and timestamp issues. Will still need dev work for a
+release version. The other, language string issue, took about four hours just to
+find where the "Post" button and string was invoked at line 100 in mod_form.php.
+During the search for the string, I have discovered that I probably do NOT
+need the module.js file at all! 
+Also added Teacher Priority to question download CSV file.
+Also changed renderer.php to use pix_url or image_url as needed.
+11/18/18 Tower 1, Pi-6, 10.0.6.236/moodle33dev has my changes for now.
+11/23/18 Moodlexx is 3.4.5+ and the HQ on it is 3.5.1, but I have updated
+the behat tests on it for the change from "Post" to "Click to post" on the button.
+11/24/18 Pushed PostgreSQL fix and changed behat tests to github.
+11/27/18 Pushed latest SQL fixes to work with PostgreSQL and MariaDB/MySQL.
+Updated README.md file and pushed it. Added width and height styles to
+the thumbs up/down for tpriority and the thumbs up for heat so they
+appear normal 16x16 size in Moodle 3.6.
+11/28/18 Had to revise 5 Behat tests to make them work in Moodle 3.6. and
+other Moodle versions. Pushed to Github.
+11/28/18 Made test release version 3.5.2.
+
+
+=== 3.5.1 ===
+06/04/18 Fixed GDPR provider.php polyfill error.
+06/04/18 Pushed changes to github.
+06/04/18 Released version 3.5.1 with GDPR.
+
+=== 3.5.0 ===
+04/16/18 Began development of GDPR code for Hot Question
+05/01/18 Have GDPR for HQ giving results for questions. Now need to add votes.
+05/02/18 Added new strings needed for, Plugin privacy registry, listing.
+05/03/18 Modified $SQL in privacy.php.
+05/04/18 Reorganized and changed wording of new strings for Plugin privacy registry.
+05/24/18 Accidently deleted all GDPR changes and had to start over.
+05/25/18 Added back strings and got GDPR for questions data export working.
+05/26/18 Added code for votes data export.
+05/26/18 Added code for user data delete.
+05/26/18 Pushed changes to github.
+05/27/18 Code style cleanup and push to github.
+05/27/18 Changed export_user_data so data is separated into data.json,
+questions.json, and votes.json.
+05/27/18 Released version 3.5.0.
+
+=== 3.4.1 ===
+05/16/18 Changed, return YAHOO.lang.trim(question); in module.js line 99
+so it is now just, return trim(question); and it seems to work okay.
+Actually, does not seem to be needed. Just, return (question); seems fine.
+
+=== 3.4.0 ===
+12/16/17 Added code to check Moodle version then use correct code to get the
+correct picture for vote, remove, and approve.
+12/29/17 Got priority to work.
+12/31/17 Got groups to work.
+12/31/17 Checked on Moodle 2.8 and 2.9.
+01/01/18 Completed code cleanup.
+01/01/18 Created 3.4.0 for release.
+01/06/18 Last minute fixes for 3.4.0 release.
+
+
+=== 3.3.2 ===
+12/24/17 Added approval field to mdl-hotquestion table.
+12/24/17 Added approval setting to mod_form.php.
+12/24/17 Added approval and approvalhelp strings.
+12/24/17 Added approval field to backup_hotquestion_stepslib.php.
+Added case for approval to view.php.
+Added public function for approval in locallib.php. - still needs work.
+Added steps in render to add approval column.
+Modified render.php, locallib.php, and language file as needed to finish approval.
+12/25/17 Have individual question approval toggle working as of today.
+12/25/17 Released version 3.3.2.
+
+=== 3.3.1 ==
+10/26/17 Published new version for early bird Moodle 3.4.
+
+=== 3.3.0 ===
+6/28/17 Fixed a few code style errors in module.js.
+6/28/17 Fixed deprecated use of pix_url and changed them to image_url.
+6/28/17 Pushed new version to github.
+
+=== 3.2.2 ===
+6/25/17 Rewrote Export to csv code becasue of MS Excel bug when first record is "ID".
+6/26/17 Rewrote most of the Behat tests to add code that checks log entries. All pass,
+but the two download ones glitch once in a while. Probably need a wait, somewhere.
+6/26/17 Double checked and fixed as needed code style and php documentation.
+
+=== 3.2.1 ===
+5/14/17 Fixed additional code style and documentation that were missed during rush to publish 3.2.0.
+5/14/17 Moved Remove question log event to be fore the code doing the removal so the log entry was actually being made.
+5/15/17 Moved code for Remove question log event trigger from view.php to the remove_question
+function in locallib.php so that it works like the event for remove_round.
+
+5/15/17 Currently working on "Are you sure" code for Remove Question and Remove Round. deferred
+
+
+=== 3.2.0 ===
+5/3/17 Fixed error in backup. Line 54 of backup_hotquestion_stepslib.php was missing the new submitdirections field.
+5/4/17 Fixed missing spaces in sytles.css, lines 12, 17, and 22.
+5/4/17 Added missing semi colons in module.js, lines 39, 58, 64, 80, 85, 95, and 132.
+5/4/17 Removed whitespace at end of line 26 and 28 in backup_hotquestion_activity_task.class.php.
+5/4/17 Removed whitespace at end of line 26 in restore_hotquestion_stepslib.php.
+=== 3.1.1 ===
+2/11/17 Added Help button to Submit your question here: setting on edit page of the activity.
+4/27/17 Code doc cleanup lib.php, starting at line 358, switch/case, to get rid of warnings and errors.
+4/27/17 Code doc cleanup settings.php line 20&21 combined to correct verson line 20.
+4/27/17 Code doc cleanup renderer.php.
+4/27/17 Code style cleanup localib.php.
+4/27/17 Code style cleanup mod_form.php.
+4/27/17 Code doc and style cleanup upgrade.php.
+4/28/17 Code style cleanup add_round.php, remove_question.php and remove_round.php.
+4/30/17 Code style cleanup .../backup/moodle2/backup_hotquestion_activity_task.class.php.
+4/30/17 Code style cleanup .../backup/moodle2/backup_hotquestion_settingslib.php.
+4/30/17 Code style cleanup .../backup/moodle2/backup_hotquestion_stepslib.php.
+4/30/17 Code style cleanup .../backup/moodle2/restore_hotquestion_stepslib.php.
+4/30/17 Code style cleanup .../db/upgrade.php.
+4/30/17 Code style cleanup ...renderer.php
+4/30/17 Code style cleanup ...module.js
+4/30/17 Code doc cleanup ...renderer.php
+5/2/17 Code doc cleanup all the files in ...mod/hotquestion
+5/2/17 Code doc cleanup all the files in ...mod/hotquestion/classes
+5/2/17 Code doc cleanup all the files in ...mod/hotquestion/db
+5/3/17 Code doc cleanup all the files in ...mod/hotquestion/backup/Moodle2/
+
+=== 3.1.0 ===
+10/1/16 Added checkbox to the modedit.php page so that, "Display description on course page" is available.
+10/2/16 Added availability dates for Open time and Close time, which also added a number of new language strings.
+10/3/16 Updated the upgrade.php file to add timeopen and timeclose fields.
+10/4/16 Added code for a config setting for changing, "Submit your question here:" to whatever
+admin wants it to be for the whole site.
+10/5/16 Added code to include activity title when viewing the activity.
+10/5/16 Added code to allow teachers to change, "Submit your question here:" to whatever the
+teacher wants when creating a Hot Question activity, and it is now working.
+10/6/16 Added new alternate version of the activity icon (alticon.svg) provided by Kathrin84.
+To use it, remove icon.svg and change the name of alticon.svg to icon.svg. Clear cache to see the new icon.
+
+=== 3.0.3 ===
+04/15/16 Added "Participation in current round" column to the index.php list of Hot Question
+activities. For each HQ Activity it reports "X user(s) posted Y question(s)." in the new column.
+04/16/16 Bug fix. Added code to the remove_round function so that no matter which round you delete, you
+will always have an open round to add to. Before, if you deleted the current round, and typed in a question
+without starting a new round, it would just get lost.
+
+=== 3.0.2 ===
+3.0.2 (Build: 2016040100) (2016040100)Moodle 2.9, 3.0
+Release date: Saturday, 2 April 2016, 1:27 PM
+
+04/01/16 Converted both parts of the csv filename constant text to strings
+and modified code to use them.
+04/01/16 Added case handler, toolbutton, and renderer for remove_round capability.
+04/01/16 Pushed alpha code to master branch for remove_round. Just goes through
+the needed steps and works, except for the actual removal of data.
+04/02/16 Completed coding for remove_round along with adding new language strings,
+events, and triggers.
+Added details about new capabilities to READEME.md file
+04/02/16 Released MOODLE_302_STABLE branch.
+
+=== 3.0.1 ===
+3.0.1 (Build: 2016033000) (2016033000)Moodle 2.9, 3.0
+Release date: Thursday, March 31, 2016, 12:15 AM
+
+03/25/16 Added download button to the toolbar for Export to .csv file. Not working yet, though.
+03/26/16 Add a remove column to the renderer.php page that shows when viewing via view.php page.
+Does NOT show for students.
+03/26/16 Added action = remove, to the view.php page. Uses a X icon right now. 
+03/26/16 Removing a question also removes any/all votes for it.
+03/26/16 Added event and trigger for logging the removal of a question and it's votes.
+03/28/16 Added question download - currently downloads all questions.
+03/29/16 Modified question download - admin downloads all - teacher and manager downloads the
+current HQ activity.
+03/29/16 Added trigger and log event for downloading questions.
+03/29/16 Added details about new capabilities to READEME.md file.
+
+=== 3.0 ==
+3.0 (Build: 2016032500) (2016032500)Moodle 2.9, 3.0
+Release date: Friday, 25 March 2016, 10:36 AM
+
+=== 2.9 ===
+2.9 (Build: 2016032400) (2016032400)Moodle 2.9
+Release date: Thursday, 24 March 2016, 3:41 PM
+
+03/24/16 Changed mod_form.php to use $this->standard_intro_elements(); when adding the text
+editor and text area.
+
+=== 2.8 ===
+2.8 (Build: 2016032300) (2016032300)Moodle 2.7, 2.8
+Release date: Wednesday, 23 March 2016, 12:37 PM
+
+03/23/16 Deleted README.txt and added it's content to README.md
+03/23/16 Added redirect in view.php, about line 136, to reliably refresh page view for new round.
+
+=== 2.7 ===
+2.7 (Build: 2016031600) (2016031600)Moodle 2.7
+Release date: Wednesday, 16 March 2016, 3:32 PM
+
+03/16/16 Changed version and build numbers.
+03/16/16 Changed some permissions for manager and nonediting teacher.
+03/16/16 Updated version.php to use $plugin instead of $module.
+03/16/16 Added $plugin->component = 'mod_hotquestion';
+Fixed multiple occurances of Creating default object from empty value.
+
+=== 2.0 ===
+2.0 (20111022) (2011102200)Moodle 2.0, 2.1
+Release date: Friday, 21 October 2011, 9:22 PM

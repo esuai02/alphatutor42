@@ -1,0 +1,147 @@
+<div class='goodhabits-container {{extra_classes}}' id='goodhabits-container'>
+
+    <div class='calendar' data-period-duration='{{calendar.periodduration}}'>
+        <div class='dates'>
+            <div class='year'>{{calendar.year}}</div>
+            <div class='arrow-left-container'>
+                <div class='arrow-left'>
+                    <a href='{{{calendar.backurl}}}'>
+                        <span class='link-spanner'></span>
+                    </a>
+                </div>
+                <div class='arrow-left arrow-left-small-screen'>
+                    <a href='{{{calendar.backurl_small_screen}}}'>
+                        <span class='link-spanner'></span>
+                    </a>
+                </div>
+            </div>
+            {{#calendar.flexi_cal_units}}
+                <div data-text="{{top_line}} {{bottom_line}}" class="time-unit {{class}}">
+                    {{#month}}
+                        <div class="month">{{month}}</div>
+                    {{/month}}
+                    <div class="top-line">
+                        {{top_line}}
+                    </div>
+                    <div class="bottom-line">
+                        {{bottom_line}}
+                    </div>
+                    <div class="tuo-options">
+                        {{#all_complete}}
+                            <p class="all-complete">{{#str}} all_complete, mod_goodhabits {{/str}}</p>
+                        {{/all_complete}}
+                        {{^all_complete}}
+                            <p>
+                                <a href="{{{answer_questions_url}}}" >
+                                    {{#str}} answer_questions, mod_goodhabits {{/str}}
+                                </a>
+                            </p>
+                            <p>
+                                <a href="{{{skip_url}}}" >
+                                    {{#str}} skip, mod_goodhabits {{/str}}
+                                </a>
+                            </p>
+                        {{/all_complete}}
+                    </div>
+                </div>
+            {{/calendar.flexi_cal_units}}
+
+            {{#calendar.forwardurl}}
+            <div class='arrow-right-container'>
+                <div class='arrow-right'>
+                    <a href='{{{calendar.forwardurl}}}'>
+                        <span class='link-spanner'></span>
+                    </a>
+                </div>
+                <div class='arrow-right arrow-right-small-screen'>
+                    <a href='{{{calendar.forwardurl_small_screen}}}'>
+                        <span class='link-spanner'></span>
+                    </a>
+                </div>
+            </div>
+           {{/calendar.forwardurl}}
+        </div>
+    </div>
+
+    <div class="clear-both"></div>
+
+    <div class="habits">
+        {{#habits}}
+            <div class='habit habit-{{id}}'>
+                <div title="{{title_text}}" class="streak {{can_manage_class}} {{activity_class}}"
+                     data-habit-id="{{id}}" data-is-global="{{is_activity_level}}">
+                    <div class="streak-habit-name">{{{habit_name}}}</div>
+                    <div class="streak-close-option close-btn">X</div>
+                    {{#has_first_entry}}
+                        <div class="streak-first-line">
+                            {{#str}} first_entry, mod_goodhabits {{/str}}: <a href="{{{first_entry_url}}}">{{{first_entry_display}}}</a>
+                        </div>
+                        <div class="streak-second-line">
+                            {{#str}} average_eff_out, mod_goodhabits {{/str}}: <span class="checkmark x-val-{{effort_avg_rounded}} y-val-{{outcome_avg_rounded}}">
+                                {{effort_avg}} / {{outcome_avg}}
+                            </span>
+                        </div>
+                        <div class="streak-historical_data">
+                            <a href="{{{historical_data_url}}}">{{#str}} historical_data, mod_goodhabits {{/str}}</a>
+                        </div>
+                    {{/has_first_entry}}
+                    {{^has_first_entry}}
+                        <div class="no-entries">
+                            {{#str}} no_entries, mod_goodhabits {{/str}}
+                        </div>
+                    {{/has_first_entry}}
+                </div>
+                    <div class="title">
+                        <div class="habit-name">{{{habit_name}}}</div>
+                        <div class="description">{{{habit_desc}}}</div>
+                    </div>
+                    <div class="time-line">
+                        <div class='{{checkmarks.class}}' data-id='{{id}}'>
+                            {{#checkmarks.units}}
+
+                                    {{#is_filled}}
+                                        <div class="{{class}} " data-timestamp="{{timestamp}}"
+                                             data-x="{{x}}" data-y="{{y}}">
+                                            <span class="x-val">{{x}}</span>
+                                            <span class="xy-separator">/</span>
+                                            <span class="y-val">{{y}}</span>
+                                        </div>
+                                    {{/is_filled}}
+                                    {{^is_filled}}
+                                        <div class="{{class}}" data-timestamp="{{timestamp}}">
+                                            <div class="empty-day">  </div>
+                                        </div>
+                                    {{/is_filled}}
+
+
+                            {{/checkmarks.units}}
+                        </div>
+                        <div class="clear-both"></div>
+                    </div>
+
+
+                <div class="clear-both"></div>
+            </div>
+            <div class="habit-grid-container habit-grid-container-{{id}}"></div>
+        {{/habits}}
+    </div>
+
+    {{#help.show_help}}
+        <div class="help-section">
+            {{#help.get_started}}
+                <div class="answer-qs">
+                    {{{help.get_started}}}
+                </div>
+            {{/help.get_started}}
+            {{#help.answer_latest}}
+                <div class="answer-qs">
+                    {{{help.answer_latest}}}
+                </div>
+            {{/help.answer_latest}}
+            {{#help.did_you_know}}
+                {{{help.did_you_know}}}
+            {{/help.did_you_know}}
+        </div>
+    {{/help.show_help}}
+
+</div><br /><br />

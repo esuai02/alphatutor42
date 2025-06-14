@@ -1,0 +1,667 @@
+/*
+ * @package    Talent Grid jQuery plugin.
+ * @copyright  2017 Joseph Cape (http://chacana.co.uk)
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+.path-mod-goodhabits .talentgrid-report-container .cell-with-smiley,
+.path-mod-goodhabits .talentgrid-report-container .cell-with-multiple-smileys {
+    cursor: pointer;
+}
+
+.path-mod-goodhabits .clearboth {
+    clear: both;
+}
+.path-mod-goodhabits .talentgrid-userlist-container {
+    float: left;
+    margin-top: 30px;
+}
+
+.path-mod-goodhabits ul.talentgrid-userlist li {
+    cursor: pointer;
+}
+
+.path-mod-goodhabits ul.talentgrid-userlist {
+    width: 200px;
+    height: 338px;
+    overflow-y: scroll;
+}
+
+.path-mod-goodhabits .table-plus-axis.report {
+    width: 338px;
+    float: left;
+}
+
+.path-mod-goodhabits .table-plus-axis {
+    margin-top: 40px;
+    width: 338px;
+}
+
+.path-mod-goodhabits div.table-plus-axis.centre-el {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.path-mod-goodhabits .mform fieldset#id_question div {
+    margin: 0;
+    padding: 0;
+}
+.path-mod-goodhabits .talentgrid-token {
+    cursor: pointer;
+    z-index: 1;
+}
+
+.path-mod-goodhabits .table-plus-axis {
+    position: relative;
+    margin-left: 50px;
+    margin-bottom: 50px;
+}
+
+.path-mod-goodhabits .talentgrid-y-axis {
+    position: absolute;
+    left: -40px;
+    top: 144px;
+}
+
+.path-mod-goodhabits .talentgrid-y-axis.large-label,
+.path-mod-goodhabits .talentgrid-x-axis.large-label {
+    font-size: 22px;
+}
+.path-mod-goodhabits .talentgrid-y-axis.large-label.small-labels-also-used {
+    left: -120px;
+}
+
+.path-mod-goodhabits .talentgrid-y-axis.large-label.only-large {
+    left: -100px;
+}
+
+.path-mod-goodhabits .talentgrid-x-axis.large-label {
+    bottom: -100px;
+}
+
+.path-mod-goodhabits .talentgrid-x-axis.large-label.only-large {
+    bottom: -60px;
+}
+
+.path-mod-goodhabits .y-sub-label {
+    position: absolute;
+}
+
+
+.path-mod-goodhabits .x-sub-label {
+    position: absolute;
+}
+
+.path-mod-goodhabits .talentgrid-x-axis {
+    position: absolute;
+    bottom: -20px;
+    left: 0;
+}
+
+.path-mod-goodhabits .rotated-text {
+    -webkit-transform: rotate(-90deg);
+    -moz-transform: rotate(-90deg);
+    -ms-transform: rotate(-90deg);
+    -o-transform: rotate(-90deg);
+    transform: rotate(-90deg);
+
+    /* also accepts left, right, top, bottom coordinates; not required, but a good idea for styling */
+    -webkit-transform-origin: 50% 50%;
+    -moz-transform-origin: 50% 50%;
+    -ms-transform-origin: 50% 50%;
+    -o-transform-origin: 50% 50%;
+    transform-origin: 50% 50%;
+
+    /* Should be unset in IE9+ I think. */
+    filter: progid:dximagetransform.microsoft.basicimage(rotation=3);
+}
+
+
+.path-mod-goodhabits .talentgrid-cell {
+    border: solid #d0d0d0 1px;
+    table-layout: fixed;
+
+    margin: 0;
+    padding: 0;
+}
+
+.path-mod-goodhabits .talentgrid-cell.cell-with-smiley {
+    height: 32px;
+}
+
+.path-mod-goodhabits .talentgrid-cell.emboldened {
+    border-left: solid black 3px;
+}
+
+.path-mod-goodhabits .talentgrid-cell.final {
+    border-right: solid black 3px;
+}
+
+.path-mod-goodhabits .talentgrid-row.final,
+.path-mod-goodhabits .talentgrid-row.final td {
+    border-bottom: solid black 3px;
+}
+
+.path-mod-goodhabits .talentgrid-row.emboldened,
+.path-mod-goodhabits .talentgrid-row.emboldened td {
+    border-top: solid black 3px;
+}
+
+.path-mod-goodhabits .talentgrid-table {
+    height: 288px;
+    width: 288px;
+    max-width: 100%;
+    background-color: transparent;
+    border-collapse: collapse;
+    border-spacing: 0;
+
+}
+
+.path-mod-goodhabits .talentgrid-image {
+    vertical-align: middle;
+    border: 0;
+}
+
+.path-mod-goodhabits td.ui-draggable {
+    background-clip: padding-box;
+}
+
+.path-mod-goodhabits .table-plus-axis {
+    float: left;
+    margin-left: 25px;
+    margin-top: 25px;
+}
+
+.path-mod-goodhabits .talentgrid-controls {
+    float: left;
+    margin-top: 160px;
+}
+
+.path-mod-goodhabits .talentgrid {
+    margin-left: 100px;
+}
+
+.path-mod-goodhabits .talentgrid-select-controls {
+    margin-top: 20px;
+}
+
+.path-mod-goodhabits .axis-selector-label {
+    margin-left: 5px;
+}
+
+.path-mod-goodhabits .drag-instructions-arrow {
+    font-size: 30px;
+    margin-right: 10px;
+}
+
+.path-mod-goodhabits .drag-instructions {
+    margin-left: 10px;
+}
+
+.path-mod-goodhabits .talentgrid-select-controls select {
+    margin-left: 3px;
+    margin-right: 3px;
+}
+
+.path-mod-goodhabits table.band-table {
+    position: absolute;
+    left: 0;
+    right: 0;
+    /*border: solid black 3px;*/
+    z-index: 1;
+}
+
+.path-mod-goodhabits table.band-table td {
+    opacity: 0;
+}
+
+.path-mod-goodhabits * {
+    font-size: 100%;
+    font-family: Arial;
+}
+
+.path-mod-goodhabits .x-val-1.y-val-9,
+.path-mod-goodhabits .x-val-2.y-val-9,
+.path-mod-goodhabits .x-val-2.y-val-8,
+.path-mod-goodhabits .x-val-3.y-val-8 {
+    background-color: #ffe879;
+}
+
+.path-mod-goodhabits .x-val-1.y-val-8,
+.path-mod-goodhabits .x-val-1.y-val-7,
+.path-mod-goodhabits .x-val-1.y-val-6,
+.path-mod-goodhabits .x-val-2.y-val-7 {
+    background-color: #fff1b0;
+}
+
+.path-mod-goodhabits .x-val-1.y-val-5,
+.path-mod-goodhabits .x-val-1.y-val-4,
+.path-mod-goodhabits .x-val-1.y-val-3,
+.path-mod-goodhabits .x-val-2.y-val-6,
+.path-mod-goodhabits .x-val-2.y-val-5,
+.path-mod-goodhabits .x-val-2.y-val-4,
+.path-mod-goodhabits .x-val-3.y-val-6,
+.path-mod-goodhabits .x-val-3.y-val-5 {
+    background-color: #fbfe92;
+}
+
+.path-mod-goodhabits .x-val-3.y-val-7,
+.path-mod-goodhabits .x-val-4.y-val-8,
+.path-mod-goodhabits .x-val-4.y-val-7,
+.path-mod-goodhabits .x-val-4.y-val-6,
+.path-mod-goodhabits .x-val-5.y-val-7 {
+    background-color: #fafe5f;
+}
+
+.path-mod-goodhabits .x-val-3.y-val-9,
+.path-mod-goodhabits .x-val-4.y-val-9 {
+    background-color: #f9cd00;
+}
+
+.path-mod-goodhabits .x-val-5.y-val-9,
+.path-mod-goodhabits .x-val-5.y-val-8,
+.path-mod-goodhabits .x-val-6.y-val-9,
+.path-mod-goodhabits .x-val-6.y-val-8,
+.path-mod-goodhabits .x-val-7.y-val-9 {
+    background-color: #f7fd0f;
+}
+
+.path-mod-goodhabits .x-val-1.y-val-2,
+.path-mod-goodhabits .x-val-1.y-val-1,
+.path-mod-goodhabits .x-val-2.y-val-3,
+.path-mod-goodhabits .x-val-2.y-val-2,
+.path-mod-goodhabits .x-val-2.y-val-1,
+.path-mod-goodhabits .x-val-3.y-val-4,
+.path-mod-goodhabits .x-val-3.y-val-3,
+.path-mod-goodhabits .x-val-3.y-val-2,
+.path-mod-goodhabits .x-val-4.y-val-3 {
+    background-color: #edffd0;
+}
+
+.path-mod-goodhabits .x-val-4.y-val-5,
+.path-mod-goodhabits .x-val-4.y-val-4,
+.path-mod-goodhabits .x-val-5.y-val-6,
+.path-mod-goodhabits .x-val-5.y-val-5,
+.path-mod-goodhabits .x-val-5.y-val-4,
+.path-mod-goodhabits .x-val-6.y-val-7,
+.path-mod-goodhabits .x-val-6.y-val-6,
+.path-mod-goodhabits .x-val-6.y-val-5,
+.path-mod-goodhabits .x-val-7.y-val-6 {
+    background-color: #cbfc78;
+}
+
+.path-mod-goodhabits .x-val-7.y-val-8,
+.path-mod-goodhabits .x-val-7.y-val-7,
+.path-mod-goodhabits .x-val-8.y-val-9,
+.path-mod-goodhabits .x-val-8.y-val-8,
+.path-mod-goodhabits .x-val-8.y-val-7,
+.path-mod-goodhabits .x-val-9.y-val-9,
+.path-mod-goodhabits .x-val-9.y-val-8 {
+    background-color: #b5e61d;
+}
+
+.path-mod-goodhabits .x-val-3.y-val-1,
+.path-mod-goodhabits .x-val-4.y-val-2,
+.path-mod-goodhabits .x-val-4.y-val-1,
+.path-mod-goodhabits .x-val-5.y-val-3,
+.path-mod-goodhabits .x-val-5.y-val-2,
+.path-mod-goodhabits .x-val-5.y-val-1,
+.path-mod-goodhabits .x-val-6.y-val-2 {
+    background-color: #d8fef1;
+}
+
+.path-mod-goodhabits .x-val-6.y-val-4,
+.path-mod-goodhabits .x-val-6.y-val-3,
+.path-mod-goodhabits .x-val-7.y-val-5,
+.path-mod-goodhabits .x-val-7.y-val-4,
+.path-mod-goodhabits .x-val-7.y-val-3,
+.path-mod-goodhabits .x-val-8.y-val-4 {
+    background-color: #7cfccf;
+}
+
+.path-mod-goodhabits .x-val-8.y-val-6,
+.path-mod-goodhabits .x-val-8.y-val-5,
+.path-mod-goodhabits .x-val-9.y-val-7,
+.path-mod-goodhabits .x-val-9.y-val-6 {
+    background-color: #1cf9ab;
+}
+
+.path-mod-goodhabits .x-val-6.y-val-1,
+.path-mod-goodhabits .x-val-7.y-val-1,
+.path-mod-goodhabits .x-val-8.y-val-1,
+.path-mod-goodhabits .x-val-9.y-val-1 {
+    background-color: #cbf2fe;
+}
+
+.path-mod-goodhabits .x-val-7.y-val-2,
+.path-mod-goodhabits .x-val-8.y-val-2,
+.path-mod-goodhabits .x-val-8.y-val-3,
+.path-mod-goodhabits .x-val-9.y-val-2 {
+    background-color: #91e4fd;
+}
+
+.path-mod-goodhabits .x-val-9.y-val-5,
+.path-mod-goodhabits .x-val-9.y-val-4,
+.path-mod-goodhabits .x-val-9.y-val-3 {
+    background-color: #31cdfb;
+}
+
+/*!* Adjusting hue along the y-axis (from yellow to reddish-orange) *!*/
+/*!* Lightness decreases along the x-axis (left to right) *!*/
+
+/*!* Row 9 - Hue: 10 (Reddy-orange) *!*/
+/*.path-mod-goodhabits .x-val-1.y-val-9 { background-color: hsla(10, 100%, 90%, 1); } !* Lightest *!*/
+/*.path-mod-goodhabits .x-val-2.y-val-9 { background-color: hsla(10, 100%, 85%, 1); }*/
+/*.path-mod-goodhabits .x-val-3.y-val-9 { background-color: hsla(10, 100%, 80%, 1); }*/
+/*.path-mod-goodhabits .x-val-4.y-val-9 { background-color: hsla(10, 100%, 75%, 1); }*/
+/*.path-mod-goodhabits .x-val-5.y-val-9 { background-color: hsla(10, 100%, 70%, 1); }*/
+/*.path-mod-goodhabits .x-val-6.y-val-9 { background-color: hsla(10, 100%, 65%, 1); }*/
+/*.path-mod-goodhabits .x-val-7.y-val-9 { background-color: hsla(10, 100%, 60%, 1); }*/
+/*.path-mod-goodhabits .x-val-8.y-val-9 { background-color: hsla(10, 100%, 55%, 1); }*/
+/*.path-mod-goodhabits .x-val-9.y-val-9 { background-color: hsla(10, 100%, 50%, 1); } !* Dark reddish-orange *!*/
+
+/*!* Row 8 - Hue: 20 (Orange-red) *!*/
+/*.path-mod-goodhabits .x-val-1.y-val-8 { background-color: hsla(20, 100%, 90%, 1); }*/
+/*.path-mod-goodhabits .x-val-2.y-val-8 { background-color: hsla(20, 100%, 85%, 1); }*/
+/*.path-mod-goodhabits .x-val-3.y-val-8 { background-color: hsla(20, 100%, 80%, 1); }*/
+/*.path-mod-goodhabits .x-val-4.y-val-8 { background-color: hsla(20, 100%, 75%, 1); }*/
+/*.path-mod-goodhabits .x-val-5.y-val-8 { background-color: hsla(20, 100%, 70%, 1); }*/
+/*.path-mod-goodhabits .x-val-6.y-val-8 { background-color: hsla(20, 100%, 65%, 1); }*/
+/*.path-mod-goodhabits .x-val-7.y-val-8 { background-color: hsla(20, 100%, 60%, 1); }*/
+/*.path-mod-goodhabits .x-val-8.y-val-8 { background-color: hsla(20, 100%, 55%, 1); }*/
+/*.path-mod-goodhabits .x-val-9.y-val-8 { background-color: hsla(20, 100%, 50%, 1); } !* Dark orange-red *!*/
+
+/*!* Row 7 - Hue: 30 (Orange) *!*/
+/*.path-mod-goodhabits .x-val-1.y-val-7 { background-color: hsla(30, 100%, 90%, 1); }*/
+/*.path-mod-goodhabits .x-val-2.y-val-7 { background-color: hsla(30, 100%, 85%, 1); }*/
+/*.path-mod-goodhabits .x-val-3.y-val-7 { background-color: hsla(30, 100%, 80%, 1); }*/
+/*.path-mod-goodhabits .x-val-4.y-val-7 { background-color: hsla(30, 100%, 75%, 1); }*/
+/*.path-mod-goodhabits .x-val-5.y-val-7 { background-color: hsla(30, 100%, 70%, 1); }*/
+/*.path-mod-goodhabits .x-val-6.y-val-7 { background-color: hsla(30, 100%, 65%, 1); }*/
+/*.path-mod-goodhabits .x-val-7.y-val-7 { background-color: hsla(30, 100%, 60%, 1); }*/
+/*.path-mod-goodhabits .x-val-8.y-val-7 { background-color: hsla(30, 100%, 55%, 1); }*/
+/*.path-mod-goodhabits .x-val-9.y-val-7 { background-color: hsla(30, 100%, 50%, 1); } !* Dark orange *!*/
+
+/*!* Row 6 - Hue: 40 (Yellow-orange) *!*/
+/*.path-mod-goodhabits .x-val-1.y-val-6 { background-color: hsla(40, 100%, 90%, 1); }*/
+/*.path-mod-goodhabits .x-val-2.y-val-6 { background-color: hsla(40, 100%, 85%, 1); }*/
+/*.path-mod-goodhabits .x-val-3.y-val-6 { background-color: hsla(40, 100%, 80%, 1); }*/
+/*.path-mod-goodhabits .x-val-4.y-val-6 { background-color: hsla(40, 100%, 75%, 1); }*/
+/*.path-mod-goodhabits .x-val-5.y-val-6 { background-color: hsla(40, 100%, 70%, 1); }*/
+/*.path-mod-goodhabits .x-val-6.y-val-6 { background-color: hsla(40, 100%, 65%, 1); }*/
+/*.path-mod-goodhabits .x-val-7.y-val-6 { background-color: hsla(40, 100%, 60%, 1); }*/
+/*.path-mod-goodhabits .x-val-8.y-val-6 { background-color: hsla(40, 100%, 55%, 1); }*/
+/*.path-mod-goodhabits .x-val-9.y-val-6 { background-color: hsla(40, 100%, 50%, 1); } !* Dark yellow-orange *!*/
+
+/*!* Row 5 - Hue: 50 (Yellow) *!*/
+/*.path-mod-goodhabits .x-val-1.y-val-5 { background-color: hsla(50, 100%, 90%, 1); }*/
+/*.path-mod-goodhabits .x-val-2.y-val-5 { background-color: hsla(50, 100%, 85%, 1); }*/
+/*.path-mod-goodhabits .x-val-3.y-val-5 { background-color: hsla(50, 100%, 80%, 1); }*/
+/*.path-mod-goodhabits .x-val-4.y-val-5 { background-color: hsla(50, 100%, 75%, 1); }*/
+/*.path-mod-goodhabits .x-val-5.y-val-5 { background-color: hsla(50, 100%, 70%, 1); }*/
+/*.path-mod-goodhabits .x-val-6.y-val-5 { background-color: hsla(50, 100%, 65%, 1); }*/
+/*.path-mod-goodhabits .x-val-7.y-val-5 { background-color: hsla(50, 100%, 60%, 1); }*/
+/*.path-mod-goodhabits .x-val-8.y-val-5 { background-color: hsla(50, 100%, 55%, 1); }*/
+/*.path-mod-goodhabits .x-val-9.y-val-5 { background-color: hsla(50, 100%, 50%, 1); } !* Dark yellow *!*/
+
+/*!* Row 4 - Hue: 55 (Yellow tint) *!*/
+/*.path-mod-goodhabits .x-val-1.y-val-4 { background-color: hsla(55, 100%, 90%, 1); }*/
+/*.path-mod-goodhabits .x-val-2.y-val-4 { background-color: hsla(55, 100%, 85%, 1); }*/
+/*.path-mod-goodhabits .x-val-3.y-val-4 { background-color: hsla(55, 100%, 80%, 1); }*/
+/*.path-mod-goodhabits .x-val-4.y-val-4 { background-color: hsla(55, 100%, 75%, 1); }*/
+/*.path-mod-goodhabits .x-val-5.y-val-4 { background-color: hsla(55, 100%, 70%, 1); }*/
+/*.path-mod-goodhabits .x-val-6.y-val-4 { background-color: hsla(55, 100%, 65%, 1); }*/
+/*.path-mod-goodhabits .x-val-7.y-val-4 { background-color: hsla(55, 100%, 60%, 1); }*/
+/*.path-mod-goodhabits .x-val-8.y-val-4 { background-color: hsla(55, 100%, 55%, 1); }*/
+/*.path-mod-goodhabits .x-val-9.y-val-4 { background-color: hsla(55, 100%, 50%, 1); } !* Dark yellow tint *!*/
+
+/*!* Row 3 - Hue: 60 (Light yellow) *!*/
+/*.path-mod-goodhabits .x-val-1.y-val-3 { background-color: hsla(60, 100%, 90%, 1); }*/
+/*.path-mod-goodhabits .x-val-2.y-val-3 { background-color: hsla(60, 100%, 85%, 1); }*/
+/*.path-mod-goodhabits .x-val-3.y-val-3 { background-color: hsla(60, 100%, 80%, 1); }*/
+/*.path-mod-goodhabits .x-val-4.y-val-3 { background-color: hsla(60, 100%, 75%, 1); }*/
+/*.path-mod-goodhabits .x-val-5.y-val-3 { background-color: hsla(60, 100%, 70%, 1); }*/
+/*.path-mod-goodhabits .x-val-6.y-val-3 { background-color: hsla(60, 100%, 65%, 1); }*/
+/*.path-mod-goodhabits .x-val-7.y-val-3 { background-color: hsla(60, 100%, 60%, 1); }*/
+/*.path-mod-goodhabits .x-val-8.y-val-3 { background-color: hsla(60, 100%, 55%, 1); }*/
+/*.path-mod-goodhabits .x-val-9.y-val-3 { background-color: hsla(60, 100%, 50%, 1); } !* Dark light yellow *!*/
+
+/*!* Row 2 - Hue: 65 (Yellow-whitish) *!*/
+/*.path-mod-goodhabits .x-val-1.y-val-2 { background-color: hsla(65, 80%, 85%, 1); }*/
+/*.path-mod-goodhabits .x-val-2.y-val-2 { background-color: hsla(65, 80%, 80%, 1); }*/
+/*.path-mod-goodhabits .x-val-3.y-val-2 { background-color: hsla(65, 80%, 75%, 1); }*/
+/*.path-mod-goodhabits .x-val-4.y-val-2 { background-color: hsla(65, 80%, 70%, 1); }*/
+/*.path-mod-goodhabits .x-val-5.y-val-2 { background-color: hsla(65, 80%, 65%, 1); }*/
+/*.path-mod-goodhabits .x-val-6.y-val-2 { background-color: hsla(65, 80%, 60%, 1); }*/
+/*.path-mod-goodhabits .x-val-7.y-val-2 { background-color: hsla(65, 80%, 55%, 1); }*/
+/*.path-mod-goodhabits .x-val-8.y-val-2 { background-color: hsla(65, 80%, 50%, 1); }*/
+/*.path-mod-goodhabits .x-val-9.y-val-2 { background-color: hsla(65, 80%, 45%, 1); } !* Dark yellow-whitish *!*/
+
+/*!* Row 1 - Hue: 70 (Slightly white with yellow) *!*/
+/*.path-mod-goodhabits .x-val-1.y-val-1 { background-color: hsla(70, 50%, 90%, 1); }*/
+/*.path-mod-goodhabits .x-val-2.y-val-1 { background-color: hsla(70, 50%, 85%, 1); }*/
+/*.path-mod-goodhabits .x-val-3.y-val-1 { background-color: hsla(70, 50%, 80%, 1); }*/
+/*.path-mod-goodhabits .x-val-4.y-val-1 { background-color: hsla(70, 50%, 75%, 1); }*/
+/*.path-mod-goodhabits .x-val-5.y-val-1 { background-color: hsla(70, 50%, 70%, 1); }*/
+/*.path-mod-goodhabits .x-val-6.y-val-1 { background-color: hsla(70, 50%, 65%, 1); }*/
+/*.path-mod-goodhabits .x-val-7.y-val-1 { background-color: hsla(70, 50%, 60%, 1); }*/
+/*.path-mod-goodhabits .x-val-8.y-val-1 { background-color: hsla(70, 50%, 55%, 1); }*/
+/*.path-mod-goodhabits .x-val-9.y-val-1 { background-color: hsla(70, 50%, 50%, 1); } !* Dark whitish yellow *!*/
+
+
+
+
+/*Most convincing*/
+/*!* Lightness ranges from 90% to 40% along the Y-axis *!*/
+
+/*!*!* Column 1 - Hue: 210 (Cool blue) *!*!*/
+/*.path-mod-goodhabits .x-val-1.y-val-1 { background-color: hsla(210, 100%, 90%, 1); } !* Lightest cool blue *!*/
+/*.path-mod-goodhabits .x-val-1.y-val-2 { background-color: hsla(210, 100%, 83.57%, 1); }*/
+/*.path-mod-goodhabits .x-val-1.y-val-3 { background-color: hsla(210, 100%, 77.14%, 1); }*/
+/*.path-mod-goodhabits .x-val-1.y-val-4 { background-color: hsla(210, 100%, 70.71%, 1); }*/
+/*.path-mod-goodhabits .x-val-1.y-val-5 { background-color: hsla(210, 100%, 64.28%, 1); }*/
+/*.path-mod-goodhabits .x-val-1.y-val-6 { background-color: hsla(210, 100%, 57.85%, 1); }*/
+/*.path-mod-goodhabits .x-val-1.y-val-7 { background-color: hsla(210, 100%, 51.42%, 1); }*/
+/*.path-mod-goodhabits .x-val-1.y-val-8 { background-color: hsla(210, 100%, 44.99%, 1); }*/
+/*.path-mod-goodhabits .x-val-1.y-val-9 { background-color: hsla(210, 100%, 40%, 1); } !* Darkest cool blue *!*/
+
+/*!* Column 2 - Hue: 180 (Teal) *!*/
+/*.path-mod-goodhabits .x-val-2.y-val-1 { background-color: hsla(180, 100%, 90%, 1); } !* Light teal *!*/
+/*.path-mod-goodhabits .x-val-2.y-val-2 { background-color: hsla(180, 100%, 83.57%, 1); }*/
+/*.path-mod-goodhabits .x-val-2.y-val-3 { background-color: hsla(180, 100%, 77.14%, 1); }*/
+/*.path-mod-goodhabits .x-val-2.y-val-4 { background-color: hsla(180, 100%, 70.71%, 1); }*/
+/*.path-mod-goodhabits .x-val-2.y-val-5 { background-color: hsla(180, 100%, 64.28%, 1); }*/
+/*.path-mod-goodhabits .x-val-2.y-val-6 { background-color: hsla(180, 100%, 57.85%, 1); }*/
+/*.path-mod-goodhabits .x-val-2.y-val-7 { background-color: hsla(180, 100%, 51.42%, 1); }*/
+/*.path-mod-goodhabits .x-val-2.y-val-8 { background-color: hsla(180, 100%, 44.99%, 1); }*/
+/*.path-mod-goodhabits .x-val-2.y-val-9 { background-color: hsla(180, 100%, 40%, 1); } !* Darkest teal *!*/
+
+/*!* Column 3 - Hue: 150 (Green) *!*/
+/*.path-mod-goodhabits .x-val-3.y-val-1 { background-color: hsla(150, 100%, 90%, 1); } !* Light green *!*/
+/*.path-mod-goodhabits .x-val-3.y-val-2 { background-color: hsla(150, 100%, 83.57%, 1); }*/
+/*.path-mod-goodhabits .x-val-3.y-val-3 { background-color: hsla(150, 100%, 77.14%, 1); }*/
+/*.path-mod-goodhabits .x-val-3.y-val-4 { background-color: hsla(150, 100%, 70.71%, 1); }*/
+/*.path-mod-goodhabits .x-val-3.y-val-5 { background-color: hsla(150, 100%, 64.28%, 1); }*/
+/*.path-mod-goodhabits .x-val-3.y-val-6 { background-color: hsla(150, 100%, 57.85%, 1); }*/
+/*.path-mod-goodhabits .x-val-3.y-val-7 { background-color: hsla(150, 100%, 51.42%, 1); }*/
+/*.path-mod-goodhabits .x-val-3.y-val-8 { background-color: hsla(150, 100%, 44.99%, 1); }*/
+/*.path-mod-goodhabits .x-val-3.y-val-9 { background-color: hsla(150, 100%, 40%, 1); } !* Darkest green *!*/
+
+/*!* Column 4 - Hue: 120 (Yellow-green) *!*/
+/*.path-mod-goodhabits .x-val-4.y-val-1 { background-color: hsla(120, 100%, 90%, 1); } !* Light yellow-green *!*/
+/*.path-mod-goodhabits .x-val-4.y-val-2 { background-color: hsla(120, 100%, 83.57%, 1); }*/
+/*.path-mod-goodhabits .x-val-4.y-val-3 { background-color: hsla(120, 100%, 77.14%, 1); }*/
+/*.path-mod-goodhabits .x-val-4.y-val-4 { background-color: hsla(120, 100%, 70.71%, 1); }*/
+/*.path-mod-goodhabits .x-val-4.y-val-5 { background-color: hsla(120, 100%, 64.28%, 1); }*/
+/*.path-mod-goodhabits .x-val-4.y-val-6 { background-color: hsla(120, 100%, 57.85%, 1); }*/
+/*.path-mod-goodhabits .x-val-4.y-val-7 { background-color: hsla(120, 100%, 51.42%, 1); }*/
+/*.path-mod-goodhabits .x-val-4.y-val-8 { background-color: hsla(120, 100%, 44.99%, 1); }*/
+/*.path-mod-goodhabits .x-val-4.y-val-9 { background-color: hsla(120, 100%, 40%, 1); } !* Darkest yellow-green *!*/
+
+/*!* Column 5 - Hue: 90 (Yellow) *!*/
+/*.path-mod-goodhabits .x-val-5.y-val-1 { background-color: hsla(90, 100%, 90%, 1); } !* Light yellow *!*/
+/*.path-mod-goodhabits .x-val-5.y-val-2 { background-color: hsla(90, 100%, 83.57%, 1); }*/
+/*.path-mod-goodhabits .x-val-5.y-val-3 { background-color: hsla(90, 100%, 77.14%, 1); }*/
+/*.path-mod-goodhabits .x-val-5.y-val-4 { background-color: hsla(90, 100%, 70.71%, 1); }*/
+/*.path-mod-goodhabits .x-val-5.y-val-5 { background-color: hsla(90, 100%, 64.28%, 1); }*/
+/*.path-mod-goodhabits .x-val-5.y-val-6 { background-color: hsla(90, 100%, 57.85%, 1); }*/
+/*.path-mod-goodhabits .x-val-5.y-val-7 { background-color: hsla(90, 100%, 51.42%, 1); }*/
+/*.path-mod-goodhabits .x-val-5.y-val-8 { background-color: hsla(90, 100%, 44.99%, 1); }*/
+/*.path-mod-goodhabits .x-val-5.y-val-9 { background-color: hsla(90, 100%, 40%, 1); } !* Darkest yellow *!*/
+
+/*!* Column 6 - Hue: 60 (Yellow-orange) *!*/
+/*.path-mod-goodhabits .x-val-6.y-val-1 { background-color: hsla(60, 100%, 90%, 1); } !* Light yellow-orange *!*/
+/*.path-mod-goodhabits .x-val-6.y-val-2 { background-color: hsla(60, 100%, 83.57%, 1); }*/
+/*.path-mod-goodhabits .x-val-6.y-val-3 { background-color: hsla(60, 100%, 77.14%, 1); }*/
+/*.path-mod-goodhabits .x-val-6.y-val-4 { background-color: hsla(60, 100%, 70.71%, 1); }*/
+/*.path-mod-goodhabits .x-val-6.y-val-5 { background-color: hsla(60, 100%, 64.28%, 1); }*/
+/*.path-mod-goodhabits .x-val-6.y-val-6 { background-color: hsla(60, 100%, 57.85%, 1); }*/
+/*.path-mod-goodhabits .x-val-6.y-val-7 { background-color: hsla(60, 100%, 51.42%, 1); }*/
+/*.path-mod-goodhabits .x-val-6.y-val-8 { background-color: hsla(60, 100%, 44.99%, 1); }*/
+/*.path-mod-goodhabits .x-val-6.y-val-9 { background-color: hsla(60, 100%, 40%, 1); } !* Darkest yellow-orange *!*/
+
+/*!* Column 7 - Hue: 30 (Orange) *!*/
+/*.path-mod-goodhabits .x-val-7.y-val-1 { background-color: hsla(30, 100%, 90%, 1); } !* Light orange *!*/
+/*.path-mod-goodhabits .x-val-7.y-val-2 { background-color: hsla(30, 100%, 83.57%, 1); }*/
+/*.path-mod-goodhabits .x-val-7.y-val-3 { background-color: hsla(30, 100%, 77.14%, 1); }*/
+/*.path-mod-goodhabits .x-val-7.y-val-4 { background-color: hsla(30, 100%, 70.71%, 1); }*/
+/*.path-mod-goodhabits .x-val-7.y-val-5 { background-color: hsla(30, 100%, 64.28%, 1); }*/
+/*.path-mod-goodhabits .x-val-7.y-val-6 { background-color: hsla(30, 100%, 57.85%, 1); }*/
+/*.path-mod-goodhabits .x-val-7.y-val-7 { background-color: hsla(30, 100%, 51.42%, 1); }*/
+/*.path-mod-goodhabits .x-val-7.y-val-8 { background-color: hsla(30, 100%, 44.99%, 1); }*/
+/*.path-mod-goodhabits .x-val-7.y-val-9 { background-color: hsla(30, 100%, 40%, 1); } !* Darkest orange *!*/
+
+/*!* Column 8 - Hue: 15 (Reddish-orange) *!*/
+/*.path-mod-goodhabits .x-val-8.y-val-1 { background-color: hsla(15, 100%, 90%, 1); } !* Light reddish-orange *!*/
+/*.path-mod-goodhabits .x-val-8.y-val-2 { background-color: hsla(15, 100%, 83.57%, 1); }*/
+/*.path-mod-goodhabits .x-val-8.y-val-3 { background-color: hsla(15, 100%, 77.14%, 1); }*/
+/*.path-mod-goodhabits .x-val-8.y-val-4 { background-color: hsla(15, 100%, 70.71%, 1); }*/
+/*.path-mod-goodhabits .x-val-8.y-val-5 { background-color: hsla(15, 100%, 64.28%, 1); }*/
+/*.path-mod-goodhabits .x-val-8.y-val-6 { background-color: hsla(15, 100%, 57.85%, 1); }*/
+/*.path-mod-goodhabits .x-val-8.y-val-7 { background-color: hsla(15, 100%, 51.42%, 1); }*/
+/*.path-mod-goodhabits .x-val-8.y-val-8 { background-color: hsla(15, 100%, 44.99%, 1); }*/
+/*.path-mod-goodhabits .x-val-8.y-val-9 { background-color: hsla(15, 100%, 40%, 1); } !* Darkest reddish-orange *!*/
+
+/*!* Column 9 - Hue: 0 (Red) *!*/
+/*.path-mod-goodhabits .x-val-9.y-val-1 { background-color: hsla(0, 100%, 90%, 1); } !* Light red *!*/
+/*.path-mod-goodhabits .x-val-9.y-val-2 { background-color: hsla(0, 100%, 83.57%, 1); }*/
+/*.path-mod-goodhabits .x-val-9.y-val-3 { background-color: hsla(0, 100%, 77.14%, 1); }*/
+/*.path-mod-goodhabits .x-val-9.y-val-4 { background-color: hsla(0, 100%, 70.71%, 1); }*/
+/*.path-mod-goodhabits .x-val-9.y-val-5 { background-color: hsla(0, 100%, 64.28%, 1); }*/
+/*.path-mod-goodhabits .x-val-9.y-val-6 { background-color: hsla(0, 100%, 57.85%, 1); }*/
+/*.path-mod-goodhabits .x-val-9.y-val-7 { background-color: hsla(0, 100%, 51.42%, 1); }*/
+/*.path-mod-goodhabits .x-val-9.y-val-8 { background-color: hsla(0, 100%, 44.99%, 1); }*/
+/*.path-mod-goodhabits .x-val-9.y-val-9 { background-color: hsla(0, 100%, 40%, 1); } !* Darkest red *!*/
+
+
+
+
+
+
+
+
+
+
+
+/*!* Green to Red gradient, light to dark along Y-axis *!*/
+
+/*!* Column 1 - Green (Light green) *!*/
+/*.path-mod-goodhabits .x-val-1.y-val-1 { background-color: hsla(120, 100%, 90%, 1); } !* Lightest green *!*/
+/*.path-mod-goodhabits .x-val-1.y-val-2 { background-color: hsla(120, 100%, 83.57%, 1); }*/
+/*.path-mod-goodhabits .x-val-1.y-val-3 { background-color: hsla(120, 100%, 77.14%, 1); }*/
+/*.path-mod-goodhabits .x-val-1.y-val-4 { background-color: hsla(120, 100%, 70.71%, 1); }*/
+/*.path-mod-goodhabits .x-val-1.y-val-5 { background-color: hsla(120, 100%, 64.28%, 1); }*/
+/*.path-mod-goodhabits .x-val-1.y-val-6 { background-color: hsla(120, 100%, 57.85%, 1); }*/
+/*.path-mod-goodhabits .x-val-1.y-val-7 { background-color: hsla(120, 100%, 51.42%, 1); }*/
+/*.path-mod-goodhabits .x-val-1.y-val-8 { background-color: hsla(120, 100%, 44.99%, 1); }*/
+/*.path-mod-goodhabits .x-val-1.y-val-9 { background-color: hsla(120, 100%, 40%, 1); } !* Darkest green *!*/
+
+/*!* Column 2 - Transitioning to Yellow-green *!*/
+/*.path-mod-goodhabits .x-val-2.y-val-1 { background-color: hsla(90, 100%, 90%, 1); } !* Light yellow-green *!*/
+/*.path-mod-goodhabits .x-val-2.y-val-2 { background-color: hsla(90, 100%, 83.57%, 1); }*/
+/*.path-mod-goodhabits .x-val-2.y-val-3 { background-color: hsla(90, 100%, 77.14%, 1); }*/
+/*.path-mod-goodhabits .x-val-2.y-val-4 { background-color: hsla(90, 100%, 70.71%, 1); }*/
+/*.path-mod-goodhabits .x-val-2.y-val-5 { background-color: hsla(90, 100%, 64.28%, 1); }*/
+/*.path-mod-goodhabits .x-val-2.y-val-6 { background-color: hsla(90, 100%, 57.85%, 1); }*/
+/*.path-mod-goodhabits .x-val-2.y-val-7 { background-color: hsla(90, 100%, 51.42%, 1); }*/
+/*.path-mod-goodhabits .x-val-2.y-val-8 { background-color: hsla(90, 100%, 44.99%, 1); }*/
+/*.path-mod-goodhabits .x-val-2.y-val-9 { background-color: hsla(90, 100%, 40%, 1); } !* Darker yellow-green *!*/
+
+/*!* Column 3 - Transitioning to Yellow *!*/
+/*.path-mod-goodhabits .x-val-3.y-val-1 { background-color: hsla(60, 100%, 90%, 1); } !* Light yellow *!*/
+/*.path-mod-goodhabits .x-val-3.y-val-2 { background-color: hsla(60, 100%, 83.57%, 1); }*/
+/*.path-mod-goodhabits .x-val-3.y-val-3 { background-color: hsla(60, 100%, 77.14%, 1); }*/
+/*.path-mod-goodhabits .x-val-3.y-val-4 { background-color: hsla(60, 100%, 70.71%, 1); }*/
+/*.path-mod-goodhabits .x-val-3.y-val-5 { background-color: hsla(60, 100%, 64.28%, 1); }*/
+/*.path-mod-goodhabits .x-val-3.y-val-6 { background-color: hsla(60, 100%, 57.85%, 1); }*/
+/*.path-mod-goodhabits .x-val-3.y-val-7 { background-color: hsla(60, 100%, 51.42%, 1); }*/
+/*.path-mod-goodhabits .x-val-3.y-val-8 { background-color: hsla(60, 100%, 44.99%, 1); }*/
+/*.path-mod-goodhabits .x-val-3.y-val-9 { background-color: hsla(60, 100%, 40%, 1); } !* Darker yellow *!*/
+
+/*!* Column 4 - Orange *!*/
+/*.path-mod-goodhabits .x-val-4.y-val-1 { background-color: hsla(30, 100%, 90%, 1); } !* Light orange *!*/
+/*.path-mod-goodhabits .x-val-4.y-val-2 { background-color: hsla(30, 100%, 83.57%, 1); }*/
+/*.path-mod-goodhabits .x-val-4.y-val-3 { background-color: hsla(30, 100%, 77.14%, 1); }*/
+/*.path-mod-goodhabits .x-val-4.y-val-4 { background-color: hsla(30, 100%, 70.71%, 1); }*/
+/*.path-mod-goodhabits .x-val-4.y-val-5 { background-color: hsla(30, 100%, 64.28%, 1); }*/
+/*.path-mod-goodhabits .x-val-4.y-val-6 { background-color: hsla(30, 100%, 57.85%, 1); }*/
+/*.path-mod-goodhabits .x-val-4.y-val-7 { background-color: hsla(30, 100%, 51.42%, 1); }*/
+/*.path-mod-goodhabits .x-val-4.y-val-8 { background-color: hsla(30, 100%, 44.99%, 1); }*/
+/*.path-mod-goodhabits .x-val-4.y-val-9 { background-color: hsla(30, 100%, 40%, 1); } !* Darker orange *!*/
+
+/*!* Column 5 - Transitioning to Reddish-orange *!*/
+/*.path-mod-goodhabits .x-val-5.y-val-1 { background-color: hsla(15, 100%, 90%, 1); } !* Light reddish-orange *!*/
+/*.path-mod-goodhabits .x-val-5.y-val-2 { background-color: hsla(15, 100%, 83.57%, 1); }*/
+/*.path-mod-goodhabits .x-val-5.y-val-3 { background-color: hsla(15, 100%, 77.14%, 1); }*/
+/*.path-mod-goodhabits .x-val-5.y-val-4 { background-color: hsla(15, 100%, 70.71%, 1); }*/
+/*.path-mod-goodhabits .x-val-5.y-val-5 { background-color: hsla(15, 100%, 64.28%, 1); }*/
+/*.path-mod-goodhabits .x-val-5.y-val-6 { background-color: hsla(15, 100%, 57.85%, 1); }*/
+/*.path-mod-goodhabits .x-val-5.y-val-7 { background-color: hsla(15, 100%, 51.42%, 1); }*/
+/*.path-mod-goodhabits .x-val-5.y-val-8 { background-color: hsla(15, 100%, 44.99%, 1); }*/
+/*.path-mod-goodhabits .x-val-5.y-val-9 { background-color: hsla(15, 100%, 40%, 1); } !* Darker reddish-orange *!*/
+
+/*!* Column 6 - Reddish-orange *!*/
+/*.path-mod-goodhabits .x-val-6.y-val-1 { background-color: hsla(0, 100%, 90%, 1); } !* Light reddish-orange *!*/
+/*.path-mod-goodhabits .x-val-6.y-val-2 { background-color: hsla(0, 100%, 83.57%, 1); }*/
+/*.path-mod-goodhabits .x-val-6.y-val-3 { background-color: hsla(0, 100%, 77.14%, 1); }*/
+/*.path-mod-goodhabits .x-val-6.y-val-4 { background-color: hsla(0, 100%, 70.71%, 1); }*/
+/*.path-mod-goodhabits .x-val-6.y-val-5 { background-color: hsla(0, 100%, 64.28%, 1); }*/
+/*.path-mod-goodhabits .x-val-6.y-val-6 { background-color: hsla(0, 100%, 57.85%, 1); }*/
+/*.path-mod-goodhabits .x-val-6.y-val-7 { background-color: hsla(0, 100%, 51.42%, 1); }*/
+/*.path-mod-goodhabits .x-val-6.y-val-8 { background-color: hsla(0, 100%, 44.99%, 1); }*/
+/*.path-mod-goodhabits .x-val-6.y-val-9 { background-color: hsla(0, 100%, 40%, 1); } !* Darker reddish-orange *!*/
+
+/*!* Column 7 - Darker reddish-orange *!*/
+/*.path-mod-goodhabits .x-val-7.y-val-1 { background-color: hsla(0, 100%, 85%, 1); } !* Light red *!*/
+/*.path-mod-goodhabits .x-val-7.y-val-2 { background-color: hsla(0, 100%, 77.14%, 1); }*/
+/*.path-mod-goodhabits .x-val-7.y-val-3 { background-color: hsla(0, 100%, 70.71%, 1); }*/
+/*.path-mod-goodhabits .x-val-7.y-val-4 { background-color: hsla(0, 100%, 64.28%, 1); }*/
+/*.path-mod-goodhabits .x-val-7.y-val-5 { background-color: hsla(0, 100%, 57.85%, 1); }*/
+/*.path-mod-goodhabits .x-val-7.y-val-6 { background-color: hsla(0, 100%, 51.42%, 1); }*/
+/*.path-mod-goodhabits .x-val-7.y-val-7 { background-color: hsla(0, 100%, 44.99%, 1); }*/
+/*.path-mod-goodhabits .x-val-7.y-val-8 { background-color: hsla(0, 100%, 40%, 1); }*/
+/*.path-mod-goodhabits .x-val-7.y-val-9 { background-color: hsla(0, 100%, 35%, 1); } !* Darker red *!*/
+
+/*!* Column 8 - Darkest red *!*/
+/*.path-mod-goodhabits .x-val-8.y-val-1 { background-color: hsla(0, 100%, 80%, 1); } !* Lightest red *!*/
+/*.path-mod-goodhabits .x-val-8.y-val-2 { background-color: hsla(0, 100%, 73%, 1); }*/
+/*.path-mod-goodhabits .x-val-8.y-val-3 { background-color: hsla(0, 100%, 66%, 1); }*/
+/*.path-mod-goodhabits .x-val-8.y-val-4 { background-color: hsla(0, 100%, 59%, 1); }*/
+/*.path-mod-goodhabits .x-val-8.y-val-5 { background-color: hsla(0, 100%, 52%, 1); }*/
+/*.path-mod-goodhabits .x-val-8.y-val-6 { background-color: hsla(0, 100%, 45%, 1); }*/
+/*.path-mod-goodhabits .x-val-8.y-val-7 { background-color: hsla(0, 100%, 38%, 1); }*/
+/*.path-mod-goodhabits .x-val-8.y-val-8 { background-color: hsla(0, 100%, 31%, 1); }*/
+/*.path-mod-goodhabits .x-val-8.y-val-9 { background-color: hsla(0, 100%, 25%, 1); } !* Darkest red *!*/
+
+/*!* Column 9 - Darkest red *!*/
+/*.path-mod-goodhabits .x-val-9.y-val-1 { background-color: hsla(0, 100%, 70%, 1); } !* Lightest dark red *!*/
+/*.path-mod-goodhabits .x-val-9.y-val-2 { background-color: hsla(0, 100%, 63%, 1); }*/
+/*.path-mod-goodhabits .x-val-9.y-val-3 { background-color: hsla(0, 100%, 56%, 1); }*/
+/*.path-mod-goodhabits .x-val-9.y-val-4 { background-color: hsla(0, 100%, 49%, 1); }*/
+/*.path-mod-goodhabits .x-val-9.y-val-5 { background-color: hsla(0, 100%, 42%, 1); }*/
+/*.path-mod-goodhabits .x-val-9.y-val-6 { background-color: hsla(0, 100%, 35%, 1); }*/
+/*.path-mod-goodhabits .x-val-9.y-val-7 { background-color: hsla(0, 100%, 28%, 1); }*/
+/*.path-mod-goodhabits .x-val-9.y-val-8 { background-color: hsla(0, 100%, 21%, 1); }*/
+/*.path-mod-goodhabits .x-val-9.y-val-9 { background-color: hsla(0, 100%, 15%, 1); } !* Darkest red *!*/
+
+

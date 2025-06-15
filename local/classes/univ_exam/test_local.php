@@ -1,10 +1,10 @@
 <?php
 /**
- * GCP 서버 전체 시스템 동작 테스트
- * DB 생성 후 모든 기능이 정상 작동하는지 확인
+ * 로컬 개발환경 시스템 동작 테스트
+ * SQLite를 사용하여 모든 기능이 정상 작동하는지 확인
  */
 
-//require_once 'config.php';
+require_once 'config_local.php';
 
 // HTML 헤더
 ?>
@@ -13,7 +13,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GCP 서버 전체 시스템 테스트</title>
+    <title>로컬 개발환경 시스템 테스트</title>
     <style>
         body { font-family: 'Noto Sans KR', Arial, sans-serif; margin: 20px; background-color: #f5f5f5; }
         .container { max-width: 1200px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
@@ -28,7 +28,7 @@
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
         th { background-color: #f2f2f2; font-weight: bold; }
         tr:hover { background-color: #f5f5f5; }
-        .btn { display: inline-block; padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; margin: 10px 5px; text-decoration: none; }
+        .btn { display: inline-block; padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; margin: 10px 5px; }
         .btn:hover { background-color: #0056b3; }
         .btn.success { background-color: #28a745; }
         .btn.danger { background-color: #dc3545; }
@@ -41,7 +41,7 @@
 </head>
 <body>
 <div class="container">
-    <h1>🚀 GCP 서버 전체 시스템 동작 테스트</h1>
+    <h1>🚀 로컬 개발환경 시스템 동작 테스트</h1>
     
     <?php
     $testResults = [];
@@ -49,20 +49,20 @@
     
     // 1. 데이터베이스 연결 테스트
     echo "<div class='test-section'>";
-    echo "<h2>📡 1. 데이터베이스 연결 테스트</h2>";
+    echo "<h2>📡 1. SQLite 데이터베이스 연결 테스트</h2>";
     
     try {
         $pdo = getDBConnection();
-        echo "<div class='status success'>✅ GCP MariaDB 연결 성공!</div>";
+        echo "<div class='status success'>✅ SQLite 데이터베이스 연결 성공!</div>";
         $testResults['db_connection'] = 'success';
         
         // DB 정보 표시
-        $stmt = $pdo->query("SELECT DATABASE() as db_name, USER() as user_name, VERSION() as version");
+        $stmt = $pdo->query("SELECT sqlite_version() as version");
         $dbInfo = $stmt->fetch();
         echo "<div class='code-block'>";
-        echo "<strong>DB 이름:</strong> " . $dbInfo['db_name'] . "<br>";
-        echo "<strong>사용자:</strong> " . $dbInfo['user_name'] . "<br>";
-        echo "<strong>MariaDB 버전:</strong> " . $dbInfo['version'];
+        echo "<strong>데이터베이스 타입:</strong> SQLite<br>";
+        echo "<strong>SQLite 버전:</strong> " . $dbInfo['version'] . "<br>";
+        echo "<strong>DB 파일:</strong> " . DB_FILE;
         echo "</div>";
         
     } catch (Exception $e) {
@@ -78,28 +78,24 @@
     
     if (isset($pdo)) {
         try {
-            $stmt = $pdo->query("SELECT TABLE_NAME, TABLE_ROWS, CREATE_TIME 
-                                FROM information_schema.tables 
-                                WHERE table_schema = 'moodle' AND table_name LIKE 'alpha_%' 
-                                ORDER BY table_name");
+            $stmt = $pdo->query("SELECT name, sql FROM sqlite_master WHERE type='table' AND name LIKE 'alpha_%' ORDER BY name");
             $tables = $stmt->fetchAll();
             
-            if (count($tables) >= 12) {
+            if (count($tables) >= 4) {
                 echo "<div class='status success'>✅ 모든 테이블이 존재합니다 (" . count($tables) . "개)</div>";
                 $testResults['tables_exist'] = 'success';
             } else {
-                echo "<div class='status warning'>⚠️ 일부 테이블이 누락되었습니다 (" . count($tables) . "/12개)</div>";
+                echo "<div class='status warning'>⚠️ 일부 테이블이 누락되었습니다 (" . count($tables) . "/4개)</div>";
                 $testResults['tables_exist'] = 'partial';
                 $overallStatus = 'warning';
             }
             
             echo "<table>";
-            echo "<tr><th>테이블명</th><th>레코드 수</th><th>생성 시간</th></tr>";
+            echo "<tr><th>테이블명</th><th>생성 SQL</th></tr>";
             foreach ($tables as $table) {
                 echo "<tr>";
-                echo "<td>" . htmlspecialchars($table['TABLE_NAME']) . "</td>";
-                echo "<td>" . ($table['TABLE_ROWS'] ?: '0') . "</td>";
-                echo "<td>" . ($table['CREATE_TIME'] ?: 'N/A') . "</td>";
+                echo "<td>" . htmlspecialchars($table['name']) . "</td>";
+                echo "<td style='font-size: 12px; max-width: 400px; word-break: break-all;'>" . htmlspecialchars(substr($table['sql'], 0, 100)) . "...</td>";
                 echo "</tr>";
             }
             echo "</table>";
@@ -112,23 +108,26 @@
     }
     echo "</div>";
     
-    // 3. API 엔드포인트 테스트
+    // 3. 데이터 조회 테스트
     echo "<div class='test-section'>";
-    echo "<h2>🌐 3. API 엔드포인트 테스트</h2>";
+    echo "<h2>🌐 3. 데이터 조회 테스트</h2>";
     
     if (isset($pdo)) {
         try {
-            // problems API 테스트
-            $stmt = $pdo->prepare("SELECT COUNT(*) as problem_count FROM alpha_problems");
+            $prefix = TABLE_PREFIX;
+            
+            // 문제 개수 확인
+            $stmt = $pdo->prepare("SELECT COUNT(*) as problem_count FROM {$prefix}problems");
             $stmt->execute();
             $problemCount = $stmt->fetch()['problem_count'];
             
-            $stmt = $pdo->prepare("SELECT COUNT(*) as set_count FROM alpha_problem_sets");
+            // 문제집 개수 확인
+            $stmt = $pdo->prepare("SELECT COUNT(*) as set_count FROM {$prefix}problem_sets");
             $stmt->execute();
             $setCount = $stmt->fetch()['set_count'];
             
-            echo "<div class='status success'>✅ API 테스트 통과</div>";
-            $testResults['api_test'] = 'success';
+            echo "<div class='status success'>✅ 데이터 조회 테스트 통과</div>";
+            $testResults['data_test'] = 'success';
             
             echo "<div class='stats-grid'>";
             echo "<div class='stat-card'>";
@@ -142,8 +141,8 @@
             echo "</div>";
             
         } catch (Exception $e) {
-            echo "<div class='status error'>❌ API 테스트 실패: " . htmlspecialchars($e->getMessage()) . "</div>";
-            $testResults['api_test'] = 'failed';
+            echo "<div class='status error'>❌ 데이터 조회 테스트 실패: " . htmlspecialchars($e->getMessage()) . "</div>";
+            $testResults['data_test'] = 'failed';
             $overallStatus = 'failed';
         }
     }
@@ -155,11 +154,11 @@
     
     if (isset($pdo)) {
         try {
-            $stmt = $pdo->query("SELECT ps.title AS problem_set_title, p.problem_number, p.title AS problem_title, p.category, p.difficulty
-                                FROM alpha_problem_sets ps
-                                LEFT JOIN alpha_problems p ON ps.id = p.problem_set_id
-                                ORDER BY p.problem_number
-                                LIMIT 5");
+            $prefix = TABLE_PREFIX;
+            $stmt = $pdo->query("SELECT ps.title AS problem_set_title, p.problem_number, p.title AS problem_title, p.category, p.difficulty, p.content
+                                FROM {$prefix}problem_sets ps
+                                LEFT JOIN {$prefix}problems p ON ps.id = p.problem_set_id
+                                ORDER BY p.problem_number");
             $sampleData = $stmt->fetchAll();
             
             if (count($sampleData) > 0) {
@@ -167,19 +166,20 @@
                 $testResults['sample_data'] = 'success';
                 
                 echo "<table>";
-                echo "<tr><th>문제집</th><th>문제번호</th><th>문제제목</th><th>카테고리</th><th>난이도</th></tr>";
+                echo "<tr><th>문제집</th><th>번호</th><th>문제제목</th><th>내용</th><th>카테고리</th><th>난이도</th></tr>";
                 foreach ($sampleData as $data) {
                     echo "<tr>";
                     echo "<td>" . htmlspecialchars($data['problem_set_title']) . "</td>";
                     echo "<td>" . htmlspecialchars($data['problem_number'] ?: 'N/A') . "</td>";
                     echo "<td>" . htmlspecialchars($data['problem_title'] ?: 'N/A') . "</td>";
+                    echo "<td>" . htmlspecialchars($data['content'] ?: 'N/A') . "</td>";
                     echo "<td>" . htmlspecialchars($data['category'] ?: 'N/A') . "</td>";
                     echo "<td>" . htmlspecialchars($data['difficulty'] ?: 'N/A') . "</td>";
                     echo "</tr>";
                 }
                 echo "</table>";
             } else {
-                echo "<div class='status warning'>⚠️ 샘플 데이터가 없습니다. 기본 데이터를 생성하세요.</div>";
+                echo "<div class='status warning'>⚠️ 샘플 데이터가 없습니다.</div>";
                 $testResults['sample_data'] = 'empty';
                 $overallStatus = 'warning';
             }
@@ -201,7 +201,7 @@
     
     if ($overallStatus === 'success') {
         echo "<div class='status success'>";
-        echo "<h3>🎉 시스템이 완벽하게 동작합니다!</h3>";
+        echo "<h3>🎉 로컬 시스템이 완벽하게 동작합니다!</h3>";
         echo "<p>모든 테스트가 통과했습니다. ({$successCount}/{$totalTests})</p>";
         echo "</div>";
     } elseif ($overallStatus === 'warning') {
@@ -234,21 +234,21 @@
     
     if ($overallStatus === 'success') {
         echo "<div class='status info'>";
-        echo "<h4>✨ 시스템 사용 준비 완료!</h4>";
-        echo "<p>이제 수학 문제 학습 시스템을 정상적으로 사용할 수 있습니다.</p>";
+        echo "<h4>✨ 로컬 개발환경 준비 완료!</h4>";
+        echo "<p>이제 로컬에서 수학 문제 학습 시스템을 개발하고 테스트할 수 있습니다.</p>";
         echo "</div>";
     } else {
         echo "<div class='status warning'>";
         echo "<h4>🔧 추가 설정이 필요합니다</h4>";
         echo "<ul>";
         if ($testResults['db_connection'] !== 'success') {
-            echo "<li>데이터베이스 연결 설정을 확인하세요</li>";
+            echo "<li>SQLite 데이터베이스 연결을 확인하세요</li>";
         }
         if ($testResults['tables_exist'] !== 'success') {
-            echo "<li>누락된 테이블을 생성하세요</li>";
+            echo "<li>테이블 생성을 다시 시도하세요</li>";
         }
         if ($testResults['sample_data'] === 'empty') {
-            echo "<li>기본 샘플 데이터를 추가하세요</li>";
+            echo "<li>샘플 데이터를 다시 생성하세요</li>";
         }
         echo "</ul>";
         echo "</div>";
@@ -258,16 +258,16 @@
     ?>
     
     <div style="text-align: center; margin-top: 30px;">
-        <a href="sample.html" class="btn success">📚 수학 문제 시스템 시작하기</a>
-        <a href="api.php?action=health" class="btn">🏥 API 상태 확인</a>
-        <a href="run_mysql_commands.php" class="btn">🛠️ 테이블 재생성</a>
+        <a href="test_simple.php" class="btn">🧪 간단한 PHP 테스트</a>
+        <a href="api_local.php?action=problems" class="btn">🌐 로컬 API 테스트</a>
+        <a href="sample.html" class="btn success">📚 메인 시스템</a>
     </div>
     
     <div class="code-block">
-        <h3>🔗 시스템 링크</h3>
-        <p><strong>메인 시스템:</strong> <a href="sample.html" target="_blank">http://34.64.175.237/local/classes/univ_exam/sample.html</a></p>
-        <p><strong>API 테스트:</strong> <a href="api.php?action=problems" target="_blank">http://34.64.175.237/local/classes/univ_exam/api.php?action=problems</a></p>
-        <p><strong>전체 테스트:</strong> <a href="test_full_system.php" target="_blank">http://34.64.175.237/local/classes/univ_exam/test_full_system.php</a></p>
+        <h3>🔗 로컬 테스트 링크</h3>
+        <p><strong>간단한 테스트:</strong> <a href="http://localhost:8000/test_simple.php" target="_blank">http://localhost:8000/test_simple.php</a></p>
+        <p><strong>로컬 시스템 테스트:</strong> <a href="http://localhost:8000/test_local.php" target="_blank">http://localhost:8000/test_local.php</a></p>
+        <p><strong>메인 시스템:</strong> <a href="http://localhost:8000/sample.html" target="_blank">http://localhost:8000/sample.html</a></p>
     </div>
 </div>
 </body>

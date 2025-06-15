@@ -2853,8 +2853,8 @@
                     if (problemsData.problems[i].isEmpty) {
                         openJsonModal(i);
                     } else {
-                        if (i <= currentProblemIndex || problemsCompleted[i-1]) {
-                            loadProblem(i);
+                    if (i <= currentProblemIndex || problemsCompleted[i-1]) {
+                        loadProblem(i);
                         }
                     }
                 };
@@ -3443,34 +3443,34 @@
         
         // 서술평가 시작 함수
         function startEvaluation() {
-            const transitionMessage = document.getElementById('transitionMessage');
-            if (transitionMessage && transitionMessage.classList) {
-                transitionMessage.classList.add('active');
-            }
-            
-            setTimeout(() => {
+                const transitionMessage = document.getElementById('transitionMessage');
                 if (transitionMessage && transitionMessage.classList) {
-                    transitionMessage.classList.remove('active');
-                }
-                
-                const mainContainer = document.querySelector('.main-container');
-                if (mainContainer) {
-                    mainContainer.style.transition = 'opacity 0.5s ease';
-                    mainContainer.style.opacity = '0';
+                    transitionMessage.classList.add('active');
                 }
                 
                 setTimeout(() => {
-                    if (document.body && document.body.classList) {
-                        document.body.classList.add('evaluation-mode');
+                    if (transitionMessage && transitionMessage.classList) {
+                        transitionMessage.classList.remove('active');
                     }
                     
-                    const whiteboardContainer = document.getElementById('whiteboardContainer');
-                    if (whiteboardContainer && whiteboardContainer.classList) {
-                        whiteboardContainer.classList.add('active');
+                    const mainContainer = document.querySelector('.main-container');
+                    if (mainContainer) {
+                        mainContainer.style.transition = 'opacity 0.5s ease';
+                        mainContainer.style.opacity = '0';
                     }
-                    initWhiteboard();
-                }, 500);
-            }, 2000);
+                    
+                    setTimeout(() => {
+                        if (document.body && document.body.classList) {
+                            document.body.classList.add('evaluation-mode');
+                        }
+                        
+                        const whiteboardContainer = document.getElementById('whiteboardContainer');
+                        if (whiteboardContainer && whiteboardContainer.classList) {
+                            whiteboardContainer.classList.add('active');
+                        }
+                        initWhiteboard();
+                    }, 500);
+                }, 2000);
         }
         
         function showNextStep() {

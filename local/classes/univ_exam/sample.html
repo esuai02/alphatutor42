@@ -284,23 +284,14 @@
         
         /* 1등급 질문 섹션 */
         .creative-section {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            padding: 20px;
-            background: white;
-            overflow-y: auto;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.5s ease;
-            z-index: 10;
+            padding: 20px 0;
+            background: transparent;
+            display: none;
         }
         
         .creative-section.active {
-            opacity: 1;
-            visibility: visible;
+            display: block;
+            animation: fadeInUp 0.6s ease-out;
         }
         
         /* 우측 칼럼 - 해설 */
@@ -1492,19 +1483,6 @@
                 </div>
                 <div id="insightList"></div>
             </div>
-            
-            <!-- 1등급 질문 섹션 -->
-            <div class="creative-section" id="creativeSection">
-                <div class="section-header">
-                    <h3 class="section-title">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="#667eea">
-                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/>
-                        </svg>
-                        1등급 창의적 질문
-                    </h3>
-                </div>
-                <div id="creativeQuestionsList"></div>
-            </div>
         </div>
         
         <!-- 우측 칼럼 -->
@@ -2425,13 +2403,6 @@
             }
             document.getElementById('insightList').innerHTML = '';
             
-            // 창의적 질문 섹션 초기화
-            const creativeSection = document.getElementById('creativeSection');
-            if (creativeSection) {
-                creativeSection.classList.remove('active');
-                document.getElementById('creativeQuestionsList').innerHTML = '';
-            }
-            
             // 화이트보드 초기화
             document.body.classList.remove('evaluation-mode');
             const whiteboardContainer = document.getElementById('whiteboardContainer');
@@ -2740,6 +2711,11 @@
                             footerDiv.style.opacity = '0';
                             footerDiv.style.animation = 'fadeIn 0.5s ease-out forwards';
                             containerElement.appendChild(footerDiv);
+                            
+                            // 창의적 질문 완료 후 서술평가 버튼 표시
+                            setTimeout(() => {
+                                showEvaluationButton();
+                            }, 1000);
                         }, 500);
                         return;
                     }
@@ -2795,6 +2771,81 @@
             }, 2000);
         }
         
+        // 서술평가 버튼 표시 함수
+        function showEvaluationButton() {
+            const explanationArea = document.getElementById('explanationArea');
+            
+            const evaluationButtonDiv = document.createElement('div');
+            evaluationButtonDiv.style.cssText = 'text-align: center; margin: 30px 0; padding: 20px;';
+            evaluationButtonDiv.innerHTML = `
+                <button class="next-button" id="evaluationButton" style="
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white;
+                    border: none;
+                    padding: 15px 30px;
+                    font-size: 16px;
+                    border-radius: 25px;
+                    cursor: pointer;
+                    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+                    transition: all 0.3s;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    margin: 0 auto;
+                    width: auto;
+                    border-bottom: none;
+                ">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                    </svg>
+                    서술평가 시작하기
+                </button>
+            `;
+            
+            explanationArea.appendChild(evaluationButtonDiv);
+            
+            // 서술평가 버튼 클릭 이벤트
+            document.getElementById('evaluationButton').addEventListener('click', startEvaluation);
+            
+            // 스크롤을 맨 아래로
+            setTimeout(() => {
+                document.getElementById('solutionContainer').scrollTop = 
+                    document.getElementById('solutionContainer').scrollHeight;
+            }, 100);
+        }
+        
+        // 서술평가 시작 함수
+        function startEvaluation() {
+            const transitionMessage = document.getElementById('transitionMessage');
+            if (transitionMessage && transitionMessage.classList) {
+                transitionMessage.classList.add('active');
+            }
+            
+            setTimeout(() => {
+                if (transitionMessage && transitionMessage.classList) {
+                    transitionMessage.classList.remove('active');
+                }
+                
+                const mainContainer = document.querySelector('.main-container');
+                if (mainContainer) {
+                    mainContainer.style.transition = 'opacity 0.5s ease';
+                    mainContainer.style.opacity = '0';
+                }
+                
+                setTimeout(() => {
+                    if (document.body && document.body.classList) {
+                        document.body.classList.add('evaluation-mode');
+                    }
+                    
+                    const whiteboardContainer = document.getElementById('whiteboardContainer');
+                    if (whiteboardContainer && whiteboardContainer.classList) {
+                        whiteboardContainer.classList.add('active');
+                    }
+                    initWhiteboard();
+                }, 500);
+            }, 2000);
+        }
+        
         function showNextStep() {
             if (isTyping) return;
             
@@ -2807,62 +2858,33 @@
             
             // 핵심 포인트 정리가 끝나면 창의적 질문 표시
             if (currentStep === currentProblemData.solutionSteps.length) {
-                // 시선 섹션 숨기기
-                const insightSection = document.getElementById('insightSection');
-                if (insightSection) {
-                    insightSection.classList.add('hidden');
-                }
+                // 창의적 질문을 해설 영역에 직접 추가
+                const explanationArea = document.getElementById('explanationArea');
                 
-                // 창의적 질문 섹션 활성화
-                const creativeSection = document.getElementById('creativeSection');
-                const creativeContainer = document.getElementById('creativeQuestionsList');
-                
-                if (creativeSection && creativeContainer && currentProblemData.creativeQuestions) {
-                    // 약간의 지연 후 창의적 질문 표시 (부드러운 전환을 위해)
-                    setTimeout(() => {
-                        creativeSection.classList.add('active');
-                        
-                        // 창의적 질문 실시간 생성
-                        generateCreativeQuestions(creativeContainer, currentProblemData.creativeQuestions);
-                    }, 300);
+                if (currentProblemData.creativeQuestions) {
+                    // 창의적 질문 컨테이너 생성
+                    const creativeContainer = document.createElement('div');
+                    creativeContainer.className = 'creative-section active';
+                    creativeContainer.id = 'creativeQuestionsList';
                     
-                    // 다음 버튼 텍스트 변경
-                    document.getElementById('nextButton').innerHTML = '서술평가 시작하기';
+                    // 창의적 질문 실시간 생성
+                    generateCreativeQuestions(creativeContainer, currentProblemData.creativeQuestions);
+                    
+                    // 해설 영역에 추가
+                    explanationArea.appendChild(creativeContainer);
+                    
+                    // 다음 버튼 숨기기 (창의적 질문 완료 후 자동으로 서술평가 버튼 표시)
+                    document.getElementById('nextButton').style.display = 'none';
+                    
+                    // 스크롤을 맨 아래로
+                    setTimeout(() => {
+                        document.getElementById('solutionContainer').scrollTop = 
+                            document.getElementById('solutionContainer').scrollHeight;
+                    }, 100);
                 }
                 return;
             } else if (currentStep > currentProblemData.solutionSteps.length) {
-                // 서술평가로 전환
-                document.getElementById('nextButton').style.display = 'none';
-                
-                const transitionMessage = document.getElementById('transitionMessage');
-                if (transitionMessage && transitionMessage.classList) {
-                    transitionMessage.classList.add('active');
-                }
-                
-                setTimeout(() => {
-                    if (transitionMessage && transitionMessage.classList) {
-                        transitionMessage.classList.remove('active');
-                    }
-                    
-                    const mainContainer = document.querySelector('.main-container');
-                    if (mainContainer) {
-                        mainContainer.style.transition = 'opacity 0.5s ease';
-                        mainContainer.style.opacity = '0';
-                    }
-                    
-                    setTimeout(() => {
-                        if (document.body && document.body.classList) {
-                            document.body.classList.add('evaluation-mode');
-                        }
-                        
-                        const whiteboardContainer = document.getElementById('whiteboardContainer');
-                        if (whiteboardContainer && whiteboardContainer.classList) {
-                            whiteboardContainer.classList.add('active');
-                        }
-                        initWhiteboard();
-                    }, 500);
-                }, 2000);
-                
+                // 이 부분은 더 이상 필요하지 않음 (창의적 질문 완료 후 자동으로 처리)
                 return;
             }
             
@@ -2889,6 +2911,11 @@
             }, 100);
             
             document.getElementById('nextButton').disabled = true;
+            
+            // 핵심 포인트 단계(7번째 단계, 인덱스 6)부터 연필 아이콘으로 변경
+            if (currentStep >= 6) {
+                document.getElementById('nextButton').innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>';
+            }
             
             const thinkingSpan = document.createElement('span');
             thinkingSpan.className = 'thinking-indicator';

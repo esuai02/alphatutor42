@@ -4,6 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>수학 문제 학습 시스템</title>
+    
+    <!-- MathJax 설정 및 로드 -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true,
+                processEnvironments: true
+            },
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+                ignoreHtmlClass: 'no-mathjax'
+            },
+            startup: {
+                ready: function () {
+                    MathJax.startup.defaultReady();
+                    console.log('MathJax is loaded and ready!');
+                }
+            }
+        };
+    </script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <style>
         * {
             margin: 0;
@@ -1434,12 +1458,402 @@
                 font-size: 13px;
             }
         }
+        
+        /* JSON 입력 모달 스타일 */
+        .json-input-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: none;
+            z-index: 3000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .json-input-modal.active {
+            display: flex;
+            opacity: 1;
+        }
+        
+        .json-modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+        }
+        
+        .json-modal-content {
+            position: relative;
+            width: 90%;
+            max-width: 1000px;
+            max-height: 90vh;
+            margin: auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+        
+        .json-input-modal.active .json-modal-content {
+            transform: scale(1);
+        }
+        
+        .json-modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .json-modal-header h2 {
+            margin: 0;
+            font-size: 20px;
+        }
+        
+        .json-close-button {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+        
+        .json-close-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .json-modal-body {
+            flex: 1;
+            padding: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .json-input-tabs {
+            display: flex;
+            border-bottom: 1px solid #e0e0e0;
+            background: #f8f9fa;
+        }
+        
+        .json-tab-button {
+            background: none;
+            border: none;
+            padding: 15px 25px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .json-tab-button.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+            background: white;
+        }
+        
+        .json-tab-button:hover:not(.active) {
+            background: rgba(102, 126, 234, 0.05);
+            color: #555;
+        }
+        
+        .json-tab-content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+        
+        .json-input-section {
+            margin-bottom: 30px;
+        }
+        
+        .json-input-section label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        #jsonInput {
+            width: 100%;
+            height: 300px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+        
+        #jsonInput:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .json-validation-status {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 14px;
+            display: none;
+        }
+        
+        .json-validation-status.valid {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+            display: block;
+        }
+        
+        .json-validation-status.invalid {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+            display: block;
+        }
+        
+        .json-template-section h4 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        
+        .template-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+        
+        .template-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        .json-schema-details {
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+        }
+        
+        .json-schema-details summary {
+            cursor: pointer;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .schema-guide pre {
+            background: #fff;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+            font-size: 12px;
+            line-height: 1.4;
+            overflow-x: auto;
+        }
+        
+        /* 이미지 업로드 섹션 */
+        .image-upload-section h4 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        
+        .image-upload-area {
+            position: relative;
+            border: 2px dashed #ccc;
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        
+        .image-upload-area:hover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.02);
+        }
+        
+        .image-upload-area.dragover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+        
+        #imageInput {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+        
+        .upload-placeholder {
+            pointer-events: none;
+        }
+        
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        
+        .upload-placeholder p {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .upload-placeholder small {
+            color: #666;
+            font-size: 13px;
+        }
+        
+        .image-preview-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        
+        .image-preview-item {
+            position: relative;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        
+        .image-preview-item:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .image-preview-item img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+        }
+        
+        .image-preview-info {
+            padding: 10px;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .image-remove-button {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #e57373;
+            transition: all 0.3s;
+        }
+        
+        .image-remove-button:hover {
+            background: #ffebee;
+            color: #c62828;
+        }
+        
+        /* 미리보기 섹션 */
+        .preview-section h4 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        
+        .preview-container {
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 200px;
+        }
+        
+        .preview-placeholder {
+            text-align: center;
+            color: #999;
+            font-style: italic;
+            margin-top: 80px;
+        }
+        
+        .json-modal-footer {
+            border-top: 1px solid #e0e0e0;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            background: #f8f9fa;
+        }
+        
+        .json-button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 80px;
+        }
+        
+        .json-button.secondary {
+            background: #e0e0e0;
+            color: #666;
+        }
+        
+        .json-button.secondary:hover {
+            background: #d0d0d0;
+        }
+        
+        .json-button.primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .json-button.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
     </style>
 </head>
 <body>
     <!-- 진행률 바 -->
     <div class="progress-bar-container">
-        <div class="problem-counter">문제 <span id="currentProblem">1</span> / <span id="totalProblems">20</span></div>
+        <div class="problem-counter">문제 <span id="currentProblem">1</span> / <span id="totalProblems">30</span></div>
         <div class="progress-bar">
             <div class="progress-fill" id="progressFill"></div>
         </div>
@@ -1614,6 +2028,73 @@
                 <button class="question-history-close" onclick="toggleQuestionHistory()">✕</button>
             </div>
             <div id="questionHistoryList"></div>
+        </div>
+    </div>
+
+    <!-- JSON 입력 모달 -->
+    <div class="json-input-modal" id="jsonInputModal">
+        <div class="json-modal-overlay" onclick="closeJsonModal()"></div>
+        <div class="json-modal-content">
+            <div class="json-modal-header">
+                <h2>📝 문제 데이터 입력</h2>
+                <button class="json-close-button" onclick="closeJsonModal()">✕</button>
+            </div>
+            
+            <div class="json-modal-body">
+                <div class="json-input-tabs">
+                    <button class="json-tab-button active" onclick="switchJsonTab('json')">JSON 데이터</button>
+                    <button class="json-tab-button" onclick="switchJsonTab('image')">이미지 추가</button>
+                    <button class="json-tab-button" onclick="switchJsonTab('preview')">미리보기</button>
+                </div>
+                
+                <div class="json-tab-content" id="jsonTab">
+                    <div class="json-input-section">
+                        <label for="jsonInput">문제 데이터 (JSON 형식)</label>
+                        <textarea id="jsonInput" placeholder="JSON 형태로 문제 데이터를 입력하세요..."></textarea>
+                        <div class="json-validation-status" id="jsonValidationStatus"></div>
+                    </div>
+                    
+                    <div class="json-template-section">
+                        <h4>📋 JSON 템플릿</h4>
+                        <button class="template-button" onclick="loadJsonTemplate()">기본 템플릿 불러오기</button>
+                        <details class="json-schema-details">
+                            <summary>📖 JSON 스키마 가이드</summary>
+                            <div class="schema-guide">
+                                <pre id="jsonSchemaGuide"></pre>
+                            </div>
+                        </details>
+                    </div>
+                </div>
+                
+                <div class="json-tab-content" id="imageTab" style="display: none;">
+                    <div class="image-upload-section">
+                        <h4>🖼️ 문제 이미지</h4>
+                        <div class="image-upload-area" id="imageUploadArea">
+                            <input type="file" id="imageInput" accept="image/*" multiple onchange="handleImageUpload(event)">
+                            <div class="upload-placeholder">
+                                <div class="upload-icon">📁</div>
+                                <p>이미지를 드래그하거나 클릭하여 업로드</p>
+                                <small>PNG, JPG, SVG 파일 지원 (최대 5MB)</small>
+                            </div>
+                        </div>
+                        <div class="image-preview-container" id="imagePreviewContainer"></div>
+                    </div>
+                </div>
+                
+                <div class="json-tab-content" id="previewTab" style="display: none;">
+                    <div class="preview-section">
+                        <h4>👁️ 문제 미리보기</h4>
+                        <div class="preview-container" id="previewContainer">
+                            <p class="preview-placeholder">JSON 데이터를 입력하면 미리보기가 표시됩니다.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="json-modal-footer">
+                <button class="json-button secondary" onclick="closeJsonModal()">취소</button>
+                <button class="json-button primary" onclick="validateAndSaveJson()">저장</button>
+            </div>
         </div>
     </div>
 
@@ -1989,277 +2470,230 @@
             "problems": [
                 {
                     "id": 1,
-                    "title": "대칭식 문제",
+                    "title": "수학 문제 1",
                     "problemInfo": {
-                        "description": "세 실수 a, b, c가 다음 조건을 모두 만족시킬 때, abc의 값을 구하여라.",
+                        "description": "실수 $a$, $b$가 $a + b = 5$이고 $ab = 6$일 때, $a^2 + b^2$의 값을 구하시오.",
                         "conditions": [
-                            "(가) a³ - 5a² + 2a + 33 = a² + b² + c²",
-                            "(나) b³ - 5b² + 2b + 33 = a² + b² + c²",
-                            "(다) c³ - 5c² + 2c + 33 = a² + b² + c²"
+                            "$a + b = 5$",
+                            "$ab = 6$"
                         ]
                     },
                     "analysisInfo": [
-                        "변수의 개수와 종류 파악 → 세 개의 미지수",
-                        "조건의 완전성 확인 → '모두' 만족해야 함",
-                        "목표 명확히 하기 → abc의 값 구하기",
-                        "좌변의 공통 구조 발견 → 동일한 패턴!",
-                        "우변이 모두 같음 → 핵심 단서 발견!"
+                        "주어진 조건을 활용하여 $a^2 + b^2$를 구해야 합니다.",
+                        "$(a + b)^2 = a^2 + 2ab + b^2$ 공식을 활용할 수 있습니다.",
+                        "따라서 $a^2 + b^2 = (a + b)^2 - 2ab$로 계산할 수 있습니다."
                     ],
                     "highlightTags": [
-                        { "text": "세 실수 a, b, c", "insightNumber": 1 },
-                        { "text": "다음 조건을 모두 만족시킬 때", "insightNumber": 2 },
-                        { "text": "abc의 값", "insightNumber": 3 },
-                        { "text": "a³ - 5a² + 2a + 33", "insightNumber": 4 },
-                        { "text": "b³ - 5b² + 2b + 33", "insightNumber": 4 },
-                        { "text": "c³ - 5c² + 2c + 33", "insightNumber": 4 },
-                        { "text": "a² + b² + c²", "insightNumber": 5 }
+                        { "text": "실수", "insightNumber": 1 },
+                        { "text": "a + b = 5", "insightNumber": 2 },
+                        { "text": "ab = 6", "insightNumber": 3 }
                     ],
                     "solutionSteps": [
                         {
-                            "question": "🤔 이 문제에서 가장 먼저 주목해야 할 특징은 무엇일까요?",
-                            "answer": "세 개의 조건 (가), (나), (다)를 자세히 보면...\n\n모두 우변이 <span class='highlight'>a² + b² + c²</span>로 같다는 것을 발견할 수 있습니다!\n\n이것은 매우 중요한 단서입니다. 세 식의 좌변이 모두 같은 값이라는 의미죠."
+                            "question": "🤔 이 문제에서 구하는 것은 무엇인가요?",
+                            "answer": "$a^2 + b^2$의 값을 구해야 합니다."
                         },
                         {
-                            "question": "💡 그렇다면 세 식의 좌변을 어떻게 정리할 수 있을까요?",
-                            "answer": "조건 (가)에서: a³ - 5a² + 2a + 33 = (a² + b² + c²)\n조건 (나)에서: b³ - 5b² + 2b + 33 = (a² + b² + c²)\n조건 (다)에서: c³ - 5c² + 2c + 33 = (a² + b² + c²)\n\n따라서 <span class='highlight'>a³ - 5a² + 2a + 33 = b³ - 5b² + 2b + 33 = c³ - 5c² + 2c + 33</span>\n\n이것은 a, b, c가 모두 같은 형태의 식을 만족한다는 뜻입니다!"
+                            "question": "💡 주어진 조건들을 어떻게 활용할 수 있을까요?",
+                            "answer": "$(a + b)^2 = a^2 + 2ab + b^2$ 공식을 사용하면 됩니다."
                         },
                         {
-                            "question": "🎯 a, b, c가 만족하는 공통 방정식을 찾아볼까요?",
-                            "answer": "x에 대한 삼차방정식을 세워보면:\n\n<span class='highlight'>x³ - 5x² + 2x + 33 = (a² + b² + c²)</span>\n\n이 방정식의 세 근이 바로 a, b, c입니다!\n\n이를 정리하면:\nx³ - 5x² + 2x + 33 - (a² + b² + c²) = 0"
+                            "question": "🔍 공식을 정리해보면 어떻게 될까요?",
+                            "answer": "$a^2 + b^2 = (a + b)^2 - 2ab$가 됩니다."
                         },
                         {
-                            "question": "📐 삼차방정식의 근과 계수의 관계를 활용해볼까요?",
-                            "answer": "삼차방정식 x³ + px² + qx + r = 0의 세 근을 α, β, γ라 하면:\n\n• α + β + γ = -p\n• αβ + βγ + γα = q\n• αβγ = -r\n\n우리 방정식에서는 최고차 계수가 1이므로:\n• <span class='highlight'>a + b + c = 5</span>\n• <span class='highlight'>ab + bc + ca = 2</span>\n• <span class='highlight'>abc = -33 + (a² + b² + c²)</span>"
+                            "question": "📝 주어진 값들을 대입해보겠습니다",
+                            "answer": "$a^2 + b^2 = 5^2 - 2 \\times 6 = 25 - 12 = 13$"
                         },
                         {
-                            "question": "🔍 이제 abc를 구하기 위해 (a² + b² + c²)의 값을 찾아야 합니다. 어떻게 구할까요?",
-                            "answer": "항등식을 이용합니다!\n\n(a + b + c)² = a² + b² + c² + 2(ab + bc + ca)\n\n알고 있는 값을 대입하면:\n5² = (a² + b² + c²) + 2 × 2\n25 = (a² + b² + c²) + 4\n\n따라서 <span class='highlight'>a² + b² + c² = 21</span>"
+                            "question": "✅ 검산을 해보겠습니다",
+                            "answer": "$a$, $b$는 $t^2 - 5t + 6 = 0$의 근이므로 $a = 2$, $b = 3$ (또는 그 반대)입니다.<br>실제로 $2^2 + 3^2 = 4 + 9 = 13$으로 맞습니다."
                         },
                         {
-                            "question": "✨ 드디어 마지막 단계! abc의 값은?",
-                            "answer": "앞서 구한 관계식에서:\nabc = -33 + (a² + b² + c²)\n\n(a² + b² + c²) = 21을 대입하면:\n\nabc = -33 + 21\n<span class='important'>abc = -12</span>\n\n따라서 답은 <span class='important'>-12</span>입니다!"
-                        },
-                        {
-                            "question": "📝 이 문제의 핵심 포인트를 정리해볼까요?",
-                            "answer": "<div class='final-emphasis'>\n<span class='important'>🎓 이 문제에서 꼭 기억해야 할 핵심 아이디어:</span>\n\n1️⃣ <span class='highlight'>공통된 우변을 발견</span>하여 세 변수가 같은 방정식의 근임을 파악\n\n2️⃣ <span class='highlight'>대칭성</span>을 이용하여 문제를 단순화\n\n3️⃣ <span class='highlight'>근과 계수의 관계</span>를 활용하여 미지수들 사이의 관계식 유도\n\n4️⃣ <span class='highlight'>항등식 (a+b+c)² = a²+b²+c² + 2(ab+bc+ca)</span>을 이용한 계산\n\n💡 <span class='important'>가장 중요한 것은 '패턴 인식'입니다!</span>\n세 조건이 동일한 구조를 가진다는 것을 발견하는 순간,\n문제는 훨씬 간단해집니다.\n</div>"
+                            "question": "🎯 핵심 포인트를 정리해볼까요?",
+                            "answer": "대칭식 $a^2 + b^2$은 기본 대칭식 $a + b$와 $ab$로 표현할 수 있다는 것이 핵심입니다.<br><span class='highlight'>$(a + b)^2 - 2ab = a^2 + b^2$</span>"
                         }
                     ],
                     "creativeQuestions": {
-                        "title": "💭 이 문제를 더 깊이 이해하기 위한 심화 질문들:",
+                        "title": "💭 1등급의 머릿 속 추가질문:",
                         "questions": [
                             {
-                                "text": "만약 조건에서 우변이 <span class='highlight'>a² + b² + c²</span>가 아니라 <span class='highlight'>ab + bc + ca</span>였다면 어떻게 접근해야 할까요?",
-                                "hint": "이 경우에도 세 변수가 같은 방정식의 근이 되지만, 계산 과정이 달라집니다."
+                                "text": "만약 $a + b = 5$, $ab = 7$이었다면 $a^2 + b^2$는 얼마일까요?",
+                                "hint": "같은 공식을 사용하면 됩니다."
                             },
                             {
-                                "text": "이 문제를 일반화하여 <span class='highlight'>n개의 변수</span>에 대한 문제로 확장할 수 있을까요?",
-                                "hint": "n차 방정식의 근과 계수의 관계를 생각해보세요."
+                                "text": "$a^3 + b^3$을 구하려면 어떤 공식을 사용해야 할까요?",
+                                "hint": "$a^3 + b^3 = (a + b)(a^2 - ab + b^2)$ 공식을 생각해보세요."
                             },
                             {
-                                "text": "실제로 a, b, c의 구체적인 값들을 구할 수 있을까요? 그 값들 사이에는 어떤 관계가 있을까요?",
-                                "hint": "삼차방정식을 직접 풀어보고, 근들의 대칭성을 관찰해보세요."
+                                "text": "이 문제를 일반화하여 $a + b = p$, $ab = q$일 때 $a^2 + b^2$를 구하는 공식을 만들어보세요.",
+                                "hint": "$a^2 + b^2 = p^2 - 2q$가 됩니다."
                             }
                         ],
-                        "footer": "🚀 이런 질문들을 스스로 만들어내는 것이 <span class='important'>수학적 사고력</span>을 기르는 핵심입니다!"
+                        "footer": "🚀 대칭식의 성질을 이해하면 더 복잡한 문제도 쉽게 풀 수 있어요!"
                     },
-                    "keyPoints": [
-                        "공통된 우변을 발견하여 세 변수가 같은 방정식의 근임을 파악",
-                        "대칭성을 이용하여 문제를 단순화",
-                        "근과 계수의 관계를 활용하여 미지수들 사이의 관계식 유도",
-                        "항등식 (a+b+c)² = a²+b²+c² + 2(ab+bc+ca)을 이용한 계산"
-                    ],
                     "similarProblem": {
-                        "description": "세 실수 x, y, z가 x³-4x²+x+15 = y³-4y²+y+15 = z³-4z²+z+15 = x²+y²+z²를 만족할 때, xyz의 값을 구하시오.",
+                        "description": "두 실수 $p$, $q$가 $p + q = 4$, $pq = 3$을 만족할 때, $p^2 + q^2$의 값을 구하시오.",
                         "options": [
-                            { "value": 1, "text": "① 1" },
-                            { "value": 0, "text": "② 0" },
-                            { "value": -1, "text": "③ -1" },
-                            { "value": -2, "text": "④ -2" },
-                            { "value": 2, "text": "⑤ 2" }
+                            { "value": 8, "text": "① 8" },
+                            { "value": 10, "text": "② 10" },
+                            { "value": 12, "text": "③ 12" },
+                            { "value": 14, "text": "④ 14" },
+                            { "value": 16, "text": "⑤ 16" }
                         ]
                     },
-                    "similarProblemAnswer": -1,
+                    "similarProblemAnswer": 10,
                     "similarProblemSolution": {
                         "steps": [
                             {
-                                "title": "1단계: 패턴 발견",
-                                "content": "세 식의 우변이 모두 <strong>x² + y² + z²</strong>로 같다는 것을 발견합니다.<br>이는 x, y, z가 같은 방정식의 세 근임을 의미합니다."
+                                "title": "1단계: 공식 적용",
+                                "content": "$p^2 + q^2 = (p + q)^2 - 2pq$"
                             },
                             {
-                                "title": "2단계: 방정식 세우기",
-                                "content": "t³ - 4t² + t + 15 = x² + y² + z²<br>이 방정식의 세 근이 x, y, z입니다."
-                            },
-                            {
-                                "title": "3단계: 근과 계수의 관계",
-                                "content": "• x + y + z = 4<br>• xy + yz + zx = 1<br>• xyz = -(15 - (x² + y² + z²))"
-                            },
-                            {
-                                "title": "4단계: x² + y² + z² 계산",
-                                "content": "(x + y + z)² = x² + y² + z² + 2(xy + yz + zx)<br>16 = x² + y² + z² + 2<br>따라서 <strong>x² + y² + z² = 14</strong>"
+                                "title": "2단계: 값 대입",
+                                "content": "$p^2 + q^2 = 4^2 - 2 \\times 3 = 16 - 6 = 10$"
                             }
                         ],
-                        "finalAnswer": "xyz = -(15 - 14) = -1"
+                        "finalAnswer": "따라서 답은 ② 10입니다."
                     }
                 },
                 {
                     "id": 2,
-                    "title": "이차방정식의 근과 계수",
+                    "title": "수학 문제 2",
                     "problemInfo": {
-                        "description": "이차방정식 x² - 2x + k = 0의 두 근이 α, β일 때, α² + β² = 10을 만족하는 상수 k의 값을 구하여라.",
-                        "conditions": []
+                        "description": "함수 $f(x) = x^2 - 4x + 3$의 최솟값을 구하시오.",
+                        "conditions": [
+                            "$f(x) = x^2 - 4x + 3$"
+                        ]
                     },
                     "analysisInfo": [
-                        "이차방정식의 근과 계수의 관계 확인",
-                        "주어진 조건 α² + β² = 10 파악",
-                        "목표: 상수 k의 값 구하기",
-                        "항등식 활용 필요성 인지"
+                        "이차함수의 최솟값을 구하는 문제입니다.",
+                        "완전제곱식으로 변형하거나 미분을 사용할 수 있습니다.",
+                        "이차함수 $ax^2 + bx + c$ (a > 0)의 최솟값은 $x = -\\frac{b}{2a}$에서 발생합니다."
                     ],
                     "highlightTags": [
-                        { "text": "x² - 2x + k = 0", "insightNumber": 1 },
-                        { "text": "두 근이 α, β", "insightNumber": 2 },
-                        { "text": "α² + β² = 10", "insightNumber": 3 },
-                        { "text": "상수 k의 값", "insightNumber": 4 }
+                        { "text": "최솟값", "insightNumber": 1 },
+                        { "text": "x^2 - 4x + 3", "insightNumber": 2 }
                     ],
                     "solutionSteps": [
                         {
-                            "question": "🤔 이차방정식의 근과 계수의 관계는 무엇일까요?",
-                            "answer": "이차방정식 x² - 2x + k = 0에서:\n\n• 두 근의 합: <span class='highlight'>α + β = 2</span>\n• 두 근의 곱: <span class='highlight'>αβ = k</span>\n\n이것이 비에타의 공식입니다!"
+                            "question": "🤔 이차함수의 최솟값을 어떻게 구할까요?",
+                            "answer": "완전제곱식으로 변형하는 방법을 사용하겠습니다."
                         },
                         {
-                            "question": "💡 α² + β²를 어떻게 표현할 수 있을까요?",
-                            "answer": "항등식을 이용합니다:\n\n<span class='highlight'>(α + β)² = α² + 2αβ + β²</span>\n\n따라서:\nα² + β² = (α + β)² - 2αβ"
+                            "question": "💡 완전제곱식으로 변형해보겠습니다",
+                            "answer": "$f(x) = x^2 - 4x + 3 = (x^2 - 4x + 4) - 4 + 3 = (x - 2)^2 - 1$"
                         },
                         {
-                            "question": "🎯 주어진 조건에 대입해볼까요?",
-                            "answer": "α² + β² = 10이고,\nα + β = 2, αβ = k이므로:\n\n10 = 2² - 2k\n10 = 4 - 2k\n\n따라서 <span class='highlight'>2k = -6</span>"
+                            "question": "🔍 $(x - 2)^2 - 1$에서 최솟값은 언제일까요?",
+                            "answer": "$(x - 2)^2 \\geq 0$이므로, $x = 2$일 때 $(x - 2)^2 = 0$이 되어 최솟값을 가집니다."
                         },
                         {
-                            "question": "✨ k의 값은?",
-                            "answer": "2k = -6에서:\n\n<span class='important'>k = -3</span>\n\n따라서 상수 k의 값은 <span class='important'>-3</span>입니다!"
+                            "question": "📝 최솟값을 계산해보겠습니다",
+                            "answer": "$x = 2$일 때 $f(2) = (2 - 2)^2 - 1 = 0 - 1 = -1$"
+                        },
+                        {
+                            "question": "✅ 검산을 해보겠습니다",
+                            "answer": "$f(2) = 2^2 - 4 \\times 2 + 3 = 4 - 8 + 3 = -1$ ✓"
+                        },
+                        {
+                            "question": "🎯 핵심 포인트를 정리해볼까요?",
+                            "answer": "이차함수 $ax^2 + bx + c$ (a > 0)의 최솟값은 <span class='highlight'>$x = -\\frac{b}{2a}$</span>에서 발생하며, 완전제곱식으로 변형하면 쉽게 구할 수 있습니다."
                         }
                     ],
                     "creativeQuestions": {
-                        "title": "💭 이 문제를 더 깊이 이해하기 위한 심화 질문들:",
+                        "title": "💭 1등급의 머릿 속 추가질문:",
                         "questions": [
                             {
-                                "text": "판별식 D = 4 - 4k를 계산하면 어떤 의미가 있을까요? <span class='highlight'>k = -3</span>일 때 근의 성질은?",
-                                "hint": "D > 0이면 서로 다른 두 실근, D = 0이면 중근, D < 0이면 허근입니다."
+                                "text": "만약 $f(x) = x^2 - 4x + 5$였다면 최솟값은 얼마일까요?",
+                                "hint": "같은 방법으로 완전제곱식을 만들어보세요."
                             },
                             {
-                                "text": "만약 조건이 <span class='highlight'>α³ + β³ = 28</span>이었다면 어떻게 풀어야 할까요?",
-                                "hint": "a³ + b³ = (a + b)³ - 3ab(a + b) 공식을 활용해보세요."
-                            },
-                            {
-                                "text": "이차방정식의 두 근 α, β와 계수들 사이의 기하학적 의미는 무엇일까요?",
-                                "hint": "포물선 y = x² - 2x + k와 x축의 교점을 생각해보세요."
+                                "text": "이차함수의 최솟값이 $x = 3$에서 발생한다면, 이차항의 계수가 1일 때 함수의 형태는?",
+                                "hint": "$f(x) = (x - 3)^2 + k$ 형태가 될 것입니다."
                             }
                         ],
-                        "footer": "🚀 이런 질문들을 스스로 만들어내는 것이 <span class='important'>수학적 사고력</span>을 기르는 핵심입니다!"
+                        "footer": "🚀 이차함수의 성질을 완벽히 이해하면 다양한 응용 문제를 풀 수 있어요!"
                     },
-                    "keyPoints": [
-                        "이차방정식의 근과 계수의 관계 (비에타의 공식)",
-                        "항등식 (α + β)² = α² + 2αβ + β² 활용",
-                        "주어진 조건을 이용한 방정식 수립"
-                    ],
                     "similarProblem": {
-                        "description": "이차방정식 x² - 6x + m = 0의 두 근이 p, q일 때, p² + q² = 20을 만족하는 상수 m의 값을 구하시오.",
+                        "description": "함수 $g(x) = x^2 - 6x + 5$의 최솟값을 구하시오.",
                         "options": [
-                            { "value": 6, "text": "① 6" },
-                            { "value": 7, "text": "② 7" },
-                            { "value": 8, "text": "③ 8" },
-                            { "value": 9, "text": "④ 9" },
-                            { "value": 10, "text": "⑤ 10" }
+                            { "value": -4, "text": "① -4" },
+                            { "value": -3, "text": "② -3" },
+                            { "value": -2, "text": "③ -2" },
+                            { "value": -1, "text": "④ -1" },
+                            { "value": 0, "text": "⑤ 0" }
                         ]
                     },
-                    "similarProblemAnswer": 8,
+                    "similarProblemAnswer": -4,
                     "similarProblemSolution": {
                         "steps": [
                             {
-                                "title": "1단계: 근과 계수의 관계",
-                                "content": "p + q = 6, pq = m"
+                                "title": "1단계: 완전제곱식 변형",
+                                "content": "$g(x) = x^2 - 6x + 5 = (x - 3)^2 - 9 + 5 = (x - 3)^2 - 4$"
                             },
                             {
-                                "title": "2단계: 항등식 적용",
-                                "content": "p² + q² = (p + q)² - 2pq = 36 - 2m"
-                            },
-                            {
-                                "title": "3단계: 조건 대입",
-                                "content": "20 = 36 - 2m<br>2m = 16"
+                                "title": "2단계: 최솟값 구하기",
+                                "content": "$x = 3$일 때 최솟값 $-4$를 가집니다."
                             }
                         ],
-                        "finalAnswer": "m = 8"
+                        "finalAnswer": "따라서 답은 ① -4입니다."
                     }
                 }
             ]
         };
         
-        // 20문제로 확장 (더미 데이터 추가)
-        for (let i = 3; i <= 20; i++) {
+        // 3번부터 30번까지 빈 문제 생성
+        for (let i = 3; i <= 30; i++) {
             sampleData.problems.push({
                 "id": i,
                 "title": `문제 ${i}`,
+                "isEmpty": true,
                 "problemInfo": {
-                    "description": `이것은 ${i}번째 문제입니다. 주어진 조건을 만족하는 값을 구하시오.`,
-                    "conditions": ["조건 1", "조건 2", "조건 3"]
+                    "description": "이 문제는 아직 생성되지 않았습니다. JSON 입력을 통해 문제를 추가해주세요.",
+                    "conditions": []
                 },
-                "analysisInfo": ["분석 1", "분석 2", "분석 3"],
-                "highlightTags": [
-                    { "text": "주어진 조건", "insightNumber": 1 }
-                ],
-                "solutionSteps": [
-                    {
-                        "question": "문제를 어떻게 접근할까요?",
-                        "answer": "단계별로 차근차근 접근합니다."
-                    },
-                    {
-                        "question": "핵심 포인트는 무엇인가요?",
-                        "answer": "이 문제의 핵심은 조건을 잘 파악하는 것입니다."
-                    }
-                ],
+                "analysisInfo": [],
+                "highlightTags": [],
+                "solutionSteps": [],
                 "creativeQuestions": {
-                    "title": "💭 이 문제를 더 깊이 이해하기 위한 심화 질문들:",
-                    "questions": [
-                        {
-                            "text": "이 문제의 조건을 다르게 변형한다면?",
-                            "hint": "조건의 변화가 결과에 미치는 영향을 생각해보세요."
-                        },
-                        {
-                            "text": "다른 접근 방법은 없을까요?",
-                            "hint": "여러 관점에서 문제를 바라보세요."
-                        },
-                        {
-                            "text": "이 문제의 일반화는 가능할까요?",
-                            "hint": "특수한 경우에서 일반적인 경우로 확장해보세요."
-                        }
-                    ],
-                    "footer": "🚀 이런 질문들을 스스로 만들어내는 것이 <span class='important'>수학적 사고력</span>을 기르는 핵심입니다!"
+                    "title": "💭 창의적 질문:",
+                    "questions": [],
+                    "footer": ""
                 },
-                "keyPoints": ["핵심 포인트 1"],
                 "similarProblem": {
-                    "description": "유사 문제입니다.",
-                    "options": [
-                        { "value": 1, "text": "① 1" },
-                        { "value": 2, "text": "② 2" },
-                        { "value": 3, "text": "③ 3" },
-                        { "value": 4, "text": "④ 4" },
-                        { "value": 5, "text": "⑤ 5" }
-                    ]
+                    "description": "",
+                    "options": []
                 },
-                "similarProblemAnswer": 3,
+                "similarProblemAnswer": 1,
                 "similarProblemSolution": {
-                    "steps": [{ "title": "풀이", "content": "풀이 과정" }],
-                    "finalAnswer": "정답: 3"
+                    "steps": [],
+                    "finalAnswer": ""
                 }
             });
         }
         
         // 문제 데이터 로드
         function loadProblemsData() {
-            // 실제로는 fetch API로 JSON 파일을 로드
-            // fetch('problems.json').then(response => response.json()).then(data => {...});
+            // 로컬 스토리지에서 데이터 확인
+            const savedData = localStorage.getItem('mathProblemsData');
             
-            // 여기서는 샘플 데이터 사용
-            problemsData = sampleData;
+            if (savedData) {
+                try {
+                    problemsData = JSON.parse(savedData);
+                    console.log('로컬 스토리지에서 데이터를 로드했습니다.');
+                } catch (e) {
+                    console.error('로컬 스토리지 데이터 파싱 오류:', e);
+                    problemsData = sampleData;
+                }
+            } else {
+                // 실제로는 fetch API로 JSON 파일을 로드
+                // fetch('problems.json').then(response => response.json()).then(data => {...});
+                
+                // 여기서는 샘플 데이터 사용
+                problemsData = sampleData;
+            }
+            
             problemsCompleted = new Array(problemsData.problems.length).fill(false);
             
             // 초기화
@@ -2268,18 +2702,142 @@
             updateProgress();
         }
         
+        // MathJax 렌더링 함수
+        function renderMathJax(element) {
+            if (typeof MathJax !== 'undefined' && MathJax.typesetPromise) {
+                MathJax.typesetPromise([element]).then(() => {
+                    console.log('MathJax 렌더링 완료');
+                }).catch((err) => {
+                    console.error('MathJax 렌더링 오류:', err);
+                });
+            }
+        }
+        
+        // 전체 페이지 MathJax 재렌더링
+        function rerenderAllMath() {
+            if (typeof MathJax !== 'undefined' && MathJax.typesetPromise) {
+                MathJax.typesetPromise().then(() => {
+                    console.log('전체 MathJax 재렌더링 완료');
+                }).catch((err) => {
+                    console.error('전체 MathJax 렌더링 오류:', err);
+                });
+            }
+        }
+        
+        // 데이터 내보내기 함수
+        function exportData() {
+            const dataStr = JSON.stringify(problemsData, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `math_problems_${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+        }
+        
+        // 데이터 가져오기 함수
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    
+                    // 데이터 검증
+                    if (importedData.problems && Array.isArray(importedData.problems)) {
+                        problemsData = importedData;
+                        localStorage.setItem('mathProblemsData', JSON.stringify(problemsData));
+                        
+                        alert('데이터를 성공적으로 가져왔습니다!');
+                        location.reload(); // 페이지 새로고침
+                    } else {
+                        alert('올바르지 않은 데이터 형식입니다.');
+                    }
+                } catch (error) {
+                    alert('파일을 읽는 중 오류가 발생했습니다: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+        
+        // 로컬 스토리지 백업
+        function backupToLocalStorage() {
+            const backupKey = `mathProblemsBackup_${Date.now()}`;
+            localStorage.setItem(backupKey, JSON.stringify(problemsData));
+            console.log('백업 완료:', backupKey);
+            
+            // 오래된 백업 정리 (최근 5개만 유지)
+            const allKeys = Object.keys(localStorage);
+            const backupKeys = allKeys.filter(key => key.startsWith('mathProblemsBackup_'))
+                                    .sort((a, b) => {
+                                        const timeA = parseInt(a.split('_')[1]);
+                                        const timeB = parseInt(b.split('_')[1]);
+                                        return timeB - timeA;
+                                    });
+            
+            // 5개 초과시 오래된 백업 삭제
+            if (backupKeys.length > 5) {
+                backupKeys.slice(5).forEach(key => {
+                    localStorage.removeItem(key);
+                });
+            }
+        }
+        
+        // 백업 목록 표시
+        function showBackupList() {
+            const allKeys = Object.keys(localStorage);
+            const backupKeys = allKeys.filter(key => key.startsWith('mathProblemsBackup_'))
+                                    .sort((a, b) => {
+                                        const timeA = parseInt(a.split('_')[1]);
+                                        const timeB = parseInt(b.split('_')[1]);
+                                        return timeB - timeA;
+                                    });
+            
+            if (backupKeys.length === 0) {
+                alert('백업이 없습니다.');
+                return;
+            }
+            
+            const backupList = backupKeys.map(key => {
+                const timestamp = parseInt(key.split('_')[1]);
+                const date = new Date(timestamp).toLocaleString('ko-KR');
+                return `${date} (${key})`;
+            }).join('\n');
+            
+            const selectedBackup = prompt(`백업 목록:\n${backupList}\n\n복원할 백업의 키를 입력하세요:`);
+            
+            if (selectedBackup && localStorage.getItem(selectedBackup)) {
+                try {
+                    const backupData = JSON.parse(localStorage.getItem(selectedBackup));
+                    problemsData = backupData;
+                    localStorage.setItem('mathProblemsData', JSON.stringify(problemsData));
+                    alert('백업을 성공적으로 복원했습니다!');
+                    location.reload();
+                } catch (error) {
+                    alert('백업 복원 중 오류가 발생했습니다: ' + error.message);
+                }
+            }
+        }
+        
         // 문제 네비게이션 초기화
         function initializeProblemNav() {
             const nav = document.getElementById('problemNav');
             nav.innerHTML = '';
             
-            for (let i = 0; i < Math.min(20, problemsData.problems.length); i++) {
+            for (let i = 0; i < Math.min(30, problemsData.problems.length); i++) {
                 const button = document.createElement('button');
                 button.className = 'nav-button';
                 button.textContent = i + 1;
                 button.onclick = () => {
-                    if (i <= currentProblemIndex || problemsCompleted[i-1]) {
-                        loadProblem(i);
+                    // 빈 문제인 경우 JSON 입력 모달 표시
+                    if (problemsData.problems[i].isEmpty) {
+                        openJsonModal(i);
+                    } else {
+                        if (i <= currentProblemIndex || problemsCompleted[i-1]) {
+                            loadProblem(i);
+                        }
                     }
                 };
                 nav.appendChild(button);
@@ -2308,7 +2866,7 @@
             const currentProblemSpan = document.getElementById('currentProblem');
             const totalProblemsSpan = document.getElementById('totalProblems');
             
-            const totalProblems = Math.min(20, problemsData.problems.length);
+            const totalProblems = Math.min(30, problemsData.problems.length);
             const progress = ((currentProblemIndex + 1) / totalProblems) * 100;
             
             progressFill.style.width = progress + '%';
@@ -2343,6 +2901,11 @@
             
             // 질문 가능한 요소들 추가 (약간의 지연)
             setTimeout(addQuestionableElements, 100);
+            
+            // MathJax 렌더링
+            setTimeout(() => {
+                rerenderAllMath();
+            }, 200);
         }
         
         // 문제 표시 업데이트
@@ -2377,6 +2940,51 @@
                 conditionsArea.appendChild(div);
             });
         }
+        
+        // 정규식 이스케이프
+        function escapeRegExp(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+        
+        // 전역 함수 등록
+        window.openJsonModal = openJsonModal;
+        window.closeJsonModal = closeJsonModal;
+        window.switchJsonTab = switchJsonTab;
+        window.loadJsonTemplate = loadJsonTemplate;
+        window.handleImageUpload = handleImageUpload;
+        window.removeImage = removeImage;
+        window.validateAndSaveJson = validateAndSaveJson;
+        
+        // JSON 입력 실시간 검증
+        document.addEventListener('DOMContentLoaded', function() {
+            const jsonInput = document.getElementById('jsonInput');
+            if (jsonInput) {
+                jsonInput.addEventListener('input', validateJson);
+            }
+            
+            // 드래그 앤 드롭 이벤트
+            const uploadArea = document.getElementById('imageUploadArea');
+            if (uploadArea) {
+                uploadArea.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    uploadArea.classList.add('dragover');
+                });
+                
+                uploadArea.addEventListener('dragleave', function(e) {
+                    e.preventDefault();
+                    uploadArea.classList.remove('dragover');
+                });
+                
+                uploadArea.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    uploadArea.classList.remove('dragover');
+                    
+                    const files = e.dataTransfer.files;
+                    const event = { target: { files: files } };
+                    handleImageUpload(event);
+                });
+            }
+        });
         
         // 문제 상태 초기화
         function resetProblemState() {
@@ -2415,11 +3023,6 @@
             if (nextProblemButton) {
                 nextProblemButton.classList.remove('active');
             }
-        }
-        
-        // 정규식 이스케이프
-        function escapeRegExp(string) {
-            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         }
         
         // 유사문제 해설 업데이트
@@ -2672,8 +3275,11 @@
                     isTyping = false;
                     if (callback) callback();
                     
-                    // 타이핑이 끝나면 질문 가능한 요소 추가
-                    setTimeout(addQuestionableElements, 100);
+                    // 타이핑이 끝나면 질문 가능한 요소 추가 및 MathJax 렌더링
+                    setTimeout(() => {
+                        addQuestionableElements();
+                        renderMathJax(element);
+                    }, 100);
                 }
             }
             type();
@@ -2756,6 +3362,9 @@
                                 hintDiv.style.opacity = '0';
                                 hintDiv.style.animation = 'fadeIn 0.3s ease-out forwards';
                                 questionDiv.appendChild(hintDiv);
+                                
+                                // MathJax 렌더링
+                                renderMathJax(questionDiv);
                                 
                                 // 다음 질문으로
                                 questionIndex++;
@@ -3108,6 +3717,438 @@
             }
         }
         
+        // JSON 스키마 정의
+        const problemJsonSchema = {
+            "type": "object",
+            "required": ["id", "title", "problemInfo", "analysisInfo", "solutionSteps"],
+            "properties": {
+                "id": { "type": "number" },
+                "title": { "type": "string", "minLength": 1 },
+                "problemInfo": {
+                    "type": "object",
+                    "required": ["description"],
+                    "properties": {
+                        "description": { "type": "string", "minLength": 1 },
+                        "conditions": {
+                            "type": "array",
+                            "items": { "type": "string" }
+                        },
+                        "images": {
+                            "type": "array",
+                            "items": { "type": "string" }
+                        }
+                    }
+                },
+                "analysisInfo": {
+                    "type": "array",
+                    "items": { "type": "string" }
+                },
+                "highlightTags": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "required": ["text", "insightNumber"],
+                        "properties": {
+                            "text": { "type": "string" },
+                            "insightNumber": { "type": "number" }
+                        }
+                    }
+                },
+                "solutionSteps": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "required": ["question", "answer"],
+                        "properties": {
+                            "question": { "type": "string" },
+                            "answer": { "type": "string" }
+                        }
+                    }
+                },
+                "creativeQuestions": {
+                    "type": "object",
+                    "properties": {
+                        "title": { "type": "string" },
+                        "questions": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "required": ["text"],
+                                "properties": {
+                                    "text": { "type": "string" },
+                                    "hint": { "type": "string" }
+                                }
+                            }
+                        },
+                        "footer": { "type": "string" }
+                    }
+                },
+                "similarProblem": {
+                    "type": "object",
+                    "required": ["description", "options"],
+                    "properties": {
+                        "description": { "type": "string" },
+                        "options": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "required": ["value", "text"],
+                                "properties": {
+                                    "value": { "type": "number" },
+                                    "text": { "type": "string" }
+                                }
+                            }
+                        }
+                    }
+                },
+                "similarProblemAnswer": { "type": "number" }
+            }
+        };
+        
+        // JSON 모달 관련 변수
+        let currentEditingProblemIndex = -1;
+        let uploadedImages = {};
+        let currentJsonTab = 'json';
+        
+        // JSON 모달 열기
+        function openJsonModal(problemIndex = -1) {
+            currentEditingProblemIndex = problemIndex;
+            const modal = document.getElementById('jsonInputModal');
+            
+            // 기존 데이터가 있다면 로드
+            if (problemIndex >= 0 && !problemsData.problems[problemIndex].isEmpty) {
+                const problemData = problemsData.problems[problemIndex];
+                document.getElementById('jsonInput').value = JSON.stringify(problemData, null, 2);
+                validateJson();
+            } else {
+                document.getElementById('jsonInput').value = '';
+            }
+            
+            // 스키마 가이드 표시
+            updateJsonSchemaGuide();
+            
+            // 모달 표시
+            modal.style.display = 'flex';
+            setTimeout(() => {
+                modal.classList.add('active');
+            }, 10);
+        }
+        
+        // JSON 모달 닫기
+        function closeJsonModal() {
+            const modal = document.getElementById('jsonInputModal');
+            modal.classList.remove('active');
+            setTimeout(() => {
+                modal.style.display = 'none';
+                currentEditingProblemIndex = -1;
+                document.getElementById('jsonInput').value = '';
+                document.getElementById('imagePreviewContainer').innerHTML = '';
+                uploadedImages = {};
+            }, 300);
+        }
+        
+        // JSON 탭 전환
+        function switchJsonTab(tabName) {
+            // 탭 버튼 상태 업데이트
+            document.querySelectorAll('.json-tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // 탭 콘텐츠 표시/숨김
+            document.querySelectorAll('.json-tab-content').forEach(content => {
+                content.style.display = 'none';
+            });
+            document.getElementById(tabName + 'Tab').style.display = 'block';
+            
+            currentJsonTab = tabName;
+            
+            // 미리보기 탭인 경우 프리뷰 업데이트
+            if (tabName === 'preview') {
+                updatePreview();
+            }
+        }
+        
+        // JSON 스키마 가이드 업데이트
+        function updateJsonSchemaGuide() {
+            const guide = document.getElementById('jsonSchemaGuide');
+            guide.textContent = JSON.stringify(problemJsonSchema, null, 2);
+        }
+        
+        // JSON 템플릿 로드
+        function loadJsonTemplate() {
+            const template = {
+                "id": currentEditingProblemIndex + 1,
+                "title": `문제 ${currentEditingProblemIndex + 1}`,
+                "problemInfo": {
+                    "description": "문제 설명을 입력하세요. 수식은 $x^2 + y^2 = 1$처럼 작성할 수 있습니다.",
+                    "conditions": [
+                        "조건 1: $a + b = 5$",
+                        "조건 2: $ab = 6$"
+                    ]
+                },
+                "analysisInfo": [
+                    "변수의 개수와 종류 파악",
+                    "조건의 완전성 확인",
+                    "목표 명확히 하기"
+                ],
+                "highlightTags": [
+                    { "text": "강조할 텍스트", "insightNumber": 1 }
+                ],
+                "solutionSteps": [
+                    {
+                        "question": "🤔 첫 번째 질문은 무엇인가요?",
+                        "answer": "답변을 작성하세요. <span class='highlight'>중요한 부분</span>을 강조할 수 있습니다. 수식: $x = \\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}$"
+                    },
+                    {
+                        "question": "💡 두 번째 단계는?",
+                        "answer": "단계별 설명을 작성하세요."
+                    }
+                ],
+                "creativeQuestions": {
+                    "title": "💭 1등급의 머릿 속 추가질문:",
+                    "questions": [
+                        {
+                            "text": "조건을 다르게 변형한다면 어떻게 될까요?",
+                            "hint": "조건의 변화가 결과에 미치는 영향을 생각해보세요."
+                        },
+                        {
+                            "text": "다른 접근 방법은 없을까요?",
+                            "hint": "여러 관점에서 문제를 바라보세요."
+                        }
+                    ],
+                    "footer": "🚀 창의적 사고력을 기르는 것이 핵심입니다!"
+                },
+                "similarProblem": {
+                    "description": "두 실수 $p, q$가 $p + q = 4$, $pq = 3$을 만족할 때, $p^2 + q^2$의 값을 구하시오.",
+                    "options": [
+                        { "value": 8, "text": "① 8" },
+                        { "value": 10, "text": "② 10" },
+                        { "value": 12, "text": "③ 12" },
+                        { "value": 14, "text": "④ 14" },
+                        { "value": 16, "text": "⑤ 16" }
+                    ]
+                },
+                "similarProblemAnswer": 10,
+                "similarProblemSolution": {
+                    "steps": [
+                        {
+                            "title": "1단계: 항등식 이용",
+                            "content": "$p^2 + q^2 = (p + q)^2 - 2pq = 4^2 - 2 \\times 3 = 16 - 6 = 10$"
+                        }
+                    ],
+                    "finalAnswer": "정답: 10"
+                }
+            };
+            
+            document.getElementById('jsonInput').value = JSON.stringify(template, null, 2);
+            validateJson();
+        }
+        
+        // JSON 유효성 검증
+        function validateJson() {
+            const input = document.getElementById('jsonInput').value.trim();
+            const status = document.getElementById('jsonValidationStatus');
+            
+            if (!input) {
+                status.className = 'json-validation-status';
+                status.style.display = 'none';
+                return false;
+            }
+            
+            try {
+                const jsonData = JSON.parse(input);
+                
+                // 기본 스키마 검증
+                const validation = validateJsonSchema(jsonData, problemJsonSchema);
+                
+                if (validation.valid) {
+                    status.className = 'json-validation-status valid';
+                    status.innerHTML = '✅ JSON 형식이 올바릅니다.';
+                    return true;
+                } else {
+                    status.className = 'json-validation-status invalid';
+                    status.innerHTML = `❌ 스키마 오류: ${validation.error}`;
+                    return false;
+                }
+            } catch (e) {
+                status.className = 'json-validation-status invalid';
+                status.innerHTML = `❌ JSON 구문 오류: ${e.message}`;
+                return false;
+            }
+        }
+        
+        // 간단한 JSON 스키마 검증
+        function validateJsonSchema(data, schema) {
+            try {
+                // 필수 속성 검사
+                if (schema.required) {
+                    for (const required of schema.required) {
+                        if (!(required in data)) {
+                            return { valid: false, error: `필수 속성 '${required}'이 누락되었습니다.` };
+                        }
+                    }
+                }
+                
+                // 타입 검사
+                if (schema.type && typeof data !== schema.type) {
+                    return { valid: false, error: `타입이 일치하지 않습니다. 예상: ${schema.type}, 실제: ${typeof data}` };
+                }
+                
+                // 문자열 최소 길이 검사
+                if (schema.minLength && typeof data === 'string' && data.length < schema.minLength) {
+                    return { valid: false, error: `문자열 길이가 최소 ${schema.minLength}자 이상이어야 합니다.` };
+                }
+                
+                return { valid: true };
+            } catch (e) {
+                return { valid: false, error: e.message };
+            }
+        }
+        
+        // 이미지 업로드 처리
+        function handleImageUpload(event) {
+            const files = event.target.files;
+            const container = document.getElementById('imagePreviewContainer');
+            
+            Array.from(files).forEach((file, index) => {
+                // 파일 크기 검증 (5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert(`${file.name}은 파일 크기가 5MB를 초과합니다.`);
+                    return;
+                }
+                
+                // 파일 타입 검증
+                if (!file.type.startsWith('image/')) {
+                    alert(`${file.name}은 이미지 파일이 아닙니다.`);
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imageId = Date.now() + '_' + index;
+                    uploadedImages[imageId] = {
+                        name: file.name,
+                        data: e.target.result,
+                        size: file.size
+                    };
+                    
+                    // 이미지 미리보기 생성
+                    const previewItem = document.createElement('div');
+                    previewItem.className = 'image-preview-item';
+                    previewItem.innerHTML = `
+                        <img src="${e.target.result}" alt="${file.name}">
+                        <div class="image-preview-info">
+                            <div>${file.name}</div>
+                            <div>${(file.size / 1024).toFixed(1)} KB</div>
+                        </div>
+                        <button class="image-remove-button" onclick="removeImage('${imageId}')">×</button>
+                    `;
+                    
+                    container.appendChild(previewItem);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+        
+        // 이미지 제거
+        function removeImage(imageId) {
+            delete uploadedImages[imageId];
+            event.target.closest('.image-preview-item').remove();
+        }
+        
+        // 미리보기 업데이트
+        function updatePreview() {
+            const input = document.getElementById('jsonInput').value.trim();
+            const container = document.getElementById('previewContainer');
+            
+            if (!input) {
+                container.innerHTML = '<p class="preview-placeholder">JSON 데이터를 입력하면 미리보기가 표시됩니다.</p>';
+                return;
+            }
+            
+            try {
+                const data = JSON.parse(input);
+                
+                container.innerHTML = `
+                    <div class="preview-problem">
+                        <h3>${data.title || '제목 없음'}</h3>
+                        <p><strong>설명:</strong> ${data.problemInfo?.description || '설명 없음'}</p>
+                        ${data.problemInfo?.conditions ? `
+                            <div><strong>조건:</strong></div>
+                            <ul>
+                                ${data.problemInfo.conditions.map(condition => `<li>${condition}</li>`).join('')}
+                            </ul>
+                        ` : ''}
+                        ${data.solutionSteps ? `
+                            <div><strong>해설 단계:</strong> ${data.solutionSteps.length}단계</div>
+                        ` : ''}
+                        ${data.creativeQuestions?.questions ? `
+                            <div><strong>창의적 질문:</strong> ${data.creativeQuestions.questions.length}개</div>
+                        ` : ''}
+                    </div>
+                `;
+                
+                // 미리보기에서도 MathJax 렌더링
+                setTimeout(() => {
+                    renderMathJax(container);
+                }, 100);
+            } catch (e) {
+                container.innerHTML = `<p style="color: #e57373;">미리보기를 생성할 수 없습니다: ${e.message}</p>`;
+            }
+        }
+        
+        // JSON 검증 및 저장
+        function validateAndSaveJson() {
+            if (!validateJson()) {
+                alert('JSON 데이터를 먼저 검증해주세요.');
+                return;
+            }
+            
+            try {
+                const jsonData = JSON.parse(document.getElementById('jsonInput').value);
+                
+                // 이미지 데이터 추가
+                if (Object.keys(uploadedImages).length > 0) {
+                    jsonData.problemInfo.images = Object.values(uploadedImages).map(img => img.data);
+                }
+                
+                // 문제 데이터 업데이트
+                if (currentEditingProblemIndex >= 0) {
+                    problemsData.problems[currentEditingProblemIndex] = {
+                        ...jsonData,
+                        isEmpty: false
+                    };
+                    
+                    // 로컬 스토리지에 저장
+                    localStorage.setItem('mathProblemsData', JSON.stringify(problemsData));
+                    
+                    // 백업 생성
+                    backupToLocalStorage();
+                    
+                    alert('문제가 성공적으로 저장되었습니다!');
+                    closeJsonModal();
+                    
+                    // 문제 네비게이션 업데이트
+                    updateProblemNav();
+                }
+            } catch (e) {
+                alert('저장 중 오류가 발생했습니다: ' + e.message);
+            }
+        }
+        
+        // 전역 함수 등록
+        window.openJsonModal = openJsonModal;
+        window.closeJsonModal = closeJsonModal;
+        window.switchJsonTab = switchJsonTab;
+        window.loadJsonTemplate = loadJsonTemplate;
+        window.handleImageUpload = handleImageUpload;
+        window.removeImage = removeImage;
+        window.validateAndSaveJson = validateAndSaveJson;
+        window.exportData = exportData;
+        window.importData = importData;
+        window.showBackupList = showBackupList;
+        
         // DOMContentLoaded 이벤트 리스너
         document.addEventListener('DOMContentLoaded', function() {
             const insightButton = document.getElementById('insightButton');
@@ -3118,6 +4159,35 @@
             const nextButton = document.getElementById('nextButton');
             if (nextButton) {
                 nextButton.addEventListener('click', showNextStep);
+            }
+            
+            // JSON 입력 실시간 검증
+            const jsonInput = document.getElementById('jsonInput');
+            if (jsonInput) {
+                jsonInput.addEventListener('input', validateJson);
+            }
+            
+            // 드래그 앤 드롭 이벤트
+            const uploadArea = document.getElementById('imageUploadArea');
+            if (uploadArea) {
+                uploadArea.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    uploadArea.classList.add('dragover');
+                });
+                
+                uploadArea.addEventListener('dragleave', function(e) {
+                    e.preventDefault();
+                    uploadArea.classList.remove('dragover');
+                });
+                
+                uploadArea.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    uploadArea.classList.remove('dragover');
+                    
+                    const files = e.dataTransfer.files;
+                    const event = { target: { files: files } };
+                    handleImageUpload(event);
+                });
             }
             
             document.addEventListener('click', function(e) {
@@ -3132,8 +4202,11 @@
                 if (e.key === 'Escape') {
                     const solutionPopup = document.getElementById('solutionPopup');
                     const resultPopup = document.getElementById('resultPopup');
+                    const jsonModal = document.getElementById('jsonInputModal');
                     
-                    if (solutionPopup && solutionPopup.classList && solutionPopup.classList.contains('active')) {
+                    if (jsonModal && jsonModal.classList && jsonModal.classList.contains('active')) {
+                        closeJsonModal();
+                    } else if (solutionPopup && solutionPopup.classList && solutionPopup.classList.contains('active')) {
                         closeSolution();
                     } else if (resultPopup && resultPopup.classList && resultPopup.classList.contains('active')) {
                         closeResultPopup();

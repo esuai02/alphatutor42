@@ -2465,241 +2465,356 @@
         let isInsightActive = false;
         let autoNextTimeout;
         
-        // 샘플 데이터 (실제로는 별도 JSON 파일에서 로드)
-        const sampleData = {
-            "problems": [
-                {
-                    "id": 1,
-                    "title": "수학 문제 1",
-                    "problemInfo": {
-                        "description": "실수 $a$, $b$가 $a + b = 5$이고 $ab = 6$일 때, $a^2 + b^2$의 값을 구하시오.",
-                        "conditions": [
-                            "$a + b = 5$",
-                            "$ab = 6$"
-                        ]
-                    },
-                    "analysisInfo": [
-                        "주어진 조건을 활용하여 $a^2 + b^2$를 구해야 합니다.",
-                        "$(a + b)^2 = a^2 + 2ab + b^2$ 공식을 활용할 수 있습니다.",
-                        "따라서 $a^2 + b^2 = (a + b)^2 - 2ab$로 계산할 수 있습니다."
-                    ],
-                    "highlightTags": [
-                        { "text": "실수", "insightNumber": 1 },
-                        { "text": "a + b = 5", "insightNumber": 2 },
-                        { "text": "ab = 6", "insightNumber": 3 }
-                    ],
-                    "solutionSteps": [
-                        {
-                            "question": "🤔 이 문제에서 구하는 것은 무엇인가요?",
-                            "answer": "$a^2 + b^2$의 값을 구해야 합니다."
-                        },
-                        {
-                            "question": "💡 주어진 조건들을 어떻게 활용할 수 있을까요?",
-                            "answer": "$(a + b)^2 = a^2 + 2ab + b^2$ 공식을 사용하면 됩니다."
-                        },
-                        {
-                            "question": "🔍 공식을 정리해보면 어떻게 될까요?",
-                            "answer": "$a^2 + b^2 = (a + b)^2 - 2ab$가 됩니다."
-                        },
-                        {
-                            "question": "📝 주어진 값들을 대입해보겠습니다",
-                            "answer": "$a^2 + b^2 = 5^2 - 2 \\times 6 = 25 - 12 = 13$"
-                        },
-                        {
-                            "question": "✅ 검산을 해보겠습니다",
-                            "answer": "$a$, $b$는 $t^2 - 5t + 6 = 0$의 근이므로 $a = 2$, $b = 3$ (또는 그 반대)입니다.<br>실제로 $2^2 + 3^2 = 4 + 9 = 13$으로 맞습니다."
-                        },
-                        {
-                            "question": "🎯 핵심 포인트를 정리해볼까요?",
-                            "answer": "대칭식 $a^2 + b^2$은 기본 대칭식 $a + b$와 $ab$로 표현할 수 있다는 것이 핵심입니다.<br><span class='highlight'>$(a + b)^2 - 2ab = a^2 + b^2$</span>"
-                        }
-                    ],
-                    "creativeQuestions": {
-                        "title": "💭 1등급의 머릿 속 추가질문:",
-                        "questions": [
-                            {
-                                "text": "만약 $a + b = 5$, $ab = 7$이었다면 $a^2 + b^2$는 얼마일까요?",
-                                "hint": "같은 공식을 사용하면 됩니다."
-                            },
-                            {
-                                "text": "$a^3 + b^3$을 구하려면 어떤 공식을 사용해야 할까요?",
-                                "hint": "$a^3 + b^3 = (a + b)(a^2 - ab + b^2)$ 공식을 생각해보세요."
-                            },
-                            {
-                                "text": "이 문제를 일반화하여 $a + b = p$, $ab = q$일 때 $a^2 + b^2$를 구하는 공식을 만들어보세요.",
-                                "hint": "$a^2 + b^2 = p^2 - 2q$가 됩니다."
-                            }
-                        ],
-                        "footer": "🚀 대칭식의 성질을 이해하면 더 복잡한 문제도 쉽게 풀 수 있어요!"
-                    },
-                    "similarProblem": {
-                        "description": "두 실수 $p$, $q$가 $p + q = 4$, $pq = 3$을 만족할 때, $p^2 + q^2$의 값을 구하시오.",
-                        "options": [
-                            { "value": 8, "text": "① 8" },
-                            { "value": 10, "text": "② 10" },
-                            { "value": 12, "text": "③ 12" },
-                            { "value": 14, "text": "④ 14" },
-                            { "value": 16, "text": "⑤ 16" }
-                        ]
-                    },
-                    "similarProblemAnswer": 10,
-                    "similarProblemSolution": {
-                        "steps": [
-                            {
-                                "title": "1단계: 공식 적용",
-                                "content": "$p^2 + q^2 = (p + q)^2 - 2pq$"
-                            },
-                            {
-                                "title": "2단계: 값 대입",
-                                "content": "$p^2 + q^2 = 4^2 - 2 \\times 3 = 16 - 6 = 10$"
-                            }
-                        ],
-                        "finalAnswer": "따라서 답은 ② 10입니다."
-                    }
-                },
-                {
-                    "id": 2,
-                    "title": "수학 문제 2",
-                    "problemInfo": {
-                        "description": "함수 $f(x) = x^2 - 4x + 3$의 최솟값을 구하시오.",
-                        "conditions": [
-                            "$f(x) = x^2 - 4x + 3$"
-                        ]
-                    },
-                    "analysisInfo": [
-                        "이차함수의 최솟값을 구하는 문제입니다.",
-                        "완전제곱식으로 변형하거나 미분을 사용할 수 있습니다.",
-                        "이차함수 $ax^2 + bx + c$ (a > 0)의 최솟값은 $x = -\\frac{b}{2a}$에서 발생합니다."
-                    ],
-                    "highlightTags": [
-                        { "text": "최솟값", "insightNumber": 1 },
-                        { "text": "x^2 - 4x + 3", "insightNumber": 2 }
-                    ],
-                    "solutionSteps": [
-                        {
-                            "question": "🤔 이차함수의 최솟값을 어떻게 구할까요?",
-                            "answer": "완전제곱식으로 변형하는 방법을 사용하겠습니다."
-                        },
-                        {
-                            "question": "💡 완전제곱식으로 변형해보겠습니다",
-                            "answer": "$f(x) = x^2 - 4x + 3 = (x^2 - 4x + 4) - 4 + 3 = (x - 2)^2 - 1$"
-                        },
-                        {
-                            "question": "🔍 $(x - 2)^2 - 1$에서 최솟값은 언제일까요?",
-                            "answer": "$(x - 2)^2 \\geq 0$이므로, $x = 2$일 때 $(x - 2)^2 = 0$이 되어 최솟값을 가집니다."
-                        },
-                        {
-                            "question": "📝 최솟값을 계산해보겠습니다",
-                            "answer": "$x = 2$일 때 $f(2) = (2 - 2)^2 - 1 = 0 - 1 = -1$"
-                        },
-                        {
-                            "question": "✅ 검산을 해보겠습니다",
-                            "answer": "$f(2) = 2^2 - 4 \\times 2 + 3 = 4 - 8 + 3 = -1$ ✓"
-                        },
-                        {
-                            "question": "🎯 핵심 포인트를 정리해볼까요?",
-                            "answer": "이차함수 $ax^2 + bx + c$ (a > 0)의 최솟값은 <span class='highlight'>$x = -\\frac{b}{2a}$</span>에서 발생하며, 완전제곱식으로 변형하면 쉽게 구할 수 있습니다."
-                        }
-                    ],
-                    "creativeQuestions": {
-                        "title": "💭 1등급의 머릿 속 추가질문:",
-                        "questions": [
-                            {
-                                "text": "만약 $f(x) = x^2 - 4x + 5$였다면 최솟값은 얼마일까요?",
-                                "hint": "같은 방법으로 완전제곱식을 만들어보세요."
-                            },
-                            {
-                                "text": "이차함수의 최솟값이 $x = 3$에서 발생한다면, 이차항의 계수가 1일 때 함수의 형태는?",
-                                "hint": "$f(x) = (x - 3)^2 + k$ 형태가 될 것입니다."
-                            }
-                        ],
-                        "footer": "🚀 이차함수의 성질을 완벽히 이해하면 다양한 응용 문제를 풀 수 있어요!"
-                    },
-                    "similarProblem": {
-                        "description": "함수 $g(x) = x^2 - 6x + 5$의 최솟값을 구하시오.",
-                        "options": [
-                            { "value": -4, "text": "① -4" },
-                            { "value": -3, "text": "② -3" },
-                            { "value": -2, "text": "③ -2" },
-                            { "value": -1, "text": "④ -1" },
-                            { "value": 0, "text": "⑤ 0" }
-                        ]
-                    },
-                    "similarProblemAnswer": -4,
-                    "similarProblemSolution": {
-                        "steps": [
-                            {
-                                "title": "1단계: 완전제곱식 변형",
-                                "content": "$g(x) = x^2 - 6x + 5 = (x - 3)^2 - 9 + 5 = (x - 3)^2 - 4$"
-                            },
-                            {
-                                "title": "2단계: 최솟값 구하기",
-                                "content": "$x = 3$일 때 최솟값 $-4$를 가집니다."
-                            }
-                        ],
-                        "finalAnswer": "따라서 답은 ① -4입니다."
-                    }
-                }
-            ]
-        };
+        // API 기본 설정
+        const API_BASE_URL = './api.php';
         
-        // 3번부터 30번까지 빈 문제 생성
-        for (let i = 3; i <= 30; i++) {
-            sampleData.problems.push({
-                "id": i,
-                "title": `문제 ${i}`,
-                "isEmpty": true,
-                "problemInfo": {
-                    "description": "이 문제는 아직 생성되지 않았습니다. JSON 입력을 통해 문제를 추가해주세요.",
-                    "conditions": []
-                },
-                "analysisInfo": [],
-                "highlightTags": [],
-                "solutionSteps": [],
-                "creativeQuestions": {
-                    "title": "💭 창의적 질문:",
-                    "questions": [],
-                    "footer": ""
-                },
-                "similarProblem": {
-                    "description": "",
-                    "options": []
-                },
-                "similarProblemAnswer": 1,
-                "similarProblemSolution": {
-                    "steps": [],
-                    "finalAnswer": ""
+        // 문제 데이터 로드 (DB에서 가져오기)
+        async function loadProblemsData() {
+            try {
+                showLoadingState(true);
+                
+                const response = await fetch(`${API_BASE_URL}?action=problems`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
-            });
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                
+                problemsData = { problems: data.problems };
+                problemsCompleted = new Array(problemsData.problems.length).fill(false);
+                
+                console.log('DB에서 문제 데이터를 성공적으로 로드했습니다.');
+                
+                // 초기화
+                initializeProblemNav();
+                loadProblem(0);
+                updateProgress();
+                
+            } catch (error) {
+                console.error('문제 데이터 로드 오류:', error);
+                
+                // DB 연결 실패시 빈 데이터로 초기화
+                problemsData = {
+                    problems: Array.from({length: 30}, (_, i) => ({
+                        id: i + 1,
+                        title: `문제 ${i + 1}`,
+                        isEmpty: true,
+                        problemInfo: {
+                            description: "이 문제는 아직 생성되지 않았습니다. JSON 입력을 통해 문제를 추가해주세요.",
+                            conditions: []
+                        },
+                        analysisInfo: [],
+                        highlightTags: [],
+                        solutionSteps: [],
+                        creativeQuestions: {
+                            title: "💭 창의적 질문:",
+                            questions: [],
+                            footer: ""
+                        },
+                        similarProblem: {
+                            description: "",
+                            options: []
+                        },
+                        similarProblemAnswer: 1,
+                        similarProblemSolution: {
+                            steps: [],
+                            finalAnswer: ""
+                        }
+                    }))
+                };
+                
+                problemsCompleted = new Array(30).fill(false);
+                
+                // 초기화
+                initializeProblemNav();
+                loadProblem(0);
+                updateProgress();
+                
+                showErrorMessage('DB 연결에 실패했습니다. 오프라인 모드로 실행됩니다.');
+            } finally {
+                showLoadingState(false);
+            }
         }
         
-        // 문제 데이터 로드
-        function loadProblemsData() {
-            // 로컬 스토리지에서 데이터 확인
-            const savedData = localStorage.getItem('mathProblemsData');
-            
-            if (savedData) {
-                try {
-                    problemsData = JSON.parse(savedData);
-                    console.log('로컬 스토리지에서 데이터를 로드했습니다.');
-                } catch (e) {
-                    console.error('로컬 스토리지 데이터 파싱 오류:', e);
-                    problemsData = sampleData;
-                }
-            } else {
-                // 실제로는 fetch API로 JSON 파일을 로드
-                // fetch('problems.json').then(response => response.json()).then(data => {...});
+        // 로딩 상태 표시
+        function showLoadingState(isLoading) {
+            const loadingElement = document.getElementById('loadingIndicator');
+            if (!loadingElement) {
+                // 로딩 인디케이터가 없으면 생성
+                const indicator = document.createElement('div');
+                indicator.id = 'loadingIndicator';
+                indicator.style.cssText = `
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background: white;
+                    padding: 20px 40px;
+                    border-radius: 10px;
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+                    z-index: 9999;
+                    display: none;
+                    text-align: center;
+                `;
+                indicator.innerHTML = `
+                    <div style="font-size: 18px; margin-bottom: 10px;">데이터 로딩 중...</div>
+                    <div style="width: 30px; height: 30px; border: 3px solid #f3f3f3; border-top: 3px solid #667eea; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto;"></div>
+                `;
+                document.body.appendChild(indicator);
                 
-                // 여기서는 샘플 데이터 사용
-                problemsData = sampleData;
+                // 스핀 애니메이션 CSS 추가
+                if (!document.getElementById('spinKeyframes')) {
+                    const style = document.createElement('style');
+                    style.id = 'spinKeyframes';
+                    style.textContent = `
+                        @keyframes spin {
+                            0% { transform: rotate(0deg); }
+                            100% { transform: rotate(360deg); }
+                        }
+                    `;
+                    document.head.appendChild(style);
+                }
             }
             
-            problemsCompleted = new Array(problemsData.problems.length).fill(false);
+            const indicator = document.getElementById('loadingIndicator');
+            indicator.style.display = isLoading ? 'block' : 'none';
+        }
+        
+        // 에러 메시지 표시
+        function showErrorMessage(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #ff6b6b;
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+                z-index: 10000;
+                font-size: 14px;
+                max-width: 300px;
+            `;
+            errorDiv.textContent = message;
+            document.body.appendChild(errorDiv);
             
-            // 초기화
-            initializeProblemNav();
-            loadProblem(0);
-            updateProgress();
+            // 5초 후 자동 제거
+            setTimeout(() => {
+                if (errorDiv.parentNode) {
+                    errorDiv.parentNode.removeChild(errorDiv);
+                }
+            }, 5000);
+        }
+        
+        // 성공 메시지 표시
+        function showSuccessMessage(message) {
+            const successDiv = document.createElement('div');
+            successDiv.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #4CAF50;
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+                z-index: 10000;
+                font-size: 14px;
+                max-width: 300px;
+            `;
+            successDiv.textContent = message;
+            document.body.appendChild(successDiv);
+            
+            // 3초 후 자동 제거
+            setTimeout(() => {
+                if (successDiv.parentNode) {
+                    successDiv.parentNode.removeChild(successDiv);
+                }
+            }, 3000);
+        }
+        
+        // API를 통한 문제 저장
+        async function saveProblemToDatabase(problemData) {
+            try {
+                showLoadingState(true);
+                
+                const response = await fetch(`${API_BASE_URL}?action=problem`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(problemData)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                
+                if (result.error) {
+                    throw new Error(result.error);
+                }
+                
+                console.log('문제가 성공적으로 저장되었습니다:', result);
+                showSuccessMessage('문제가 DB에 성공적으로 저장되었습니다!');
+                
+                // 데이터 다시 로드
+                await loadProblemsData();
+                
+                return result;
+                
+            } catch (error) {
+                console.error('문제 저장 오류:', error);
+                showErrorMessage('문제 저장에 실패했습니다: ' + error.message);
+                throw error;
+            } finally {
+                showLoadingState(false);
+            }
+        }
+        
+        // API를 통한 문제 수정
+        async function updateProblemInDatabase(problemId, problemData) {
+            try {
+                showLoadingState(true);
+                
+                const response = await fetch(`${API_BASE_URL}?action=problem&id=${problemId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(problemData)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                
+                if (result.error) {
+                    throw new Error(result.error);
+                }
+                
+                console.log('문제가 성공적으로 수정되었습니다:', result);
+                showSuccessMessage('문제가 성공적으로 수정되었습니다!');
+                
+                // 데이터 다시 로드
+                await loadProblemsData();
+                
+                return result;
+                
+            } catch (error) {
+                console.error('문제 수정 오류:', error);
+                showErrorMessage('문제 수정에 실패했습니다: ' + error.message);
+                throw error;
+            } finally {
+                showLoadingState(false);
+            }
+        }
+        
+        // API를 통한 이미지 업로드
+        async function uploadImageToServer(file) {
+            try {
+                const formData = new FormData();
+                formData.append('image', file);
+                
+                const response = await fetch(`${API_BASE_URL}?action=upload_image`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                
+                if (result.error) {
+                    throw new Error(result.error);
+                }
+                
+                return result;
+                
+            } catch (error) {
+                console.error('이미지 업로드 오류:', error);
+                showErrorMessage('이미지 업로드에 실패했습니다: ' + error.message);
+                throw error;
+            }
+        }
+        
+        // 기존 로컬 스토리지 관련 함수들 제거/수정
+        function exportData() {
+            if (!problemsData || !problemsData.problems) {
+                showErrorMessage('내보낼 데이터가 없습니다.');
+                return;
+            }
+            
+            const dataStr = JSON.stringify(problemsData, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `math_problems_${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            showSuccessMessage('데이터를 성공적으로 내보냈습니다.');
+        }
+        
+        // 데이터 가져오기 함수 (파일에서 읽어서 DB에 저장)
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    
+                    // 데이터 검증
+                    if (importedData.problems && Array.isArray(importedData.problems)) {
+                        showLoadingState(true);
+                        
+                        // 각 문제를 DB에 저장
+                        for (const problem of importedData.problems) {
+                            if (!problem.isEmpty) {
+                                try {
+                                    await saveProblemToDatabase(problem);
+                                } catch (error) {
+                                    console.error(`문제 ${problem.id} 저장 실패:`, error);
+                                }
+                            }
+                        }
+                        
+                        showSuccessMessage('데이터를 성공적으로 가져와서 DB에 저장했습니다!');
+                        
+                        // 데이터 다시 로드
+                        await loadProblemsData();
+                        
+                    } else {
+                        showErrorMessage('올바르지 않은 데이터 형식입니다.');
+                    }
+                } catch (error) {
+                    showErrorMessage('파일을 읽는 중 오류가 발생했습니다: ' + error.message);
+                } finally {
+                    showLoadingState(false);
+                }
+            };
+            reader.readAsText(file);
+        }
+        
+        // 로컬 스토리지 백업 관련 함수들 제거 (DB가 백업 역할)
+        function backupToLocalStorage() {
+            console.log('DB 기반 시스템에서는 자동 백업이 이루어집니다.');
+        }
+        
+        function showBackupList() {
+            showErrorMessage('DB 기반 시스템에서는 백업 관리가 서버에서 이루어집니다.');
         }
         
         // MathJax 렌더링 함수
@@ -2721,103 +2836,6 @@
                 }).catch((err) => {
                     console.error('전체 MathJax 렌더링 오류:', err);
                 });
-            }
-        }
-        
-        // 데이터 내보내기 함수
-        function exportData() {
-            const dataStr = JSON.stringify(problemsData, null, 2);
-            const dataBlob = new Blob([dataStr], { type: 'application/json' });
-            
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(dataBlob);
-            link.download = `math_problems_${new Date().toISOString().split('T')[0]}.json`;
-            link.click();
-        }
-        
-        // 데이터 가져오기 함수
-        function importData(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const importedData = JSON.parse(e.target.result);
-                    
-                    // 데이터 검증
-                    if (importedData.problems && Array.isArray(importedData.problems)) {
-                        problemsData = importedData;
-                        localStorage.setItem('mathProblemsData', JSON.stringify(problemsData));
-                        
-                        alert('데이터를 성공적으로 가져왔습니다!');
-                        location.reload(); // 페이지 새로고침
-                    } else {
-                        alert('올바르지 않은 데이터 형식입니다.');
-                    }
-                } catch (error) {
-                    alert('파일을 읽는 중 오류가 발생했습니다: ' + error.message);
-                }
-            };
-            reader.readAsText(file);
-        }
-        
-        // 로컬 스토리지 백업
-        function backupToLocalStorage() {
-            const backupKey = `mathProblemsBackup_${Date.now()}`;
-            localStorage.setItem(backupKey, JSON.stringify(problemsData));
-            console.log('백업 완료:', backupKey);
-            
-            // 오래된 백업 정리 (최근 5개만 유지)
-            const allKeys = Object.keys(localStorage);
-            const backupKeys = allKeys.filter(key => key.startsWith('mathProblemsBackup_'))
-                                    .sort((a, b) => {
-                                        const timeA = parseInt(a.split('_')[1]);
-                                        const timeB = parseInt(b.split('_')[1]);
-                                        return timeB - timeA;
-                                    });
-            
-            // 5개 초과시 오래된 백업 삭제
-            if (backupKeys.length > 5) {
-                backupKeys.slice(5).forEach(key => {
-                    localStorage.removeItem(key);
-                });
-            }
-        }
-        
-        // 백업 목록 표시
-        function showBackupList() {
-            const allKeys = Object.keys(localStorage);
-            const backupKeys = allKeys.filter(key => key.startsWith('mathProblemsBackup_'))
-                                    .sort((a, b) => {
-                                        const timeA = parseInt(a.split('_')[1]);
-                                        const timeB = parseInt(b.split('_')[1]);
-                                        return timeB - timeA;
-                                    });
-            
-            if (backupKeys.length === 0) {
-                alert('백업이 없습니다.');
-                return;
-            }
-            
-            const backupList = backupKeys.map(key => {
-                const timestamp = parseInt(key.split('_')[1]);
-                const date = new Date(timestamp).toLocaleString('ko-KR');
-                return `${date} (${key})`;
-            }).join('\n');
-            
-            const selectedBackup = prompt(`백업 목록:\n${backupList}\n\n복원할 백업의 키를 입력하세요:`);
-            
-            if (selectedBackup && localStorage.getItem(selectedBackup)) {
-                try {
-                    const backupData = JSON.parse(localStorage.getItem(selectedBackup));
-                    problemsData = backupData;
-                    localStorage.setItem('mathProblemsData', JSON.stringify(problemsData));
-                    alert('백업을 성공적으로 복원했습니다!');
-                    location.reload();
-                } catch (error) {
-                    alert('백업 복원 중 오류가 발생했습니다: ' + error.message);
-                }
             }
         }
         
@@ -4011,17 +4029,19 @@
             const files = event.target.files;
             const container = document.getElementById('imagePreviewContainer');
             
-            Array.from(files).forEach((file, index) => {
+            for (let index = 0; index < files.length; index++) {
+                const file = files[index];
+                
                 // 파일 크기 검증 (5MB)
                 if (file.size > 5 * 1024 * 1024) {
-                    alert(`${file.name}은 파일 크기가 5MB를 초과합니다.`);
-                    return;
+                    showErrorMessage(`${file.name}은 파일 크기가 5MB를 초과합니다.`);
+                    continue;
                 }
                 
                 // 파일 타입 검증
                 if (!file.type.startsWith('image/')) {
-                    alert(`${file.name}은 이미지 파일이 아닙니다.`);
-                    return;
+                    showErrorMessage(`${file.name}은 이미지 파일이 아닙니다.`);
+                    continue;
                 }
                 
                 const reader = new FileReader();
@@ -4048,7 +4068,7 @@
                     container.appendChild(previewItem);
                 };
                 reader.readAsDataURL(file);
-            });
+            }
         }
         
         // 이미지 제거
@@ -4099,41 +4119,68 @@
         }
         
         // JSON 검증 및 저장
-        function validateAndSaveJson() {
+        async function validateAndSaveJson() {
             if (!validateJson()) {
-                alert('JSON 데이터를 먼저 검증해주세요.');
+                showErrorMessage('JSON 데이터를 먼저 검증해주세요.');
                 return;
             }
             
             try {
+                showLoadingState(true);
                 const jsonData = JSON.parse(document.getElementById('jsonInput').value);
                 
-                // 이미지 데이터 추가
+                // 이미지 업로드 처리
                 if (Object.keys(uploadedImages).length > 0) {
-                    jsonData.problemInfo.images = Object.values(uploadedImages).map(img => img.data);
+                    const uploadedImageUrls = [];
+                    
+                    for (const imageId in uploadedImages) {
+                        const imageData = uploadedImages[imageId];
+                        
+                        // Base64 데이터를 Blob으로 변환
+                        const response = await fetch(imageData.data);
+                        const blob = await response.blob();
+                        const file = new File([blob], imageData.name, { type: blob.type });
+                        
+                        try {
+                            const uploadResult = await uploadImageToServer(file);
+                            uploadedImageUrls.push(uploadResult.url);
+                        } catch (error) {
+                            console.error('이미지 업로드 실패:', error);
+                            showErrorMessage(`이미지 "${imageData.name}" 업로드에 실패했습니다.`);
+                        }
+                    }
+                    
+                    if (uploadedImageUrls.length > 0) {
+                        jsonData.problemInfo.images = uploadedImageUrls;
+                    }
                 }
                 
-                // 문제 데이터 업데이트
+                // 문제 번호가 일치하는지 확인
                 if (currentEditingProblemIndex >= 0) {
-                    problemsData.problems[currentEditingProblemIndex] = {
-                        ...jsonData,
-                        isEmpty: false
-                    };
+                    jsonData.id = currentEditingProblemIndex + 1;
                     
-                    // 로컬 스토리지에 저장
-                    localStorage.setItem('mathProblemsData', JSON.stringify(problemsData));
+                    // 기존 문제인지 새 문제인지 확인
+                    const existingProblem = problemsData.problems[currentEditingProblemIndex];
                     
-                    // 백업 생성
-                    backupToLocalStorage();
+                    if (existingProblem && !existingProblem.isEmpty) {
+                        // 기존 문제 수정
+                        await updateProblemInDatabase(existingProblem.id, jsonData);
+                    } else {
+                        // 새 문제 생성
+                        await saveProblemToDatabase(jsonData);
+                    }
                     
-                    alert('문제가 성공적으로 저장되었습니다!');
                     closeJsonModal();
                     
-                    // 문제 네비게이션 업데이트
-                    updateProblemNav();
+                } else {
+                    showErrorMessage('문제 인덱스가 올바르지 않습니다.');
                 }
+                
             } catch (e) {
-                alert('저장 중 오류가 발생했습니다: ' + e.message);
+                console.error('저장 중 오류:', e);
+                showErrorMessage('저장 중 오류가 발생했습니다: ' + e.message);
+            } finally {
+                showLoadingState(false);
             }
         }
         
